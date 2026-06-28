@@ -1,0 +1,44 @@
+name: courrier
+description: "Privacy-first, offline-first FOSS alternative to the Outlook mobile app — mail, calendar, contacts, tasks, reminders, notes, RSS — syncing to self-hosted Nextcloud, with Microsoft 365 mail as a first-class account type. Member of the Établi Suite."
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.0
+
+# v0.1.0 dependencies are added per milestone (enough_mail at M6, flutter_appauth at M8,
+# rrule at M3, flutter_local_notifications at M5). Each addition is recorded in NOTICE
+# and audited by .github/workflows/license-gate.yml.
+dependencies:
+  crypto: ^3.0.3
+  cupertino_icons: ^1.0.8
+  drift: ^2.20.0
+  enough_mail: ^2.1.6
+  flutter:
+    sdk: flutter
+  flutter_appauth: ^9.0.0
+  flutter_local_notifications: ^20.1.0
+  flutter_secure_storage: ^10.0.0
+  html: ^0.15.4
+  http: ^1.2.0
+  intl: ^0.19.0
+  local_auth: ^2.3.0
+  meta: ^1.18.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  rrule: ^0.2.16
+  shared_preferences: ^2.3.0
+  sqlite3_flutter_libs: ^0.5.24
+  timezone: ^0.10.0
+  xml: ^6.5.0
+
+dev_dependencies:
+  build_runner: ^2.4.11
+  drift_dev: ^2.20.0
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

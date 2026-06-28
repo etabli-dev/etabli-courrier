@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Example Tech Blog</title>
+    <link>https://example.org/blog</link>
+    <description>News and notes from the Example team.</description>
+    <item>
+      <title>Hello, RSS</title>
+      <link>https://example.org/blog/hello-rss</link>
+      <guid isPermaLink="true">https://example.org/blog/hello-rss</guid>
+      <pubDate>Wed, 14 Feb 2024 09:30:00 +0000</pubDate>
+      <dc:creator>Ada Lovelace</dc:creator>
+      <description>Short description.</description>
+      <content:encoded><![CDATA[<p>Full <strong>content</strong> with HTML.</p>]]></content:encoded>
+    </item>
+    <item>
+      <title>Second post</title>
+      <link>https://example.org/blog/second</link>
+      <pubDate>Thu, 15 Feb 2024 10:00:00 +0100</pubDate>
+      <description>Plain description fallback.</description>
+    </item>
+  </channel>
+</rss>

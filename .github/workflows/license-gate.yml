@@ -1,0 +1,88 @@
+name: license-gate
+
+# Fails the build if any resolved Dart/Flutter dependency carries a non-allow-listed license
+# (see LICENSING.md), if a BANNED package is present, or if required licensing artifacts are
+# missing. GREEN = link freely, YELLOW = allowed with obligations, RED = fail.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  license-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Install license auditor
+        run: dart pub global activate very_good_cli
+
+      # very_good packages check licenses reports the SPDX license of every transitive
+      # dependency. Allow GREEN + YELLOW; forbid RED. Mirror LICENSING.md exactly.
+      - name: Enforce license allow-list
+        run: |
+          dart pub global run very_good_cli:very_good packages check licenses \
+            --allowed="Apache-2.0,MIT,BSD-2-Clause,BSD-3-Clause,ISC,Zlib,Unlicense,CC0-1.0,MPL-2.0,EPL-2.0,CDDL-1.0,CDDL-1.1" \
+            --forbidden="GPL-2.0,GPL-3.0,AGPL-3.0,LGPL-2.1,LGPL-3.0,SSPL-1.0,BUSL-1.1" \
+            --reporter=compact
+
+      # Banned packages: proprietary native MSAL wrappers break F-Droid regardless of the
+      # wrapper's own SPDX string. Fail hard if present anywhere in the resolved tree.
+      - name: Forbid banned packages
+        run: |
+          set -e
+          BANNED="msal_auth"
+          for pkg in $BANNED; do
+            if grep -qE "^\s*$pkg:" pubspec.lock 2>/dev/null; then
+              echo "::error::Banned package '$pkg' present (breaks F-Droid). Use flutter_appauth."
+              exit 1
+            fi
+          done
+          echo "No banned packages present."
+
+      - name: Ensure secrets file is not committed
+        run: |
+          if git ls-files --error-unmatch secrets.json >/dev/null 2>&1; then
+            echo "::error::secrets.json is tracked by git. Remove it from version control and add it to .gitignore."
+            exit 1
+          fi
+          echo "No committed secrets.json."
+
+      - name: Verify NOTICE exists and mentions MPL dependency
+        run: |
+          test -f NOTICE || { echo "::error::NOTICE file missing"; exit 1; }
+          grep -qi "MPL-2.0" NOTICE || { echo "::error::NOTICE must list the MPL-2.0 enough_mail entry"; exit 1; }
+          echo "NOTICE present and references MPL-2.0."
+
+      - name: Verify clean-room provenance file exists
+        run: |
+          test -f THIRD_PARTY_REFERENCES.md || { echo "::error::THIRD_PARTY_REFERENCES.md missing"; exit 1; }
+          echo "Clean-room provenance present."
+
+      # F-Droid hygiene: M365/Gmail OAuth (proprietary-service) code must stay in the optional
+      # providers module so the core remains clean. Warn if provider-specific identifiers leak
+      # outside lib/modules/mail/providers/. Tune the pattern to your code; keep it advisory
+      # unless you want a hard gate.
+      - name: Check M365/OAuth provider isolation (advisory)
+        run: |
+          LEAK=$(grep -rIl --include=*.dart -E "office365|outlook\.office|login\.microsoftonline" lib 2>/dev/null \
+                 | grep -v "lib/modules/mail/providers/" || true)
+          if [ -n "$LEAK" ]; then
+            echo "::warning::Microsoft 365 identifiers found outside lib/modules/mail/providers/:"
+            echo "$LEAK"
+          else
+            echo "M365 provider code is isolated."
+          fi
+
+# NOTE: very_good_cli's exact flag names may differ by version; pin the version and adjust.
+# A 'flutter pub deps --json' + jq script over pubspec.lock is an equivalent fallback —
+# the requirement is: any RED license OR banned package in the resolved tree => non-zero exit.

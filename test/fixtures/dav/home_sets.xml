@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<D:multistatus xmlns:D="DAV:"
+               xmlns:C="urn:ietf:params:xml:ns:caldav"
+               xmlns:CR="urn:ietf:params:xml:ns:carddav">
+  <D:response>
+    <D:href>/remote.php/dav/principals/users/courrier-test/</D:href>
+    <D:propstat>
+      <D:prop>
+        <C:calendar-home-set>
+          <D:href>/remote.php/dav/calendars/courrier-test/</D:href>
+        </C:calendar-home-set>
+        <CR:addressbook-home-set>
+          <D:href>/remote.php/dav/addressbooks/users/courrier-test/</D:href>
+        </CR:addressbook-home-set>
+      </D:prop>
+      <D:status>HTTP/1.1 200 OK</D:status>
+    </D:propstat>
+  </D:response>
+</D:multistatus>

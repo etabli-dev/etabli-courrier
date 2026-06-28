@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Atom Feed</title>
+  <subtitle>An example feed for the M10 parser tests.</subtitle>
+  <link href="https://example.org/atom" rel="alternate"/>
+  <link href="https://example.org/atom.xml" rel="self"/>
+  <id>tag:example.org,2024:atom</id>
+  <updated>2024-02-15T10:00:00Z</updated>
+  <entry>
+    <id>tag:example.org,2024:entry-1</id>
+    <title>Atom first post</title>
+    <link href="https://example.org/atom/first" rel="alternate"/>
+    <published>2024-02-14T09:30:00Z</published>
+    <author><name>Grace Hopper</name></author>
+    <content type="html"><![CDATA[<p>Inline <em>Atom</em> content.</p>]]></content>
+  </entry>
+  <entry>
+    <id>tag:example.org,2024:entry-2</id>
+    <title>Atom second post</title>
+    <link href="https://example.org/atom/second"/>
+    <updated>2024-02-15T10:00:00Z</updated>
+    <summary>Summary fallback.</summary>
+  </entry>
+</feed>

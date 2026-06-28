@@ -1,0 +1,138 @@
+courrier
+Copyright 2026 Raban Heller and the Établi Suite contributors
+
+This product includes software developed as part of the Établi Suite
+(https://github.com/etabli-dev).
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at: http://www.apache.org/licenses/LICENSE-2.0
+
+================================================================================
+Third-Party Licenses
+================================================================================
+
+This application bundles or depends on the following third-party components.
+Each remains under its own license. Components under the Mozilla Public License
+2.0 are file-level copyleft: their source files remain MPL-2.0 within this
+combined work, while courrier's own source remains under Apache-2.0.
+
+--------------------------------------------------------------------------------
+enough_mail — IMAP/POP3/SMTP and MIME for Dart (incl. XOAUTH2)
+License: Mozilla Public License 2.0 (MPL-2.0)
+Source:  https://github.com/Enough-Software/enough_mail
+Pinned:  ^2.1.6 (added at M6)
+Notes:   Used unmodified as a published dependency. If modified, the modified
+         files remain MPL-2.0 and their source will be published.
+--------------------------------------------------------------------------------
+html — Dart team's HTML 5 parser; used to sanitise message bodies (M6)
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/tools/tree/main/pkgs/html
+Pinned:  ^0.15.4 (added at M6)
+--------------------------------------------------------------------------------
+flutter_appauth — OAuth 2.0 authorization-code + PKCE (AppAuth)
+License: MIT (package) / Apache-2.0 (AppAuth SDKs upstream)
+Source:  https://github.com/MaikuB/flutter_appauth
+Pinned:  ^9.0.0 (added at M8)
+Used by: Microsoft 365 mail sign-in (modules/mail/providers/microsoft365).
+         Gmail seam deferred to v2.
+--------------------------------------------------------------------------------
+aad_oauth — Azure AD OAuth for Flutter (alternative to flutter_appauth)
+License: MIT (verify at pin time)
+Source:  https://github.com/Authrize/aad_oauth
+Notes:   Include only if actually shipped; otherwise omit.
+--------------------------------------------------------------------------------
+oauth2 — OAuth2 building blocks for Dart (if used)
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/oauth2
+--------------------------------------------------------------------------------
+drift — SQLite persistence for Dart
+License: MIT
+Source:  https://github.com/simolus3/drift
+Pinned:  ^2.20.0 (added at M1)
+--------------------------------------------------------------------------------
+sqlite3_flutter_libs — bundles SQLite native libraries for the Flutter binary
+License: MIT
+Source:  https://github.com/simolus3/sqlite3.dart
+Pinned:  ^0.5.24 (added at M1)
+--------------------------------------------------------------------------------
+rrule — RFC 5545 recurrence rules for Dart
+License: MIT
+Source:  https://github.com/JonasWanke/rrule
+Pinned:  ^0.2.16 (added at M3)
+--------------------------------------------------------------------------------
+intl — Dart team's i18n / date formatting
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/i18n/tree/main/pkgs/intl
+Pinned:  ^0.19.0 (added at M3; transitive dep of rrule)
+--------------------------------------------------------------------------------
+time — TimeOfDay arithmetic / Duration extensions (transitive via rrule)
+License: Apache-2.0
+Source:  https://github.com/JonasWanke/time
+Pinned:  transitive (added at M3 via rrule)
+--------------------------------------------------------------------------------
+flutter_secure_storage — Keychain/Keystore-backed secret & OAuth-token storage
+License: BSD-3-Clause
+Source:  https://github.com/juliansteenbakker/flutter_secure_storage
+Pinned:  ^9.2.2 (added at M1)
+--------------------------------------------------------------------------------
+shared_preferences — central preferences store (non-sensitive settings)
+License: BSD-3-Clause
+Source:  https://github.com/flutter/packages/tree/main/packages/shared_preferences
+Pinned:  ^2.3.0 (added at M1)
+--------------------------------------------------------------------------------
+path_provider — platform-correct application support / documents directories
+License: BSD-3-Clause
+Source:  https://github.com/flutter/packages/tree/main/packages/path_provider
+Pinned:  ^2.1.4 (added at M1)
+--------------------------------------------------------------------------------
+path — path manipulation utilities (Dart)
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/core
+Pinned:  ^1.9.0 (added at M1)
+--------------------------------------------------------------------------------
+meta — annotation library (Dart)
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/core
+Pinned:  ^1.18.0 (added at M1, also transitive via Flutter SDK)
+--------------------------------------------------------------------------------
+cupertino_icons — iOS-style glyph font
+License: MIT
+Source:  https://github.com/flutter/packages/tree/main/packages/cupertino_icons
+Pinned:  ^1.0.8 (scaffold default)
+--------------------------------------------------------------------------------
+http — Dart team's HTTP client (used by core/net/dav)
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/http
+Pinned:  ^1.2.0 (added at M2)
+--------------------------------------------------------------------------------
+xml — XML parser / builder (PROPFIND multistatus, REPORT requests)
+License: MIT
+Source:  https://github.com/renggli/dart-xml
+Pinned:  ^6.5.0 (added at M2)
+--------------------------------------------------------------------------------
+flutter_local_notifications — local notification scheduling
+License: BSD-3-Clause
+Source:  https://github.com/MaikuB/flutter_local_notifications
+Pinned:  ^20.1.0 (added at M5)
+--------------------------------------------------------------------------------
+local_auth — biometric prompt (Touch ID / Face ID / Fingerprint)
+License: BSD-3-Clause
+Source:  https://github.com/flutter/packages/tree/main/packages/local_auth
+Pinned:  ^2.3.0 (added at M11; used by core/lock for app lock)
+--------------------------------------------------------------------------------
+timezone — IANA TZ database for scheduling (transitive via flutter_local_notifications)
+License: BSD-2-Clause
+Source:  https://github.com/srawlins/timezone
+Pinned:  ^0.10.0 (added at M5)
+--------------------------------------------------------------------------------
+
+BANNED (must never be added): msal_auth or any wrapper of Microsoft's
+proprietary native MSAL binaries — breaks F-Droid. See LICENSING.md.
+
+The CI license gate (.github/workflows/license-gate.yml) enforces that every
+resolved dependency carries an allow-listed license and that no banned package
+is present. See LICENSING.md.
+
+Behavioral references consulted under clean-room discipline (NO code copied or
+ported), including DavMail (GPLv2), are documented in THIRD_PARTY_REFERENCES.md.

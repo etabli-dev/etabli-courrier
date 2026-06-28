@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:4.0
+UID:vcard-uid-001
+FN:Ada Lovelace
+N:Lovelace;Ada;;;
+ORG:Analytical Engines;Programming
+EMAIL;TYPE=work:ada@example.org
+EMAIL;TYPE=home:lovelace@example.net
+TEL;TYPE=cell:+44-20-7000-1815
+TEL;TYPE=work:+44-20-7000-1816
+ADR;TYPE=home:;;1 Engine Lane;London;;;UK
+X-IM-SLACK:@ada
+X-CUSTOM-VENDOR-NOTE:keep-this-too
+END:VCARD

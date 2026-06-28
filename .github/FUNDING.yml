@@ -1,0 +1,7 @@
+# Funding surfaces are flavor-aware in the app (see BUILD_PROMPT.md M11/M15):
+#   * App Store / Google Play / GitHub Releases flavor: Buy Me a Coffee
+#   * F-Droid flavor: Liberapay (no proprietary payment processor)
+# This file backs the GitHub "Sponsor" button on the repo.
+liberapay: etabli
+custom:
+  - https://www.buymeacoffee.com/etabli

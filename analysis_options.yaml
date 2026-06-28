@@ -1,0 +1,60 @@
+# Strict analyzer config — supports CLAUDE.md operating principle 2 (zero-warning hard-fail).
+# `flutter analyze` must report 0 errors, 0 warnings, AND 0 infos. Suppressions are forbidden.
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Promote everything that would normally be a warning or info to a hard error.
+    # The audit dimension 1 gate fails on any non-zero analyzer output, but this
+    # keeps developers honest in the editor too.
+    todo: error
+    deprecated_member_use: error
+    deprecated_member_use_from_same_package: error
+    unused_import: error
+    unused_element: error
+    unused_local_variable: error
+    dead_code: error
+    missing_required_param: error
+    missing_return: error
+  exclude:
+    - build/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+linter:
+  rules:
+    # Style and safety beyond flutter_lints defaults.
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_empty_else: true
+    avoid_redundant_argument_values: true
+    avoid_returning_null_for_void: true
+    avoid_unused_constructor_parameters: true
+    cancel_subscriptions: true
+    close_sinks: true
+    directives_ordering: true
+    no_adjacent_strings_in_list: true
+    no_runtimeType_toString: true
+    only_throw_errors: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_fields: true
+    prefer_final_in_for_each: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_pub_dependencies: true
+    test_types_in_equals: true
+    throw_in_finally: true
+    unawaited_futures: true
+    unnecessary_await_in_return: true
+    unnecessary_parenthesis: true
+    unnecessary_statements: true
+    use_super_parameters: true

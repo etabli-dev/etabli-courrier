@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<D:multistatus xmlns:D="DAV:"
+               xmlns:C="urn:ietf:params:xml:ns:caldav"
+               xmlns:CS="http://calendarserver.org/ns/"
+               xmlns:A="http://apple.com/ns/ical/">
+  <D:response>
+    <D:href>/remote.php/dav/calendars/courrier-test/</D:href>
+    <D:propstat>
+      <D:prop>
+        <D:resourcetype>
+          <D:collection/>
+        </D:resourcetype>
+        <D:displayname>courrier-test</D:displayname>
+      </D:prop>
+      <D:status>HTTP/1.1 200 OK</D:status>
+    </D:propstat>
+  </D:response>
+  <D:response>
+    <D:href>/remote.php/dav/calendars/courrier-test/personal/</D:href>
+    <D:propstat>
+      <D:prop>
+        <D:resourcetype>
+          <D:collection/>
+          <C:calendar/>
+        </D:resourcetype>
+        <D:displayname>Personal</D:displayname>
+        <D:sync-token>http://sabre.io/ns/sync/42</D:sync-token>
+        <CS:getctag>http://sabre.io/ns/sync/42</CS:getctag>
+        <C:supported-calendar-component-set>
+          <C:comp name="VEVENT"/>
+          <C:comp name="VTODO"/>
+        </C:supported-calendar-component-set>
+        <A:calendar-color>#28a745ff</A:calendar-color>
+        <A:calendar-order>1</A:calendar-order>
+      </D:prop>
+      <D:status>HTTP/1.1 200 OK</D:status>
+    </D:propstat>
+  </D:response>
+  <D:response>
+    <D:href>/remote.php/dav/calendars/courrier-test/work/</D:href>
+    <D:propstat>
+      <D:prop>
+        <D:resourcetype>
+          <D:collection/>
+          <C:calendar/>
+        </D:resourcetype>
+        <D:displayname>Work</D:displayname>
+        <D:sync-token>http://sabre.io/ns/sync/7</D:sync-token>
+        <CS:getctag>http://sabre.io/ns/sync/7</CS:getctag>
+        <C:supported-calendar-component-set>
+          <C:comp name="VEVENT"/>
+        </C:supported-calendar-component-set>
+        <A:calendar-color>#1a8917ff</A:calendar-color>
+        <A:calendar-order>2</A:calendar-order>
+      </D:prop>
+      <D:status>HTTP/1.1 200 OK</D:status>
+    </D:propstat>
+  </D:response>
+</D:multistatus>
