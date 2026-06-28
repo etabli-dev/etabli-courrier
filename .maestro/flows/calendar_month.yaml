@@ -1,0 +1,12 @@
+appId: dev.etabli.courrier
+name: calendar month
+tags:
+  - module:calendar
+  - state:month
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-calendar-tab"
+- tapOn: "Month"
+- takeScreenshot: "calendar_month_${MAESTRO_COURRIER_THEME}"

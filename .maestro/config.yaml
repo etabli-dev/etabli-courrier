@@ -1,0 +1,11 @@
+# Maestro project config for the courrier screenshot harness.
+# https://maestro.mobile.dev/
+
+flows:
+  - flows/
+
+executionOrder:
+  continueOnFailure: true
+
+env:
+  APP_ID: dev.etabli.courrier

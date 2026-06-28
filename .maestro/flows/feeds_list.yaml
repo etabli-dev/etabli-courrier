@@ -1,0 +1,12 @@
+appId: dev.etabli.courrier
+name: feeds list
+tags:
+  - module:feeds
+  - state:list
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-feeds-tab"
+- assertVisible: "Example Tech Blog"
+- takeScreenshot: "feeds_list_${MAESTRO_COURRIER_THEME}"

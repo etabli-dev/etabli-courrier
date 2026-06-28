@@ -1,0 +1,11 @@
+appId: dev.etabli.courrier
+name: mail thread
+tags:
+  - module:mail
+  - state:thread
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Suite-wide release timing"
+- tapOn: "Suite-wide release timing"
+- takeScreenshot: "mail_thread_${MAESTRO_COURRIER_THEME}"

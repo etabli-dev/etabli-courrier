@@ -1,0 +1,13 @@
+appId: dev.etabli.courrier
+name: contacts detail
+tags:
+  - module:contacts
+  - state:detail
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-contacts-tab"
+- tapOn: "Ada Lovelace"
+- assertVisible: "Email"
+- takeScreenshot: "contacts_detail_${MAESTRO_COURRIER_THEME}"

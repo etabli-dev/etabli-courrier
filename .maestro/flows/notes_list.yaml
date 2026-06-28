@@ -1,0 +1,13 @@
+appId: dev.etabli.courrier
+name: notes list
+tags:
+  - module:notes
+  - state:list
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-notes-tab"
+- assertVisible: "Shopping list"
+- assertVisible: "Release notes draft"
+- takeScreenshot: "notes_list_${MAESTRO_COURRIER_THEME}"

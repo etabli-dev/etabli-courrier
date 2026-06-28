@@ -1,0 +1,11 @@
+appId: dev.etabli.courrier
+name: mail inbox
+tags:
+  - module:mail
+  - state:inbox
+---
+- launchApp:
+    clearState: true
+- assertVisible: "courrier · mail"
+- assertVisible: "Suite-wide release timing"
+- takeScreenshot: "mail_inbox_${MAESTRO_COURRIER_THEME}"

@@ -1,0 +1,13 @@
+appId: dev.etabli.courrier
+name: calendar agenda
+tags:
+  - module:calendar
+  - state:agenda
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-calendar-tab"
+- assertVisible: "Agenda"
+- assertVisible: "Weekly status"
+- takeScreenshot: "calendar_agenda_${MAESTRO_COURRIER_THEME}"

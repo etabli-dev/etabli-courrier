@@ -1,0 +1,12 @@
+appId: dev.etabli.courrier
+name: tasks list
+tags:
+  - module:tasks
+  - state:list
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: "demo-tasks-tab"
+- assertVisible: "Ship M13 screenshots"
+- takeScreenshot: "tasks_list_${MAESTRO_COURRIER_THEME}"

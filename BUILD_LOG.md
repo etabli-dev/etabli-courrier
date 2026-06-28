@@ -959,7 +959,61 @@ AUDIT — Milestone M12 — CONVERGED in 1 round (cap 10)
 CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M13.
 ```
 
-### M13 — Screenshots  ·  M14 — Vignettes (incl. M365 + DavMail how-tos)
+### M13 — Screenshot harness (Maestro)
+- Status: CONVERGED  ·  Audit dims run: 1, 3, 8, 10
+
+#### Round 1 reason-first
+```
+[M13 | 2026-06-28 | findings F-01..F-02 | dimension build & static | sev BLOCKER+MINOR]
+Hypothesis:        first demo-boot analyze pass surfaces a small batch of import / type
+                   miss-haves (unused drift, missing FeedRepository + EventDraft imports,
+                   FutureBuilder without generic). Standard scaffolding cost.
+Strategy:          add the missing imports, type the FutureBuilder, drop the unused
+                   drift import; format.
+Verification plan: flutter analyze → 0 + flutter test → 206 + demo_services_test green
+                   proves the harness boots end-to-end in pure Dart.
+Fallback:          if a demo-boot screen surfaces a runtime exception against the
+                   seeded data, drop the seed for that module while keeping the demo
+                   surface so the rest captures. (Not needed; every module booted.)
+Result:            All Closed. 206/206 + 1 opt-in skip.
+```
+
+#### Strategic decisions recorded
+1. **Demo boot is a separate entry point**, gated by
+   `--dart-define=COURRIER_DEMO_BOOT=true`. Production users never see it.
+   `bool.fromEnvironment` defaults to false so release builds reach the
+   regular AppShell unchanged.
+2. **One YAML per representative state**, not one per module. nine flows so far
+   (mail × 2, calendar × 2, contacts × 2, tasks, notes, feeds). M14 adds
+   any state we want in the vignette gallery.
+3. **`scripts/maestro/capture.sh` is the gallery driver**, not CI. Captures
+   actual PNGs require a connected device + Maestro CLI — the M15
+   release-gate runs it. M11-polish CI workflow (emulator + Maestro per PR)
+   is a separate item.
+4. **The smoke test catches "demo boot won't launch"** before the device
+   runner does. `test/dev/demo_services_test.dart::DemoServices.bootInMemory`
+   wires every module's repo + asserts every seed surfaces rows. If a
+   module breaks the demo boot, the unit suite catches it.
+
+#### M13 audit report
+```
+AUDIT — Milestone M13 — CONVERGED in 1 round (cap 10)
+- Dimensions run: 1 (build & static), 3 (runtime — demo boot smoke), 8 (UX),
+  10 (documentation)
+- Total findings: 2 | Closed: 2 | Reopened events: 0 | Regressions: none
+- analyze: 0 issues | format: clean | tests: 206 passing + 1 opt-in live skipped
+- Maestro harness: .maestro/config.yaml + 9 flows + scripts/maestro/capture.sh
+- Demo boot: lib/dev/demo_services.dart + lib/dev/demo_app.dart; main.dart routes
+  via --dart-define=COURRIER_DEMO_BOOT=true
+- F-Droid (M8 carry-over): msal_auth absent; M365 identifier grep clean
+- Open questions for human:
+  • Capture the actual PNGs by running scripts/maestro/capture.sh against a
+    real device + Maestro CLI before the M15 release-gate.
+  • CocoaPods → SwiftPM advisory carries from M2; M15 polish.
+CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M14.
+```
+
+### M14 — Vignettes (incl. M365 + DavMail how-tos)
 - (to be filled)
 
 ### M15 — Privacy, F-Droid metadata (NonFreeNet), funding, RELEASE GATE → v0.1.0
