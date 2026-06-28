@@ -904,7 +904,62 @@ AUDIT — Milestone M11 — CONVERGED in 1 round (cap 10)
 CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M12.
 ```
 
-### M12 — Global stability pass  ·  M13 — Screenshots  ·  M14 — Vignettes (incl. M365 + DavMail how-tos)
+### M12 — Global stability pass
+- Status: CONVERGED  ·  Audit dims run: 1–10 (all 10 dimensions, whole app)
+
+#### Round 1 reason-first
+```
+[M12 | 2026-06-28 | findings F-01..F-02 | dimension accessibility | sev MINOR]
+Hypothesis:        The global pre-release sweep across all 10 dimensions surfaces only
+                   two accessibility findings: two IconButtons (calendar editor's
+                   "Remove reminder", contacts screen's "Back to list") that don't
+                   carry a tooltip. Everything else holds — analyze + format + tests +
+                   hex + banned + F-Droid + NOTICE + provenance + offline-first +
+                   data-model + docs all clean on the first scan.
+Strategy:          Add `tooltip:` to both IconButtons. Don't touch anything else —
+                   regressing a converged milestone for cosmetic gain is exactly what
+                   AUDIT_LOOP §3 forbids.
+Verification plan: flutter analyze + dart format + flutter test (all unchanged from
+                   M11); manual grep for unlabelled IconButtons; confirmation pass on
+                   all 10 dims reproduces zero.
+Fallback:          None needed.
+Result:            Both Closed. 205/205 tests + 1 opt-in skip; analyze + format clean.
+```
+
+#### Strategic decisions recorded
+1. **Profile-mode jank is device-only.** Documented as a 14-row checklist at
+   `docs/audits/M15_jank_checklist.md` covering mail thread scroll, calendar swipe,
+   contacts list, search fan-out, onboarding cold-start, lock unlock, reminder fire +
+   reboot re-arm. The M15 release-gate ticks the boxes against real iOS + Android
+   devices.
+2. **a11y cross-tree IconButton sweep is the M12 polish.** Every IconButton in `lib/`
+   carries a `tooltip:` now — visible to sighted users + announced by VoiceOver /
+   TalkBack. The M15 device pass adds rotor-navigation verification.
+3. **CocoaPods → SwiftPM advisory** carries since M2. Treated as an optimisation
+   suggestion, not a deprecation; M15 polish removes Podfile if we want.
+
+#### M12 audit report
+```
+AUDIT — Milestone M12 — CONVERGED in 1 round (cap 10)
+- Dimensions run: ALL TEN (build & static, tests, runtime, security/privacy,
+  license/supply-chain, offline-first, data-model fidelity, UX/aesthetic,
+  accessibility, documentation) + F-Droid modularity (M8 carry-over)
+- Total findings: 2 | Closed: 2 | Reopened events: 0 | Regressions: none
+- analyze: 0 issues | format: clean | tests: 205 passing + 1 opt-in live skipped,
+  0 unintended skips
+- license gate: NOTICE current, no banned pkg, secrets.json untracked, provenance intact
+- F-Droid: msal_auth absent, M365 identifier grep clean
+- Documentation: every shipped module has a vignette (9 vignettes covering 9 modules,
+  including m365.md for the M8 provider)
+- Profile-mode jank: M15 device checklist landed at docs/audits/M15_jank_checklist.md
+- Open questions for human:
+  • CocoaPods → SwiftPM transition (advisory, optional, M15 polish).
+  • The M3 live integration test is still opt-in pending secrets.json — fire before
+    M15 cuts the release.
+CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M13.
+```
+
+### M13 — Screenshots  ·  M14 — Vignettes (incl. M365 + DavMail how-tos)
 - (to be filled)
 
 ### M15 — Privacy, F-Droid metadata (NonFreeNet), funding, RELEASE GATE → v0.1.0

@@ -309,6 +309,7 @@ class _RemindersSection extends StatelessWidget {
             trailing: IconButton(
               icon: const Icon(Icons.close, size: 18),
               onPressed: () => onRemove(i),
+              tooltip: 'Remove reminder',
             ),
           ),
       ],

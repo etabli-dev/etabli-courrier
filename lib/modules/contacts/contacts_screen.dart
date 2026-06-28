@@ -34,6 +34,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => setState(() => _selected = null),
+                  tooltip: 'Back to contacts list',
                 ),
               ),
             ],
