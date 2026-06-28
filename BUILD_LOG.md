@@ -1013,8 +1013,60 @@ AUDIT — Milestone M13 — CONVERGED in 1 round (cap 10)
 CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M14.
 ```
 
-### M14 — Vignettes (incl. M365 + DavMail how-tos)
-- (to be filled)
+### M14 — Vignettes (tutorial-grade) + bundled sample content
+- Status: CONVERGED  ·  Audit dims run: 1, 2, 10
+
+#### Round 1 reason-first
+```
+[M14 | 2026-06-28 | findings F-01..F-03 | dimension build & static | sev MINOR]
+Hypothesis:        first M14 analyze pass surfaces three minor hygiene items: an unused
+                   `drift/drift.dart` import in the installer (the AccountsCompanion etc
+                   come through the generated database.dart), a `FlutterError` reference
+                   in the test that needs `flutter/foundation.dart`, and a couple of
+                   redundant `dart:async` / `dart:typed_data` imports.
+Strategy:          drop the unused / redundant imports; add `flutter/foundation.dart`
+                   in the test; dart format.
+Verification plan: flutter analyze → 0; flutter test → 208; vignettes render in the TOC.
+Fallback:          none needed.
+Result:            All 3 Closed. 208/208 + 1 opt-in skip; format/analyze clean.
+```
+
+#### Strategic decisions recorded
+1. **Sample content is a `local`-kind account**, never anything tied to a real
+   server. Deleting the account from Settings → Accounts wipes everything;
+   nothing the installer creates can leak to a remote.
+2. **Holiday ICS is universal** (5 globally-recognisable dates). The installer
+   already accepts a custom bundle so a region-aware
+   `assets/sample/holidays_{LOCALE}.ics` drops in cleanly at M11 polish.
+3. **DavMail stays an external companion**, never a bundled binary. GPLv2 is
+   forbidden by LICENSING.md; the new `docs/vignettes/davmail.md` is the right
+   surface for users who need on-prem Exchange or want to surface Exchange
+   calendar / contacts as CalDAV / CardDAV.
+4. **`SampleContentInstaller` runs in `main()` before `runApp`**. It's
+   idempotent on "any account exists", so existing users never see surprise
+   rows. Tests cover both paths.
+
+#### M14 audit report
+```
+AUDIT — Milestone M14 — CONVERGED in 1 round (cap 10)
+- Dimensions run: 1 (build & static), 2 (tests), 10 (documentation)
+- Total findings: 3 | Closed: 3 | Reopened events: 0 | Regressions: none
+- analyze: 0 issues | format: clean | tests: 208 passing + 1 opt-in skipped
+- M14 deliverables present:
+  • assets/sample/holidays_2026.ics declared in pubspec.yaml's assets list
+  • lib/core/bootstrap/sample_content_installer.dart (idempotent; seeds local
+    account + Holidays calendar + Welcome notes + sample feed)
+  • lib/main.dart calls installIfMissing before runApp on production path
+  • docs/vignettes/index.md TOC + docs/vignettes/sample_content.md +
+    docs/vignettes/davmail.md (3 new vignettes)
+  • 13 total vignettes covering every module + provider + shell + harness
+- F-Droid (M8 carry-over): msal_auth absent; M365 identifier grep clean
+- Open questions for human:
+  • Verify the holiday calendar shows the 5 events on a real fresh install
+    before M15 cuts the release (part of the M15 jank checklist).
+  • CocoaPods → SwiftPM advisory carries from M2; M15 polish.
+CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M15.
+```
 
 ### M15 — Privacy, F-Droid metadata (NonFreeNet), funding, RELEASE GATE → v0.1.0
 - (to be filled)
