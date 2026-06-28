@@ -1,0 +1,13 @@
+v0.1.0 — initial public release of courrier.
+
+* Mail (IMAP + SMTP, threading, search, remote content off)
+* Microsoft 365 OAuth2 via XOAUTH2 (open-source AppAuth flow)
+* Calendar (CalDAV + agenda + month + RRULE + recurrence delete)
+* Contacts (CardDAV + photo + groups)
+* Tasks (VTODO + subtasks + repeat modes)
+* Reminders (local notifications, re-armed on reboot)
+* Notes (Nextcloud Notes REST + checklist + undo + lock)
+* RSS (Nextcloud News API + bundled standalone parser)
+* App lock (PIN + biometric)
+* Global search, sync-conflict UI, onboarding from one entry
+* Bundled holiday calendar for first launch

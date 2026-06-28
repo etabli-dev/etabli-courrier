@@ -96,6 +96,12 @@ License: BSD-3-Clause
 Source:  https://github.com/dart-lang/core
 Pinned:  ^1.18.0 (added at M1, also transitive via Flutter SDK)
 --------------------------------------------------------------------------------
+crypto — SHA-256 hashing for the M11 PIN app lock (per-install salt +
+         constant-time compare; never stores the raw PIN).
+License: BSD-3-Clause
+Source:  https://github.com/dart-lang/core
+Pinned:  ^3.0.3 (added at M11)
+--------------------------------------------------------------------------------
 cupertino_icons — iOS-style glyph font
 License: MIT
 Source:  https://github.com/flutter/packages/tree/main/packages/cupertino_icons

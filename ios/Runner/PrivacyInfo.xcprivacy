@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Apple privacy manifest for courrier (Privacy Manifests requirement).
+  https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+
+  Posture (BUILD_PROMPT M0):
+    * no analytics, no trackers, no third-party SDKs that collect data;
+    * mail / calendar / contacts / tasks / notes / feeds content stays on
+      device + the user's chosen accounts (Nextcloud / IMAP / M365);
+    * no advertising; no profiling; the only network traffic is to the user's
+      configured servers + the bundled FeedParser for direct RSS feeds.
+-->
+<plist version="1.0">
+<dict>
+  <key>NSPrivacyTracking</key>
+  <false/>
+
+  <key>NSPrivacyTrackingDomains</key>
+  <array/>
+
+  <key>NSPrivacyCollectedDataTypes</key>
+  <array/>
+
+  <key>NSPrivacyAccessedAPITypes</key>
+  <array>
+    <!-- shared_preferences uses UserDefaults to persist non-sensitive
+         preferences (theme, sync interval, lock toggle). No PII. -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+      <key>NSPrivacyAccessedAPITypeReasons</key>
+      <array>
+        <string>CA92.1</string>
+      </array>
+    </dict>
+
+    <!-- path_provider's cache + documents directories touch file creation
+         and modification timestamps when sqlite3_flutter_libs opens the DB
+         file + when flutter_local_notifications writes its scheduled list. -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+      <key>NSPrivacyAccessedAPITypeReasons</key>
+      <array>
+        <string>C617.1</string>
+      </array>
+    </dict>
+
+    <!-- drift/SQLite reports free disk space when opening the database to
+         decide whether to create a new file. -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+      <key>NSPrivacyAccessedAPITypeReasons</key>
+      <array>
+        <string>E174.1</string>
+      </array>
+    </dict>
+
+    <!-- system uptime is used by sqlite3 + flutter_secure_storage for entropy
+         seeding (per-install salt at PIN setup) — not for tracking. -->
+    <dict>
+      <key>NSPrivacyAccessedAPIType</key>
+      <string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+      <key>NSPrivacyAccessedAPITypeReasons</key>
+      <array>
+        <string>35F9.1</string>
+      </array>
+    </dict>
+  </array>
+</dict>
+</plist>

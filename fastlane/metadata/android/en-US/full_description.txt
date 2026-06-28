@@ -1,0 +1,36 @@
+courrier is a privacy-first, offline-first FOSS alternative to the Outlook
+mobile app, in a single Flutter binary: email, calendar, contacts, tasks,
+reminders, notes, and RSS — syncing to self-hosted Nextcloud, with
+Microsoft 365 / Exchange Online mail as a first-class account type.
+
+A member of the Établi Suite.
+
+Features
+* Mail (IMAP + SMTP) with threading, soft-delete recycle bin, local-first
+  search, and remote content blocked by default.
+* Microsoft 365 mail via OAuth2 + IMAP/SMTP XOAUTH2 — open-source AppAuth
+  flow only; no proprietary native MSAL binary. F-Droid NonFreeNet applies
+  to this module.
+* Calendar (CalDAV) with agenda + month views, RRULE parsing + human-
+  readable formatting, recurrence delete (this / this-and-following / all).
+* Contacts (CardDAV) with photo + groups and round-trip preservation of
+  unknown vCard properties.
+* Tasks (VTODO) with subtasks (RELATED-TO;RELTYPE=PARENT) and both fixed
+  RRULE + repeat-after-completion recurrence.
+* Reminders via flutter_local_notifications, re-armed after reboot.
+* Notes (Nextcloud Notes REST) with checklist round-trip, editor undo/redo,
+  and per-note lock (PIN or biometric).
+* RSS / Atom feeds via Nextcloud News API with a bundled standalone parser
+  fallback for direct feeds.
+* App lock (PIN + biometric), unified settings, sync-conflict resolution
+  dialog, global search across modules.
+* Bundled holiday calendar so first launch is explorable offline.
+
+Privacy posture
+* No analytics, no trackers, no third-party SDKs that collect data.
+* All content stays on device + the user's chosen accounts.
+* Apache-2.0 source available at https://github.com/etabli-dev/etabli-courrier
+* Settings export only carries non-sensitive preferences; OAuth tokens +
+  passwords stay in the platform keystore.
+
+Paid-upfront, no in-app purchases, no freemium features.

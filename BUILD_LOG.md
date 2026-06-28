@@ -1068,8 +1068,87 @@ AUDIT — Milestone M14 — CONVERGED in 1 round (cap 10)
 CONVERGED CLEAN. AWAITING APPROVAL FOR MILESTONE M15.
 ```
 
-### M15 — Privacy, F-Droid metadata (NonFreeNet), funding, RELEASE GATE → v0.1.0
-- (to be filled)
+### M15 — Privacy, F-Droid metadata, funding, RELEASE GATE → v0.1.0
+- Status: CONVERGED  ·  Final global audit run: 1–10 (all 10 dims, whole app)
+
+#### Round 1 reason-first
+```
+[M15 | 2026-06-28 | finding F-01 | dimension license/supply-chain | sev MINOR]
+Hypothesis:        the final pre-release NOTICE cross-check against
+                   `flutter pub deps --no-dev` finds 18 direct deps; 17 are
+                   already enumerated. `crypto ^3.0.3` (added at M11 for the
+                   PIN app lock) wasn't listed.
+Strategy:          add a NOTICE entry between `meta` and `cupertino_icons` with
+                   the BSD-3 SPDX + source link + the pin from pubspec.yaml.
+Verification plan: re-run the dim 5 license-gate check; expect every direct
+                   dep to appear in NOTICE.
+Fallback:          none needed.
+Result:            Closed. 208/208 + 1 opt-in skip; all 10 dims clean.
+```
+
+#### Strategic decisions recorded
+1. **Privacy manifest declares no tracking + no third-party data collection.**
+   The four required-reason APIs courrier touches (UserDefaults via
+   shared_preferences, FileTimestamp via path_provider, DiskSpace via
+   sqlite3, SystemBootTime via flutter_secure_storage seeding) are each
+   declared with the official Apple reason codes.
+2. **F-Droid `NonFreeNet` is opt-in.** Users who never connect M365 never
+   hit a proprietary endpoint. The `fastlane/metadata/android/FDROID_NONFREENET.md`
+   file is the canonical reference for the F-Droid recipe maintainer.
+3. **Split-per-ABI APK CI** triggers on every annotated `v*` tag. Builds
+   three APKs + the AAB + a SHA256SUMS.txt + attaches NOTICE + LICENSE to
+   the GitHub Release.
+4. **Release signing is the post-tag step.** M0 set the gradle config to
+   debug signing for `flutter run --release` ergonomics; the M15 release
+   workflow uses that path. Production signing is set up before the first
+   Play upload (out of scope for the tag — covered in the open items below).
+
+#### M15 audit report
+```
+AUDIT — Milestone M15 — CONVERGED in 1 round (cap 10)
+- Dimensions run: ALL TEN (build & static, tests, runtime, security/privacy,
+  license/supply-chain, offline-first, data-model fidelity, UX/aesthetic,
+  accessibility, documentation) + F-Droid modularity
+- Total findings: 1 | Closed: 1 | Reopened events: 0 | Regressions: none
+- analyze: 0 issues | format: clean | tests: 208 passing + 1 opt-in skip
+- license gate: NOTICE final (every direct dep enumerated incl. crypto + MPL
+  enough_mail); no banned pkg; secrets.json untracked; provenance intact
+- F-Droid modularity: msal_auth absent; M365 identifier grep clean;
+  NonFreeNet declaration documented for the F-Droid recipe maintainer
+- Release artefacts: PrivacyInfo.xcprivacy, Fastlane metadata,
+  FDROID_NONFREENET.md, release-apk.yml CI workflow all in place
+- Open device-gate items (carry to release announcement, not the tag):
+  • M15 jank checklist (docs/audits/M15_jank_checklist.md) — 14 flows
+  • Maestro gallery capture via scripts/maestro/capture.sh
+  • M3 live integration test with populated secrets.json
+  • Apple Developer Program + Google Play Console enrolment + release signing
+CONVERGED CLEAN. RELEASE READY.
+```
+
+#### v0.1.0 release summary
+courrier v0.1.0 ships seven offline-first modules (mail, calendar,
+contacts, tasks, reminders, notes, RSS) in a single Flutter binary,
+syncing to self-hosted Nextcloud with Microsoft 365 mail as a first-
+class account type via XOAUTH2.
+
+**Numbers at the release-gate.** Eight separate `lib/` trees (core/,
+dev/, modules/, shell/) + 208 tests passing + 13 vignettes + 1 opt-in
+live integration. Zero analyzer findings across 16 milestones of
+accumulation. Hex literals only in `tokens.dart`; M365 identifiers only
+in the optional provider module; `msal_auth` banned. NOTICE final with
+every shipped dep enumerated.
+
+**Architectural decisions that carried.** Hand-rolled iCal / vCard layer
+(audit dim 7 preservation), MailBackend interface auth-agnostic from M6
+(M8 plugged in without forking the protocol stack), build-time isolation
+test enforcing F-Droid hygiene, `_defaultUidGenerator` salted with
+microseconds + process counter (caught by a contacts test that surfaced
+a real UID-collision bug under rapid creates), drift DateTimeColumn
+contract documented after M5 caught it.
+
+**Tagging.** `git tag -a v0.1.0` with this BUILD_LOG entry; push the tag
+to fire the release workflow.
+```
 
 ---
 

@@ -1,0 +1,1 @@
+Offline-first mail, calendar, contacts, tasks, notes & RSS for Nextcloud + M365.
