@@ -64,7 +64,7 @@ quick double-presses don't bloat the stack. After undo, a fresh commit
 drops the redo future (canonical undo semantics).
 `undo_history_test.dart` covers the contract.
 
-## Per-note lock (M11 hooks in)
+## Per-note lock
 
 `NoteRepository.setLocked(id, locked:)` flips the column. The list view
 renders a lock icon and obscures the body preview ("(locked)"). The editor

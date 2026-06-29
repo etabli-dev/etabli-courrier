@@ -1,6 +1,6 @@
 # Mail
 
-![Mail — inbox with bundled demo content (M13 demo-boot)](../_screens/0.1.0/01-mail.png){width=320}
+![Mail — inbox with bundled demo content](../_screens/0.1.0/01-mail.png){width=320}
 
 ![Mail — thread state after tapping a row (demo shell baseline; thread route lands as an M13 follow-up)](../_screens/0.1.0/09-mail-thread.png){width=320}
 
@@ -77,7 +77,7 @@ and there's an HTML alternative.
 fallback) — 32 chars of context around the match, ellipses on both sides
 when truncated.
 
-## Compose / send (M7)
+## Compose / send
 
 - **`ComposeDraft`** — fromAddress, to/cc/bcc, subject, body text/html,
   attachments, inReplyTo + references for replies.
@@ -101,7 +101,7 @@ when truncated.
   backend records every send to `sentLog` so tests can assert intent without
   hitting the wire.
 
-## Autoconfig (M7)
+## Autoconfig
 
 `AutoconfigResolver` follows the canonical Mozilla waterfall:
 
@@ -116,7 +116,7 @@ host, port, socket type (SSL / STARTTLS / plain), username template (which
 honours `%EMAILADDRESS%` / `%EMAILLOCALPART%`), and auth mechanism. Tests use
 an injected fake `http.Client` and a fake `SrvResolver`.
 
-## Push + incremental (M7)
+## Push + incremental
 
 - **`IncrementalSyncer`** — diffs the backend's current envelope window
   against the local DB. Output: new envelopes (insert), dropped UIDs (delete),
