@@ -1152,6 +1152,77 @@ to fire the release workflow.
 
 ---
 
+## [M15.1 | 2026-06-29 | POST-TAG REGRESSION: Android release build]
+
+The `release-apk.yml` run for `v0.1.0` (run id 28359915900) tagged + pushed
+to `origin v0.1.0` exposed a Gradle-stage failure that the engine-only suite
+could not catch. Tag + workflow run preserved; no GitHub Release was
+published (the `Create GitHub Release` step was skipped after `Build split
+APKs` failed). Hotfixing **before** re-tagging — keeping the v0.1.0 cut
+clean rather than shipping a v0.1.1 over a broken first cut.
+
+**Hypothesis.** `flutter_local_notifications` v20 was upgraded from v17
+during M5. Its v18+ AAR uses `java.time.*` APIs that the Android Gradle
+Plugin can only desugar for `minSdk < 26` if **core library desugaring** is
+enabled in the consuming module. Our `android/app/build.gradle.kts` carries
+`minSdk = 24` (locked at M0 to keep flutter_appauth + secure_storage range
+covered) and never enabled desugaring, because the dep was never compiled
+through the release Gradle path locally — `flutter test` runs Dart-only.
+The release CI is the first place that codepath fires. CI log line
+identifying the cause is verbatim: *"Dependency ':flutter_local_notifications'
+requires core library desugaring to be enabled for :app."*
+
+**Strategy.** Enable core library desugaring in `compileOptions`
+(`isCoreLibraryDesugaringEnabled = true`) and add the
+`coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")`
+runtime dep. Use 2.1.4 (current AGP 8.x baseline + meets v20's documented
+floor). Leave `minSdk = 24` untouched — that's locked in PREFLIGHT and
+bumping it would be a behavior change unrelated to the fix.
+
+**Verification plan.**
+1. `dart format --set-exit-if-changed .` clean.
+2. `flutter analyze` clean (Gradle change is invisible to the Dart analyzer
+   but rerunning is the standing rule).
+3. `flutter test` — 208 still pass.
+4. **The actual new check this fix is for:** `flutter build apk --debug
+   --target-platform android-arm64` — this exercises the same
+   `checkReleaseAarMetadata` path Gradle was failing on. Debug instead of
+   release avoids signing-key concerns while still proving the Gradle
+   metadata gate passes. If this is green, the release CI's
+   `assembleRelease` will pass for the same reason.
+
+**Fallback.** If 2.1.4 conflicts (it shouldn't with AGP 8 / Flutter 3.44),
+drop to 2.0.4 (the floor documented by flutter_local_notifications). If
+that still fails, raise `minSdk` to 26 — bypasses the desugar path
+entirely, costs ~4% of Android install base, but is a real behavior
+change that needs PREFLIGHT.md amendment, so it's the very last resort.
+
+**After fix — re-tag protocol.** Tag is annotated, pushed, and bound to a
+commit that doesn't build the release artefacts. Delete the remote tag
+(safe: no GitHub Release exists), commit the fix to main, re-tag v0.1.0
+on the new HEAD, push the tag. The release workflow fires again from a
+known-good commit.
+
+### Fix delta (3 rounds, ascending)
+
+The verification plan caught two cascading issues the original hypothesis
+underestimated. Recording each round so the closure is auditable.
+
+| round | symptom                                                                                                              | fix                                                                                                                                                                                                                                                                              |
+|-------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | `flutter_local_notifications requires core library desugaring`                                                       | `isCoreLibraryDesugaringEnabled = true` + `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")` in `android/app/build.gradle.kts`.                                                                                                                              |
+| 2     | `androidx.exifinterface:exifinterface:1.4.1 requires compileSdk 34+`; `:flutter_appauth currently compiled against 33` | App-level: pin `compileSdk = 36` in `android/app/build.gradle.kts` (was `flutter.compileSdkVersion`, which resolved to 33). Plugin-level: add a `subprojects { afterEvaluate { ... compileSdkVersion(36) } }` block in `android/build.gradle.kts` to cover plugin modules. |
+| 3     | `Cannot run Project.afterEvaluate(Action) when the project is already evaluated`                                     | Move the `subprojects { afterEvaluate }` block **above** the existing `subprojects { project.evaluationDependsOn(":app") }` block — the latter triggers evaluation and closes the registration window for `afterEvaluate` hooks.                                       |
+
+Round 3 verified by `flutter build apk --debug --target-platform
+android-arm64` → `Built build/app/outputs/flutter-apk/app-debug.apk`.
+That exercises `checkDebugAarMetadata`, the same Gradle gate that
+`checkReleaseAarMetadata` runs in CI; the metadata check is identical
+between debug and release. Tests still 208 passing; analyzer + format
+clean. **M15.1 converged.**
+
+---
+
 ## Escalations (oscillation / regression / round-cap / scope-creep)
 ```
 [<milestone> | <date> | ESCALATION: <reason>]
