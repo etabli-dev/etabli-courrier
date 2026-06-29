@@ -1,4 +1,4 @@
-# Settings + onboarding (M11)
+# Settings + onboarding
 
 The M11 shell polish brings five things to the surface for the first time:
 unified settings + about, app lock (PIN + biometric), settings export/import,

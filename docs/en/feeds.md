@@ -1,4 +1,4 @@
-# Feeds (M10)
+# Feeds
 
 RSS / Atom subscriptions with two pull paths and one offline store.
 

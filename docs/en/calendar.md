@@ -1,4 +1,4 @@
-# Calendar (M3)
+# Calendar
 
 The Calendar module is the first full vertical slice in `courrier`. It wires the
 M1 schema, the M2 DAV layer, and the M2 iCal layer through an offline-first

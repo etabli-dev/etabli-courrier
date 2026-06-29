@@ -1,0 +1,52 @@
+---
+title: "Établi courrier"
+sidebar: de
+---
+
+<img src="../_icons/icon-courrier.svg" alt="" width="80" align="right" style="margin:0 0 1rem 1rem;">
+
+<span class="etabli-badge">v0.1.0 — verfügbar</span>
+
+> Eine datenschutzfreundliche, offline-zuerst Outlook-Mobile-Alternative in einem einzigen Flutter-Binary.
+
+Établi courrier vereint **E-Mail, Kalender, Kontakte, Aufgaben, Erinnerungen, Notizen und RSS-Feeds** in einer einzigen Offline-First-App, die mit selbst gehostetem **Nextcloud** synchronisiert und **Microsoft 365 / Exchange Online** als erstklassigen Kontotyp per XOAUTH2 unterstützt — kein proprietäres natives MSAL-Binary, ausschliesslich Open-Source-AppAuth mit OAuth2 + PKCE. Keine Analytics, keine Dritt-SDKs, keine Konten ausser denen, die Sie selbst verbinden.
+
+## Für wen
+
+Wer den Outlook-Mobile-Zuschnitt schätzt — E-Mail neben Kalender neben Kontakten neben Aufgaben — und dabei seine Metadaten nicht einem Anbieter überlassen will. Selbsthoster, die bereits Nextcloud betreiben, erhalten einen vollwertigen Client. Microsoft-365-Nutzer in Tenants, in denen die IT OAuth zulässt, bekommen einen Open-Source-XOAUTH2-Client ohne proprietäres MSAL-Binary im Build.
+
+## Plattformen
+
+| Plattform | Status |
+|-----------|--------|
+| Android   | ✓ (signierte APK über GitHub Releases) |
+| iOS       | geplant — noch nicht verfügbar |
+| F-Droid   | geplant — `NonFreeNet`-Rezept liegt bereit |
+| Google Play | geplant — noch nicht verfügbar |
+| App Store (iOS) | geplant — noch nicht verfügbar |
+
+## Datenschutz
+
+Keine Analytics. Keine Dritt-SDKs, die Daten erheben. Keine Konten ausser denen, die der Benutzer selbst verbindet. E-Mail, Kalender, Kontakte, Aufgaben, Erinnerungen, Notizen und Feeds bleiben auf dem Gerät und auf den vom Benutzer gewählten Nextcloud- / M365- / IMAP-Konten. OAuth-Tokens und Passwörter liegen ausschliesslich im Plattform-Schlüsselspeicher (iOS Keychain / Android `EncryptedSharedPreferences`). Der Einstellungs-Export enthält nur nicht sensible Präferenzen.
+
+Der Microsoft-365-Provider löst F-Droids `NonFreeNet`-Anti-Feature aus, weil er mit proprietären Endpunkten kommuniziert. Der Provider ist optional — wer M365 nie verbindet, erreicht diese Server nicht.
+
+## Installation
+
+courrier v0.1.0 ist ein **Android-Entwicklungs-Build**, verteilt als signierte Split-per-ABI-APKs über die [GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0). Die Prüfsumme kann gegen die veröffentlichte `SHA256SUMS.txt` validiert werden.
+
+App Store, Google Play und F-Droid sind geplant, aber **noch nicht verfügbar**. Desktop-Plattformen (macOS / Windows / Linux) sind nicht im Umfang von v0.1.0.
+
+Details: siehe [Erste Schritte](getting-started.qmd).
+
+## Modul-Dokumentation
+
+Die tiefen Module-How-Tos liegen in v0.1.0 derzeit **nur auf Englisch** vor. Die französische und deutsche Übersetzung der technischen Vignetten folgt nach v0.1.0 schrittweise.
+
+- Module: [E-Mail](../en/mail.md), [Kalender](../en/calendar.md), [Kontakte](../en/contacts.md), [Aufgaben](../en/tasks.md), [Erinnerungen](../en/reminders.md), [Notizen](../en/notes.md), [Feeds (RSS)](../en/feeds.md)
+- Provider: [Microsoft 365](../en/m365.md), [DavMail (externe Brücke)](../en/davmail.md)
+- Shell: [Onboarding](../en/onboarding.md), [Screenshot-Harness](../en/maestro.md)
+
+## Entwicklung unterstützen
+
+Wenn Ihnen die App nützlich ist: [Liberapay](https://liberapay.com/rabanheller/).

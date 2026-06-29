@@ -1,4 +1,4 @@
-# Contacts (M4)
+# Contacts
 
 The Contacts module turns the M1 schema and the M2 CardDAV/iCal layer into a
 working VCARD-4.0 vertical: list, detail, editor, repository, and a sync

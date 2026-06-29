@@ -1,4 +1,4 @@
-# Maestro screenshot harness (M13)
+# Maestro screenshot harness
 
 courrier ships a Maestro-driven screenshot harness that captures every
 module in light + dark mode against the in-memory demo data. The output is

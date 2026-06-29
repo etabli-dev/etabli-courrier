@@ -1,0 +1,51 @@
+---
+title: "Premiers pas"
+sidebar: fr
+---
+
+## Prérequis
+
+- Un appareil Android pour la build de développement v0.1.0. Les versions iOS, F-Droid, Google Play et App Store sont prévues mais pas encore disponibles.
+- Un parmi : un serveur **Nextcloud** auto-hébergé (courrier, calendrier, contacts, tâches, notes, flux), une boîte aux lettres **Microsoft 365 / Exchange Online** (courrier uniquement via OAuth) ou un compte **IMAP/SMTP** générique (courrier uniquement).
+- Aucun compte fournisseur n'est requis. courrier lui-même ne collecte aucune donnée et n'embarque aucun SDK d'analyse.
+
+## Installation
+
+1. **Téléchargez l'APK** depuis les [GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0). Trois APK sont publiés (un par ABI) — choisissez celui qui correspond à votre appareil (`arm64-v8a` pour les téléphones modernes).
+2. **Vérifiez l'empreinte** par rapport au `SHA256SUMS.txt` publié si vous installez depuis un miroir tiers.
+3. **Installez.** Android demandera l'autorisation d'installer depuis l'extérieur du Play Store — acceptez une fois.
+4. **Ouvrez courrier.** Le calendrier de jours fériés intégré est installé au premier lancement, l'application est donc explorable hors-ligne avant même que vous ne connectiez un compte.
+
+## Connecter un compte
+
+L'écran de mise en route accepte trois types de comptes depuis un point d'entrée unique — détails dans la vignette [Onboarding](../en/onboarding.md) (en anglais).
+
+1. **Nextcloud.** Saisissez l'URL du serveur et un mot de passe d'application. courrier découvre automatiquement les points de terminaison CalDAV / CardDAV / Notes / News et connecte chaque module exposé par le serveur.
+2. **Microsoft 365.** Connectez-vous via le flot OAuth embarqué. courrier demande uniquement les portées `IMAP.AccessAsUser.All` et `SMTP.Send` ; le courrier passe par XOAUTH2 au-dessus d'IMAP/SMTP, jamais via MSAL propriétaire.
+3. **IMAP/SMTP.** Saisissez serveur + port + identifiants. L'autodécouverte tente DNS SRV puis l'autoconfiguration du fournisseur.
+
+## Une journée typique
+
+1. **Courrier** est l'onglet d'accueil. Utilisez la barre latérale pour passer à **Calendrier**, **Contacts**, **Tâches**, **Rappels**, **Notes** ou **Flux**.
+2. **Composer** s'ouvre depuis le bouton flottant de la liste de courriers. Le corps du message est en texte brut ; les pièces jointes proviennent du partage système.
+3. Les événements du **Calendrier** se synchronisent via CalDAV ; la récurrence prend en charge RRULE avec suppression « cet événement / et les suivants / tous ».
+4. Les **Rappels** se déclenchent comme notifications locales. Ils survivent à un redémarrage de l'appareil — le récepteur de démarrage les réarme depuis la base de données locale.
+5. La **Recherche globale** couvre tous les modules ; les résultats sont groupés par module, avec des hits hors-ligne d'abord.
+
+## Verrouiller l'application
+
+Paramètres → Sécurité :
+
+- **Code PIN** — 4 à 8 chiffres, SHA-256 salé.
+- **Biométrie** — optionnelle, repli sur le code PIN.
+
+Le verrouillage s'active après un délai d'inactivité configurable. Les notes peuvent en plus être verrouillées individuellement (voir la vignette Notes).
+
+## Vie privée
+
+- Aucune analyse, aucune télémétrie, aucun SDK tiers qui collecte des données.
+- Tout le contenu reste sur l'appareil et sur les comptes choisis par l'utilisateur.
+- Les jetons OAuth et les mots de passe restent dans le coffre sécurisé de la plateforme ; jamais dans l'export des paramètres.
+- Le fournisseur Microsoft 365 est optionnel — un utilisateur qui ne connecte jamais M365 ne touche jamais les points de terminaison propriétaires.
+
+Pour le flot complet de données par module, voir la vignette de chaque module (actuellement en anglais).

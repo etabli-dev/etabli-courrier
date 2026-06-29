@@ -1,4 +1,4 @@
-# Tasks (M5)
+# Tasks
 
 VTODO over the shared M2 DAV layer. Subtasks are wired via
 `RELATED-TO;RELTYPE=PARENT`. Two recurrence modes ship:

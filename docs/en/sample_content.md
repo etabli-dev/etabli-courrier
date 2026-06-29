@@ -1,4 +1,4 @@
-# First-launch sample content (M14)
+# First-launch sample content
 
 `courrier` ships with **bundled runnable sample content** so the very
 first launch is explorable offline — no accounts, no network, no setup.

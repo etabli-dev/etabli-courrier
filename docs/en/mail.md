@@ -1,4 +1,4 @@
-# Mail (M6 + M7)
+# Mail
 
 The mail module is the biggest deliverable so far. M6 shipped the **read
 path**: token-capable backend, real IMAP via `enough_mail`, in-memory demo

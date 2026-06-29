@@ -31,6 +31,10 @@ website:
     right:
       - text: "EN"
         href: en/index.qmd
+      - text: "FR"
+        href: fr/index.qmd
+      - text: "DE"
+        href: de/index.qmd
       - icon: github
         text: "Code"
         href: "https://github.com/etabli-dev/etabli-courrier"
@@ -75,6 +79,30 @@ website:
               href: en/onboarding.md
             - text: "Screenshot harness"
               href: en/maestro.md
+    - id: fr
+      title: "Établi courrier"
+      style: floating
+      contents:
+        - section: "En français"
+          contents:
+            - text: "Aperçu"
+              href: fr/index.qmd
+            - text: "Premiers pas"
+              href: fr/getting-started.qmd
+            - text: "Modules (en anglais)"
+              href: en/index.qmd
+    - id: de
+      title: "Établi courrier"
+      style: floating
+      contents:
+        - section: "Auf Deutsch"
+          contents:
+            - text: "Überblick"
+              href: de/index.qmd
+            - text: "Erste Schritte"
+              href: de/getting-started.qmd
+            - text: "Module (auf Englisch)"
+              href: en/index.qmd
   page-footer:
     left: "Apache-2.0 · © 2026 R. Heller"
     right:

@@ -1,4 +1,4 @@
-# Reminders (M5)
+# Reminders
 
 `courrier` fires local notifications for two sources:
 

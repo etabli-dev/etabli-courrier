@@ -1,4 +1,4 @@
-# Notes (M9)
+# Notes
 
 Nextcloud Notes (the official Notes app, REST v1) gets a full offline-first
 vertical with checklist support, undo/redo, and per-note lock.

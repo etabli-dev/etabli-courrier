@@ -1,0 +1,51 @@
+---
+title: "Erste Schritte"
+sidebar: de
+---
+
+## Voraussetzungen
+
+- Ein Android-Gerät für den Entwicklungs-Build v0.1.0. iOS-, F-Droid-, Google-Play- und App-Store-Releases sind geplant, aber noch nicht verfügbar.
+- Eines von: einen selbst gehosteten **Nextcloud**-Server (E-Mail, Kalender, Kontakte, Aufgaben, Notizen, Feeds), ein **Microsoft 365 / Exchange Online**-Postfach (nur E-Mail per OAuth) oder ein generisches **IMAP/SMTP**-Konto (nur E-Mail).
+- Es ist kein Anbieter-Konto erforderlich. courrier selbst erhebt keine Daten und enthält keine Analytics-SDKs.
+
+## Installation
+
+1. **APK herunterladen** aus den [GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0). Drei Split-per-ABI-APKs sind veröffentlicht — wählen Sie die zum Gerät passende (`arm64-v8a` für moderne Telefone).
+2. **Prüfsumme verifizieren** gegen die veröffentlichte `SHA256SUMS.txt`, falls Sie aus einem Drittspiegel beziehen.
+3. **Installieren.** Android fragt einmalig nach der Erlaubnis, ausserhalb von Google Play zu installieren — bestätigen.
+4. **courrier öffnen.** Der mitgelieferte Feiertagskalender wird beim ersten Start initialisiert, sodass die App offline und vor jeder Kontoverbindung erkundbar ist.
+
+## Konto verbinden
+
+Das Onboarding nimmt drei Kontoformen über einen einzigen Eingang an — Details in der Vignette [Onboarding](../en/onboarding.md) (auf Englisch).
+
+1. **Nextcloud.** Server-URL und ein App-Passwort eingeben. courrier entdeckt CalDAV- / CardDAV- / Notes- / News-Endpunkte automatisch und verbindet jedes vom Server bereitgestellte Modul.
+2. **Microsoft 365.** Anmeldung über den eingebetteten OAuth-Flow. courrier verlangt nur die Scopes `IMAP.AccessAsUser.All` und `SMTP.Send`; E-Mail läuft per XOAUTH2 über IMAP/SMTP, niemals über proprietäres MSAL.
+3. **IMAP/SMTP.** Server + Port + Anmeldedaten eingeben. Autoentdeckung wird über DNS-SRV und Provider-Autoconfig versucht.
+
+## Ein typischer Arbeitstag
+
+1. **E-Mail** ist der Startreiter. Über die Seitenleiste wechseln Sie zu **Kalender**, **Kontakte**, **Aufgaben**, **Erinnerungen**, **Notizen** oder **Feeds**.
+2. **Verfassen** öffnet sich vom Floating Action Button in der Maillistenansicht. Der E-Mail-Body ist Klartext; Anhänge kommen aus dem System-Share-Sheet.
+3. **Kalender**-Termine synchronisieren per CalDAV; Serien unterstützen RRULE mit Löschen «dieses / dieses und folgende / alle».
+4. **Erinnerungen** feuern als lokale Benachrichtigungen. Sie überleben einen Geräte-Neustart — der Boot-Receiver bewaffnet sie aus der lokalen DB erneut.
+5. **Globale Suche** umfasst alle Module; Treffer werden nach Modul gruppiert, Offline-Treffer zuerst.
+
+## App sperren
+
+Einstellungen → Sicherheit:
+
+- **PIN** — 4–8 Stellen, gesalzenes SHA-256.
+- **Biometrie** — optional, fällt auf den PIN zurück.
+
+Die Sperre aktiviert sich nach einer konfigurierbaren Leerlaufzeit. Notizen lassen sich zusätzlich einzeln sperren (siehe Notes-Vignette).
+
+## Datenschutz
+
+- Keine Analytics, keine Telemetrie, keine Dritt-SDKs, die Daten erheben.
+- Alle Inhalte bleiben auf dem Gerät und auf den vom Benutzer gewählten Konten.
+- OAuth-Tokens und Passwörter bleiben im Plattform-Schlüsselspeicher; nie im Einstellungs-Export.
+- Der Microsoft-365-Provider ist optional — wer M365 nie verbindet, erreicht die proprietären Endpunkte nicht.
+
+Für den vollständigen Datenfluss pro Modul siehe die Vignette des jeweiligen Moduls (derzeit auf Englisch).
