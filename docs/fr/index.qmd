@@ -11,6 +11,8 @@ sidebar: fr
 
 Établi courrier réunit **courrier électronique, calendrier, contacts, tâches, rappels, notes et flux RSS** dans une application unique qui se synchronise avec un Nextcloud auto-hébergé et traite **Microsoft 365 / Exchange Online** comme un type de compte de courrier de premier ordre via XOAUTH2 — pas de binaire MSAL propriétaire, uniquement AppAuth open-source avec OAuth2 + PKCE. Aucune analyse, aucun SDK tiers, aucun compte au-delà de ceux que vous connectez vous-même.
 
+![courrier — boîte de réception avec le contenu de démo intégré au premier lancement](../_screens/0.1.0/01-mail.png){width=320}
+
 ## À qui s'adresse l'application
 
 Toute personne qui veut retrouver la forme d'Outlook mobile — courrier, calendrier, contacts, tâches — sans confier ses métadonnées à un fournisseur. Les utilisateurs auto-hébergés qui font déjà tourner Nextcloud y trouvent un client complet. Les utilisateurs Microsoft 365 dont la DSI autorise OAuth obtiennent un client XOAUTH2 open-source sans binaire MSAL propriétaire dans la build.

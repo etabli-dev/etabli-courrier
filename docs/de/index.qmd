@@ -11,6 +11,8 @@ sidebar: de
 
 Établi courrier vereint **E-Mail, Kalender, Kontakte, Aufgaben, Erinnerungen, Notizen und RSS-Feeds** in einer einzigen Offline-First-App, die mit selbst gehostetem **Nextcloud** synchronisiert und **Microsoft 365 / Exchange Online** als erstklassigen Kontotyp per XOAUTH2 unterstützt — kein proprietäres natives MSAL-Binary, ausschliesslich Open-Source-AppAuth mit OAuth2 + PKCE. Keine Analytics, keine Dritt-SDKs, keine Konten ausser denen, die Sie selbst verbinden.
 
+![courrier — Posteingang mit den mitgelieferten Demo-Inhalten beim ersten Start](../_screens/0.1.0/01-mail.png){width=320}
+
 ## Für wen
 
 Wer den Outlook-Mobile-Zuschnitt schätzt — E-Mail neben Kalender neben Kontakten neben Aufgaben — und dabei seine Metadaten nicht einem Anbieter überlassen will. Selbsthoster, die bereits Nextcloud betreiben, erhalten einen vollwertigen Client. Microsoft-365-Nutzer in Tenants, in denen die IT OAuth zulässt, bekommen einen Open-Source-XOAUTH2-Client ohne proprietäres MSAL-Binary im Build.

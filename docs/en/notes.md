@@ -1,5 +1,7 @@
 # Notes
 
+![Notes — checklist (Shopping list), locked note (Personal), and text note (Release notes draft)](../_screens/0.1.0/05-notes.png){width=320}
+
 Nextcloud Notes (the official Notes app, REST v1) gets a full offline-first
 vertical with checklist support, undo/redo, and per-note lock.
 

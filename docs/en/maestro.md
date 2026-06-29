@@ -1,8 +1,18 @@
 # Maestro screenshot harness
 
+![Mail inbox captured against the M13 demo backend](../_screens/0.1.0/01-mail.png){width=320}
+
 courrier ships a Maestro-driven screenshot harness that captures every
 module in light + dark mode against the in-memory demo data. The output is
 the gallery the store listings and the M14 vignette doc embed.
+
+The v0.1.0 gallery under `docs/_screens/0.1.0/` was captured on an Android
+emulator (Pixel AVD, arm64-v8a, API 35) by an adb-driven capture pass: the
+demo APK is built with `--dart-define=COURRIER_DEMO_BOOT=true`, installed,
+launched, and each tab is selected in turn while `adb exec-out screencap -p`
+deposits a PNG per module. The Maestro flows under `.maestro/flows/` are
+the canonical harness for CI + light/dark parity; the adb pass is the
+faster sibling for v0.1.0 doc capture.
 
 ## Why a separate demo boot?
 

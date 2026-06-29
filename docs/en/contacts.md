@@ -1,5 +1,9 @@
 # Contacts
 
+![Contacts — list view with three demo contacts (B / G / A initial chips)](../_screens/0.1.0/03-contacts.png){width=320}
+
+![Contacts — detail view for Grace Hopper (Bell Labs, grace@example.org)](../_screens/0.1.0/08-contact-detail.png){width=320}
+
 The Contacts module turns the M1 schema and the M2 CardDAV/iCal layer into a
 working VCARD-4.0 vertical: list, detail, editor, repository, and a sync
 backend that mirrors the calendar one shape-for-shape.

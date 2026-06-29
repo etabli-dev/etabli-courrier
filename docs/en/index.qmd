@@ -11,6 +11,8 @@ sidebar: en
 
 Établi courrier brings email, calendar, contacts, tasks, reminders, notes, and RSS feeds into a single offline-first app that syncs to self-hosted Nextcloud and treats Microsoft 365 / Exchange Online mail as a first-class account type. No analytics, no third-party SDKs, no accounts beyond the ones you connect.
 
+![courrier — mail inbox with the bundled demo content on first launch](../_screens/0.1.0/01-mail.png){width=320}
+
 ## Who benefits
 
 Anyone who wants the Outlook-mobile shape — mail next to calendar next to contacts next to tasks — without giving a vendor the metadata. Self-hosters who already run Nextcloud get a full client. Tenants on Microsoft 365 where IT permits OAuth get an open-source XOAUTH2 client with no proprietary native MSAL binary in the build.

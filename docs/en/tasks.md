@@ -1,5 +1,7 @@
 # Tasks
 
+![Tasks — three sample VTODO items with checkboxes and due dates](../_screens/0.1.0/04-tasks.png){width=320}
+
 VTODO over the shared M2 DAV layer. Subtasks are wired via
 `RELATED-TO;RELTYPE=PARENT`. Two recurrence modes ship:
 

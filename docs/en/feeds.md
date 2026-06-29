@@ -1,5 +1,7 @@
 # Feeds
 
+![Feeds — two demo subscriptions (Example News + Example Tech Blog)](../_screens/0.1.0/06-feeds.png){width=320}
+
 RSS / Atom subscriptions with two pull paths and one offline store.
 
 ## Two pull paths, one store

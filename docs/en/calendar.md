@@ -1,5 +1,9 @@
 # Calendar
 
+![Calendar — agenda view with Weekly status + Coffee with Ada](../_screens/0.1.0/02-calendar.png){width=320}
+
+![Calendar — month view, June 2026, with two dot markers for events on Mon/Tue](../_screens/0.1.0/07-calendar-month.png){width=320}
+
 The Calendar module is the first full vertical slice in `courrier`. It wires the
 M1 schema, the M2 DAV layer, and the M2 iCal layer through an offline-first
 repository, a CalDAV-shaped sync backend, and a Coder/Hugo-styled UI.
