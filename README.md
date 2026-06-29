@@ -8,8 +8,22 @@ Ships to App Store, Google Play, F-Droid, GitHub Releases.
 
 ## Status
 
-Pre-v0.1.0 — being built milestone-by-milestone per `BUILD_PROMPT.md`. Standing rules live
-in `CLAUDE.md`. The audit engine lives in `AUDIT_LOOP.md`.
+v0.1.0 — released. The milestone-by-milestone plan lives in `BUILD_PROMPT.md`, standing
+rules in `CLAUDE.md`, and the audit engine in `AUDIT_LOOP.md`.
+
+## Documentation
+
+Tutorial-grade per-module vignettes live in [`docs/vignettes/`](docs/vignettes/index.md) —
+start with the index. Coverage:
+
+- [Mail](docs/vignettes/mail.md) · [Calendar](docs/vignettes/calendar.md) ·
+  [Contacts](docs/vignettes/contacts.md) · [Tasks](docs/vignettes/tasks.md) ·
+  [Reminders](docs/vignettes/reminders.md) · [Notes](docs/vignettes/notes.md) ·
+  [Feeds](docs/vignettes/feeds.md)
+- Providers — [Microsoft 365](docs/vignettes/m365.md) · [DavMail companion](docs/vignettes/davmail.md)
+- Shell — [Onboarding](docs/vignettes/onboarding.md) ·
+  [First-launch sample content](docs/vignettes/sample_content.md) ·
+  [Screenshot harness](docs/vignettes/maestro.md)
 
 ## Build
 

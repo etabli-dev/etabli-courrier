@@ -82,6 +82,15 @@ class SettingsScreen extends StatelessWidget {
           subtitle: Text(about.fundingLabel, style: theme.textTheme.bodySmall),
           trailing: const Icon(Icons.open_in_new, size: 16),
         ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text('Documentation', style: theme.textTheme.bodyLarge),
+          subtitle: Text(
+            'Module how-tos and onboarding vignettes',
+            style: theme.textTheme.bodySmall,
+          ),
+          trailing: const Icon(Icons.open_in_new, size: 16),
+        ),
         const SizedBox(height: CourrierTokens.space5),
         Text(
           'courrier is part of the Établi Suite. Apache-2.0.',

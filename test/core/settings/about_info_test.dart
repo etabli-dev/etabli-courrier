@@ -15,4 +15,10 @@ void main() {
     final about = AboutInfo.current(versionLabel: 'v0.2.0+beta');
     expect(about.versionLabel, 'v0.2.0+beta');
   });
+
+  test('docsUrl points at the docs/vignettes/index.md on origin', () {
+    final about = AboutInfo.current();
+    expect(about.docsUrl, contains('docs/vignettes/index.md'));
+    expect(about.docsUrl, startsWith('https://'));
+  });
 }
