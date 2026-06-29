@@ -1,0 +1,51 @@
+---
+title: "Getting Started"
+sidebar: en
+---
+
+## Requirements
+
+- An Android device for the v0.1.0 development build. iOS, F-Droid, Google Play, and App Store releases are planned but not yet available.
+- One of: a self-hosted **Nextcloud** server (mail, calendar, contacts, tasks, notes, feeds), a Microsoft 365 / Exchange Online **mailbox** (mail only via OAuth), or a generic **IMAP/SMTP** account (mail only).
+- No vendor account is required. courrier itself collects no data and ships no analytics SDKs.
+
+## Install
+
+1. **Download the APK** from [GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0). Three split-per-ABI APKs are published — pick the one matching your device (`arm64-v8a` for modern phones).
+2. **Verify the checksum** against the published `SHA256SUMS.txt` if you sideload from a third-party mirror.
+3. **Install.** Android will prompt about installing from outside Google Play — accept once.
+4. **Open courrier.** The bundled holiday calendar seeds itself on first launch so the app is explorable even before you connect an account.
+
+## Connect an account
+
+courrier's onboarding screen accepts three account shapes from one entry point — full details in the [Onboarding](onboarding.md) vignette.
+
+1. **Nextcloud.** Enter the server URL and an app password. courrier discovers CalDAV / CardDAV / Notes / News endpoints automatically and connects each module that the server exposes.
+2. **Microsoft 365 mail.** Sign in to the embedded OAuth flow. courrier asks only for the `IMAP.AccessAsUser.All` and `SMTP.Send` scopes; mail goes via XOAUTH2 over IMAP/SMTP, never via proprietary MSAL.
+3. **IMAP/SMTP.** Enter server + port + credentials. Autodiscovery is attempted via DNS SRV records and provider autoconfig.
+
+## A typical day
+
+1. **Mail** is the landing tab. Use the side rail to switch to **Calendar**, **Contacts**, **Tasks**, **Reminders**, **Notes**, or **Feeds**.
+2. **Compose** opens from the FAB in the mail list. The mail body is plain text; attachments come from the system share sheet.
+3. **Calendar** events sync via CalDAV; recurrence supports RRULE with "this / this-and-following / all" deletes.
+4. **Reminders** fire as local notifications. They survive a device reboot — the boot receiver re-arms them from the local DB.
+5. **Global search** spans every module; results group by module with offline-first hits.
+
+## Lock the app
+
+Settings → Security:
+
+- **PIN** — 4–8 digit, salted SHA-256.
+- **Biometric** — optional, falls back to the PIN.
+
+The lock activates after a configurable idle interval. Notes can additionally be locked per-note (Notes vignette).
+
+## Privacy
+
+- No analytics, no telemetry, no third-party SDKs that collect data.
+- All content stays on device + the user's chosen accounts.
+- OAuth tokens and passwords stay in the platform secure store; never in the settings export.
+- The Microsoft 365 provider is optional — users who never connect M365 never reach proprietary endpoints.
+
+For the full data flow per module, see each module's vignette.

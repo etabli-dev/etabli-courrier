@@ -1,0 +1,84 @@
+project:
+  type: website
+  output-dir: _site
+
+format:
+  html:
+    theme:
+      light: [cosmo, theme/etabli.scss]
+      dark: [cosmo, theme/etabli-dark.scss]
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    anchor-sections: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    grid:
+      sidebar-width: 270px
+      body-width: 900px
+
+website:
+  title: "Établi courrier"
+  description: "Privacy-first, offline-first FOSS alternative to the Outlook mobile app — email, calendar, contacts, tasks, reminders, notes, and RSS in one Flutter binary."
+  reader-mode: true
+  back-to-top-navigation: true
+  navbar:
+    pinned: true
+    logo: assets/etabli-logo.svg
+    logo-href: index.html
+    title: false
+    right:
+      - text: "EN"
+        href: en/index.qmd
+      - icon: github
+        text: "Code"
+        href: "https://github.com/etabli-dev/etabli-courrier"
+  sidebar:
+    - id: en
+      title: "Établi courrier"
+      style: floating
+      contents:
+        - section: "Documentation"
+          contents:
+            - text: "Overview"
+              href: en/index.qmd
+            - text: "Getting Started"
+              href: en/getting-started.qmd
+            - text: "Sample content"
+              href: en/sample_content.md
+        - section: "Modules"
+          contents:
+            - text: "Mail"
+              href: en/mail.md
+            - text: "Calendar"
+              href: en/calendar.md
+            - text: "Contacts"
+              href: en/contacts.md
+            - text: "Tasks"
+              href: en/tasks.md
+            - text: "Reminders"
+              href: en/reminders.md
+            - text: "Notes"
+              href: en/notes.md
+            - text: "Feeds (RSS)"
+              href: en/feeds.md
+        - section: "Providers"
+          contents:
+            - text: "Microsoft 365"
+              href: en/m365.md
+            - text: "DavMail companion"
+              href: en/davmail.md
+        - section: "Shell"
+          contents:
+            - text: "Onboarding"
+              href: en/onboarding.md
+            - text: "Screenshot harness"
+              href: en/maestro.md
+  page-footer:
+    left: "Apache-2.0 · © 2026 R. Heller"
+    right:
+      - text: "Liberapay"
+        href: "https://liberapay.com/rabanheller/"
+      - text: "GitHub"
+        href: "https://github.com/etabli-dev/etabli-courrier"

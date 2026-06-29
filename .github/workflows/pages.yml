@@ -1,8 +1,8 @@
-name: pages
+name: docs
 
-# Builds the docs/ directory with Jekyll and deploys to GitHub Pages on
-# every push to main. Pages source is configured to `workflow` in the
-# repo settings — this file is the workflow that satisfies it.
+# Builds the vignette site with Quarto in the shared Établi look and
+# deploys to GitHub Pages. Theme + assets are embedded under docs/theme
+# and docs/assets so the build has no external dependencies.
 
 on:
   push:
@@ -17,33 +17,30 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one in-flight Pages deploy; queue (don't cancel) so a deploy
-# triggered by the v0.1.0 cut doesn't get aborted by a follow-up docs push.
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/jekyll-build-pages@v1
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+      - name: Render site
+        run: quarto render docs
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          source: ./docs
-          destination: ./_site
-
-      - uses: actions/upload-pages-artifact@v3
+          path: docs/_site
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4

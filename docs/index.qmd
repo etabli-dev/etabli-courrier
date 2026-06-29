@@ -1,0 +1,15 @@
+---
+title: ""
+format:
+  html:
+    page-layout: full
+    include-in-header:
+      text: |
+        <meta http-equiv="refresh" content="0; url=./en/index.html">
+---
+
+```{=html}
+<script>window.location.replace("./en/index.html");</script>
+```
+
+<noscript>Loading the English documentation… if you are not redirected, [open it here](en/index.html).</noscript>

@@ -1,0 +1,65 @@
+---
+title: "Établi courrier"
+sidebar: en
+---
+
+<img src="../_icons/icon-courrier.svg" alt="" width="80" align="right" style="margin:0 0 1rem 1rem;">
+
+<span class="etabli-badge">v0.1.0 — released</span>
+
+> A privacy-first, offline-first Outlook-mobile alternative in one Flutter binary.
+
+Établi courrier brings email, calendar, contacts, tasks, reminders, notes, and RSS feeds into a single offline-first app that syncs to self-hosted Nextcloud and treats Microsoft 365 / Exchange Online mail as a first-class account type. No analytics, no third-party SDKs, no accounts beyond the ones you connect.
+
+## Who benefits
+
+Anyone who wants the Outlook-mobile shape — mail next to calendar next to contacts next to tasks — without giving a vendor the metadata. Self-hosters who already run Nextcloud get a full client. Tenants on Microsoft 365 where IT permits OAuth get an open-source XOAUTH2 client with no proprietary native MSAL binary in the build.
+
+## Platforms
+
+| Platform | Status |
+|----------|--------|
+| Android  | ✓ (signed APK from GitHub Releases) |
+| iOS      | planned — not yet available |
+| F-Droid  | planned — `NonFreeNet` recipe ready |
+| Google Play | planned — not yet available |
+| App Store (iOS) | planned — not yet available |
+
+## Privacy
+
+No analytics. No third-party SDKs that collect data. No accounts beyond the ones the user chooses to connect. Mail, calendar, contacts, tasks, reminders, notes and feeds stay on device and on the user's chosen Nextcloud / M365 / IMAP account. OAuth tokens and passwords live only in the platform secure store (iOS Keychain / Android `EncryptedSharedPreferences`). Settings export carries only non-sensitive preferences.
+
+The Microsoft 365 provider triggers F-Droid's `NonFreeNet` anti-feature because it talks to proprietary endpoints. The provider is optional — users who never connect M365 never reach those servers.
+
+## Installation
+
+courrier v0.1.0 is an **Android development build** distributed as signed split-per-ABI APKs via [GitHub Releases (v0.1.0)](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0). Verify with the published `SHA256SUMS.txt`.
+
+App Store, Google Play, and F-Droid releases are planned but **not yet available**. Desktop platforms (macOS / Windows / Linux) are not in scope for v0.1.0.
+
+Details: see [Getting Started](getting-started.qmd).
+
+## Modules
+
+Each module has its own how-to in the sidebar.
+
+| Module | What it does |
+|--------|--------------|
+| [Mail](mail.md) | IMAP + SMTP read/compose, threading, remote-content blocked by default, soft-delete recycle bin |
+| [Calendar](calendar.md) | CalDAV agenda + month views, RRULE, recurrence delete, ICS import |
+| [Contacts](contacts.md) | CardDAV with photo, groups, and unknown vCard property preservation |
+| [Tasks](tasks.md) | VTODO subtasks, fixed RRULE + repeat-after-completion recurrence |
+| [Reminders](reminders.md) | Local notifications via `flutter_local_notifications`, re-armed after reboot |
+| [Notes](notes.md) | Nextcloud Notes REST with checklist round-trip + per-note lock |
+| [Feeds (RSS)](feeds.md) | Nextcloud News API + bundled standalone parser fallback |
+
+## Providers
+
+| Provider | What it gives you |
+|----------|-------------------|
+| [Microsoft 365](m365.md) | XOAUTH2 mail via `flutter_appauth` — open-source auth-code + PKCE, no proprietary MSAL binary |
+| [DavMail companion](davmail.md) | External bridge for on-prem Exchange or tenants that block OAuth |
+
+## Support development
+
+If you find the app useful: [Liberapay](https://liberapay.com/rabanheller/).

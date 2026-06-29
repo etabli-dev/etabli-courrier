@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Etabli courrier app icon — shared green tile with courrier glyph. -->
+  <!-- Glyph: envelope outline with a small green accent flap line. -->
+  <rect width="1024" height="1024" fill="#28A745"/>
+  <g id="glyph" fill="none" stroke="#FFFFFF" stroke-width="40"
+     stroke-linecap="round" stroke-linejoin="round">
+    <rect x="220" y="320" width="584" height="384" rx="36"/>
+    <path d="M 220 360 L 512 560 L 804 360"/>
+  </g>
+</svg>

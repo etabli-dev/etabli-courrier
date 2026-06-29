@@ -1,70 +1,53 @@
-# courrier
+# Établi courrier
 
-A privacy-first, **offline-first** FOSS alternative to the Outlook mobile app, in a single
-**Flutter** binary: **email, calendar, contacts, tasks, reminders, notes, RSS** — syncing to
-self-hosted **Nextcloud**, with **Microsoft 365 / Exchange Online mail** as a first-class
-account type. Member of the **Établi Suite** (`etabli-dev`). Paid-upfront, **no IAP**.
-Ships to App Store, Google Play, F-Droid, GitHub Releases.
+> A privacy-first, offline-first Outlook-mobile alternative in one Flutter binary.
 
-## Status
+`Android` (planned: `iOS` `F-Droid` `Google Play` `App Store`) · Apache-2.0 · Part of the [Établi Suite](https://github.com/etabli-dev)
 
-v0.1.0 — released. The milestone-by-milestone plan lives in `BUILD_PROMPT.md`, standing
-rules in `CLAUDE.md`, and the audit engine in `AUDIT_LOOP.md`.
+Établi courrier brings **email, calendar, contacts, tasks, reminders, notes, and RSS** into a single offline-first app that syncs to self-hosted **Nextcloud** and treats **Microsoft 365 / Exchange Online mail** as a first-class account type via XOAUTH2 — no proprietary native MSAL binary, just open-source AppAuth with OAuth2 + PKCE. No analytics, no third-party SDKs, no accounts beyond the ones you connect.
+
+## Availability
+
+Établi courrier v0.1.0 is **released as an Android development build**. App Store, Google Play, and F-Droid releases are planned.
+
+- **Android:** install the signed split-per-ABI **APK** from **[GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0)**. Verify with the published `SHA256SUMS.txt`.
+- **App Store (iOS):** planned — not yet available.
+- **Google Play:** planned — not yet available.
+- **F-Droid:** planned — `NonFreeNet` recipe ready in `fastlane/metadata/android/FDROID_NONFREENET.md`.
+
+## Privacy
+
+No analytics. No third-party SDKs that collect data. No accounts beyond the ones the user chooses to connect. All content stays on device and on the user's chosen Nextcloud / M365 / IMAP account. OAuth tokens and passwords live only in the platform secure store (iOS Keychain / Android `EncryptedSharedPreferences`). Settings export only carries non-sensitive preferences.
+
+The Microsoft 365 provider is optional and triggers F-Droid's `NonFreeNet` anti-feature — users who never connect M365 never reach proprietary endpoints.
 
 ## Documentation
 
-Hosted site: **<https://etabli-dev.github.io/etabli-courrier/>** — built by
-`.github/workflows/pages.yml` from the `docs/` tree on every push to `main`.
+Hosted site: **<https://etabli-dev.github.io/etabli-courrier/>** — built with Quarto by `.github/workflows/pages.yml` from the [`docs/`](docs/) tree on every push to `main`.
 
-Tutorial-grade per-module vignettes live in [`docs/vignettes/`](docs/vignettes/index.md) —
-start with the index. Coverage:
-
-- [Mail](docs/vignettes/mail.md) · [Calendar](docs/vignettes/calendar.md) ·
-  [Contacts](docs/vignettes/contacts.md) · [Tasks](docs/vignettes/tasks.md) ·
-  [Reminders](docs/vignettes/reminders.md) · [Notes](docs/vignettes/notes.md) ·
-  [Feeds](docs/vignettes/feeds.md)
-- Providers — [Microsoft 365](docs/vignettes/m365.md) · [DavMail companion](docs/vignettes/davmail.md)
-- Shell — [Onboarding](docs/vignettes/onboarding.md) ·
-  [First-launch sample content](docs/vignettes/sample_content.md) ·
-  [Screenshot harness](docs/vignettes/maestro.md)
-
-## Build
-
-`courrier` reads runtime config via `String.fromEnvironment(...)` fed by
-`--dart-define-from-file`. Copy the template and fill in your own test values:
+## Repository layout
 
 ```
-cp secrets.example.json secrets.json     # gitignored — never commit
-flutter pub get
-flutter run --dart-define-from-file=secrets.json
-flutter test --dart-define-from-file=secrets.json
+lib/         app, modules, shell, core
+android/     Android runner
+ios/         iOS runner (planned)
+docs/        Quarto site source — en/, theme/, assets/, _quarto.yml
+fastlane/    store + F-Droid listing metadata
+test/        208 unit + integration tests
+assets/      sample content (bundled holidays, demo mail, etc.)
+.fdroid.yml  (planned — F-Droid main-repo submission)
 ```
 
-The M365 client ID is **public** and may live in source; passwords / app-passwords /
-refresh tokens never appear outside `secrets.json` or `flutter_secure_storage`.
+## Tech
 
-See `PREFLIGHT.md` for the locked build decisions and provisioning prerequisites.
+Dart 3.x · Flutter · `drift` (SQLite) · `enough_mail` (MPL-2.0, the only MPL dep) · `flutter_appauth` (OAuth2 PKCE) · `flutter_local_notifications` · `flutter_secure_storage` · `local_auth` · hand-rolled CalDAV / CardDAV / iCal RFC 5545 / vCard RFC 6350 layers · `rrule` for recurrence · Nextcloud Notes REST · Nextcloud News API. **Forbidden:** `msal_auth` and any wrapper of Microsoft's proprietary MSAL binary.
 
-## Clean-room provenance
+## Support development
 
-Fossify (Calendar/Contacts/Notes/Clock/Messages/commons), Etar, Tasks.org (all GPL-3.0) and
-DavMail (GPL-2.0) were consulted as behavioural / feature references only — **no code copied
-or ported**. Thunderbird desktop (MPL-2.0) and K-9 / Thunderbird-Android (Apache-2.0) likewise
-informed design only. The only MPL component shipped is the `enough_mail` dependency
-(recorded in `NOTICE`). See `THIRD_PARTY_REFERENCES.md`.
+- 💚 **[Liberapay](https://liberapay.com/rabanheller/)** — recurring, 0% commission. To be shown on the F-Droid listing once published.
 
-### Deliberate divergences (do not "fix" later)
+## License
 
-- Single green accent `#28a745` — **no** arbitrary color customisation.
-- Paid-upfront, no IAP — **no** freemium / feature-locking UI.
-- Own DAV + offline store — **no** dependency on a system PIM provider.
+Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party provenance in [THIRD_PARTY_REFERENCES.md](THIRD_PARTY_REFERENCES.md). The clean-room posture (which GPL refs were consulted vs which MPL deps are linked) is in [LICENSING.md](LICENSING.md).
 
-## Licensing
-
-Apache-2.0 (see `LICENSE`). Third-party attributions in `NOTICE`. Banned packages — see
-`LICENSING.md`. A CI license gate (`.github/workflows/license-gate.yml`) fails the build on
-any RED license or banned package.
-
-## Contributing
-
-Inbound = outbound (Apache-2.0) with DCO sign-off. See `CONTRIBUTING.md`.
+Copyright 2026 R. Heller.
