@@ -12,12 +12,12 @@ const String _fundingFlavor = String.fromEnvironment(
   defaultValue: 'bmc',
 );
 
-// User-facing documentation index. Rendered by GitHub as the project's
-// vignette table-of-contents. Surfaced from Settings → About so end users
-// have a reachable entry point — the docs/ folder otherwise has no path
-// from the app or the store listing.
-const String _docsIndexUrl =
-    'https://github.com/etabli-dev/etabli-courrier/blob/main/docs/vignettes/index.md';
+// User-facing documentation index. The Pages site at
+// etabli-dev.github.io/etabli-courrier/ is rebuilt on every push to main
+// by .github/workflows/pages.yml; it serves the docs/ tree with the
+// vignettes as a navigable TOC. Surfaced from Settings → About so end
+// users have a reachable entry point.
+const String _docsIndexUrl = 'https://etabli-dev.github.io/etabli-courrier/';
 
 @immutable
 class AboutInfo {

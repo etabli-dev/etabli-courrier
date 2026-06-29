@@ -13,6 +13,9 @@ rules in `CLAUDE.md`, and the audit engine in `AUDIT_LOOP.md`.
 
 ## Documentation
 
+Hosted site: **<https://etabli-dev.github.io/etabli-courrier/>** — built by
+`.github/workflows/pages.yml` from the `docs/` tree on every push to `main`.
+
 Tutorial-grade per-module vignettes live in [`docs/vignettes/`](docs/vignettes/index.md) —
 start with the index. Coverage:
 

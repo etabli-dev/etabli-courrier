@@ -1,0 +1,23 @@
+title: courrier
+description: >-
+  A privacy-first, offline-first FOSS alternative to the Outlook mobile app —
+  email, calendar, contacts, tasks, reminders, notes, and RSS in one Flutter
+  binary, syncing to Nextcloud and Microsoft 365.
+baseurl: /etabli-courrier
+url: https://etabli-dev.github.io
+theme: minima
+
+minima:
+  social_links:
+    github: etabli-dev/etabli-courrier
+
+# Files in docs/ that should not be published. audits/ holds internal release-
+# gate ledgers — still public on the repo blob view, just not promoted to the
+# Pages site.
+exclude:
+  - audits
+  - README.md
+
+markdown: kramdown
+kramdown:
+  input: GFM

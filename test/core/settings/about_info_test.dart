@@ -16,9 +16,8 @@ void main() {
     expect(about.versionLabel, 'v0.2.0+beta');
   });
 
-  test('docsUrl points at the docs/vignettes/index.md on origin', () {
+  test('docsUrl points at the Pages site published from docs/', () {
     final about = AboutInfo.current();
-    expect(about.docsUrl, contains('docs/vignettes/index.md'));
-    expect(about.docsUrl, startsWith('https://'));
+    expect(about.docsUrl, 'https://etabli-dev.github.io/etabli-courrier/');
   });
 }
