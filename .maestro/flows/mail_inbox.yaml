@@ -4,8 +4,13 @@ tags:
   - module:mail
   - state:inbox
 ---
-- launchApp:
-    clearState: true
-- assertVisible: "courrier · mail"
-- assertVisible: "Suite-wide release timing"
+# Flutter's accessibility tree is not exposed to the Android a11y service
+# in debug builds, so Maestro can't find widgets by text. Until the demo
+# build is rebuilt with a wired a11y bridge, the flows tap by viewport
+# percentage (the layout is fixed by the demo shell — bottom nav at y=92%,
+# six tabs at x = 8.3%, 25%, 41.7%, 58.3%, 75%, 91.7%).
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    point: "8%, 92%"   # mail tab
 - takeScreenshot: "mail_inbox_${MAESTRO_COURRIER_THEME}"

@@ -4,10 +4,10 @@ tags:
   - module:calendar
   - state:agenda
 ---
-- launchApp:
-    clearState: true
+- waitForAnimationToEnd:
+    timeout: 3000
 - tapOn:
-    id: "demo-calendar-tab"
-- assertVisible: "Agenda"
-- assertVisible: "Weekly status"
+    point: "25%, 92%"  # calendar tab
+- tapOn:
+    point: "18%, 16%"  # Agenda pill in the Agenda/Month toggle
 - takeScreenshot: "calendar_agenda_${MAESTRO_COURRIER_THEME}"

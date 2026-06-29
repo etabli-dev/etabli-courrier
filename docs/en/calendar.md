@@ -1,6 +1,6 @@
 # Calendar
 
-![Calendar — agenda view with Weekly status + Coffee with Ada](../_screens/0.1.0/02-calendar.png){width=320}
+![Calendar — agenda view with Weekly status + Coffee with Ada](../_screens/0.1.0/02b-calendar-agenda.png){width=320}
 
 ![Calendar — month view, June 2026, with two dot markers for events on Mon/Tue](../_screens/0.1.0/07-calendar-month.png){width=320}
 

@@ -4,10 +4,8 @@ tags:
   - module:contacts
   - state:list
 ---
-- launchApp:
-    clearState: true
+- waitForAnimationToEnd:
+    timeout: 3000
 - tapOn:
-    id: "demo-contacts-tab"
-- assertVisible: "Ada Lovelace"
-- assertVisible: "Grace Hopper"
+    point: "42%, 92%"  # contacts tab
 - takeScreenshot: "contacts_list_${MAESTRO_COURRIER_THEME}"

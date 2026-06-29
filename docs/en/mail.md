@@ -2,6 +2,8 @@
 
 ![Mail — inbox with bundled demo content (M13 demo-boot)](../_screens/0.1.0/01-mail.png){width=320}
 
+![Mail — thread state after tapping a row (demo shell baseline; thread route lands as an M13 follow-up)](../_screens/0.1.0/09-mail-thread.png){width=320}
+
 The mail module is the biggest deliverable so far. M6 shipped the **read
 path**: token-capable backend, real IMAP via `enough_mail`, in-memory demo
 backend for sample content + tests + screenshots, offline store, threading,

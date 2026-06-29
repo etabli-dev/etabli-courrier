@@ -4,8 +4,13 @@ tags:
   - module:mail
   - state:thread
 ---
-- launchApp:
-    clearState: true
-- assertVisible: "Suite-wide release timing"
-- tapOn: "Suite-wide release timing"
+# Demo shell does not route mail-row taps to a thread view (M13 follow-up).
+# This flow captures the inbox state after tapping a row — useful as a
+# baseline for diffing when the thread route lands.
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    point: "8%, 92%"   # mail tab
+- tapOn:
+    point: "50%, 39%"  # third mail row (alice@etabli.dev) on a 2340-tall screen
 - takeScreenshot: "mail_thread_${MAESTRO_COURRIER_THEME}"

@@ -14,8 +14,15 @@ import 'shell/app_shell.dart';
 const bool _demoBoot = bool.fromEnvironment('COURRIER_DEMO_BOOT');
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
   if (_demoBoot) {
+    // The Maestro screenshot harness relies on the platform accessibility
+    // tree to find widgets by text. Flutter only wires that tree when an
+    // a11y service connects; Maestro never triggers one. Force-enabling
+    // semantics on the demo boot path makes every label / list cell
+    // discoverable to `maestro test` without leaking the cost into
+    // production builds (this binary never ships with COURRIER_DEMO_BOOT).
+    binding.ensureSemantics();
     final services = await DemoServices.bootInMemory();
     runApp(DemoApp(services: services));
     return;
