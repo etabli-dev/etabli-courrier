@@ -33,7 +33,8 @@ jobs:
           dart pub global run very_good_cli:very_good packages check licenses \
             --allowed="Apache-2.0,MIT,BSD-2-Clause,BSD-3-Clause,ISC,Zlib,Unlicense,CC0-1.0,MPL-2.0,EPL-2.0,CDDL-1.0,CDDL-1.1" \
             --forbidden="GPL-2.0,GPL-3.0,AGPL-3.0,LGPL-2.1,LGPL-3.0,SSPL-1.0,BUSL-1.1" \
-            --reporter=compact
+            --reporter=text \
+            --dependency-type=transitive
 
       # Banned packages: proprietary native MSAL wrappers break F-Droid regardless of the
       # wrapper's own SPDX string. Fail hard if present anywhere in the resolved tree.
