@@ -92,6 +92,7 @@ void main() {
         // Pretend a pull populated an etag.
         await (db.update(db.calendarEvents)..where((t) => t.id.equals(id)))
             .write(const CalendarEventsCompanion(etag: Value('"server-1"')));
+        await db.delete(db.pendingChanges).go();
 
         await repo.updateEvent(
           id,
@@ -111,7 +112,7 @@ void main() {
         final pending = await (db.select(
           db.pendingChanges,
         )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
-        expect(pending, hasLength(2));
+        expect(pending, hasLength(1));
         expect(pending.last.operation, 'update');
         expect(pending.last.baseEtag, '"server-1"');
       },
@@ -135,6 +136,7 @@ void main() {
         );
         await (db.update(db.calendarEvents)..where((t) => t.id.equals(id)))
             .write(const CalendarEventsCompanion(etag: Value('"server-2"')));
+        await db.delete(db.pendingChanges).go();
 
         await repo.deleteEvent(id);
 

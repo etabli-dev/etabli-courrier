@@ -1,23 +1,22 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val releaseProperties = Properties()
+val releasePropertiesFile = rootProject.file("keystore.properties")
+if (releasePropertiesFile.exists()) releasePropertiesFile.inputStream().use { releaseProperties.load(it) }
+
 android {
     namespace = "dev.etabli.courrier"
-    // Pinned to 36: `flutter.compileSdkVersion` resolves to 33 on this
-    // Flutter channel and several androidx transitives (exifinterface
-    // 1.4.1 via local_auth/image_picker, core 1.16 via flutter_appauth)
-    // now require compileSdk >= 34. 36 is the current latest stable;
-    // safe because compileSdk only sets which APIs are visible at
-    // compile-time — targetSdk = flutter.targetSdkVersion remains the
-    // runtime-behavior switch and is unchanged.
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        // flutter_local_notifications v20's AAR uses java.time APIs;
+        // flutter_local_notifications uses java.time APIs; its AAR uses java.time APIs;
         // minSdk = 24 (< 26) requires core library desugaring on the
         // app module. Caught by the v0.1.0 release-apk CI run; the
         // unit suite (`flutter test`) doesn't exercise this path.
@@ -26,10 +25,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    lint {
+        // Analyze libraries with the actual application permissions and API floor.
+        checkDependencies = true
+    }
+
     defaultConfig {
         applicationId = "dev.etabli.courrier"
         minSdk = 24
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
@@ -38,10 +42,18 @@ android {
         manifestPlaceholders["appAuthRedirectScheme"] = "dev.etabli.courrier"
     }
 
+    signingConfigs {
+        if (releasePropertiesFile.exists()) create("production") {
+            storeFile = rootProject.file(releaseProperties.getProperty("storeFile"))
+            storePassword = releaseProperties.getProperty("storePassword")
+            keyAlias = releaseProperties.getProperty("keyAlias")
+            keyPassword = releaseProperties.getProperty("keyPassword")
+        }
+    }
     buildTypes {
         release {
-            // Debug signing for `flutter run --release`; release signing wired at M15.
-            signingConfig = signingConfigs.getByName("debug")
+            // Without private signing configuration, produce an unsigned review artifact.
+            signingConfig = signingConfigs.findByName("production")
         }
     }
 }

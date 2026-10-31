@@ -21,6 +21,7 @@ class MailFolderHandle {
 class MailEnvelope {
   const MailEnvelope({
     required this.uid,
+    this.uidValidity,
     required this.subject,
     required this.fromAddress,
     required this.receivedAt,
@@ -36,6 +37,7 @@ class MailEnvelope {
   });
 
   final int uid;
+  final int? uidValidity;
   final String? subject;
   final String? fromAddress;
   final String? toAddresses;
@@ -65,10 +67,12 @@ class MailFlags {
 @immutable
 class MailBodyPayload {
   const MailBodyPayload({
+    this.uidValidity,
     this.textPart,
     this.htmlPart,
     this.attachments = const <MailAttachmentInfo>[],
   });
+  final int? uidValidity;
   final String? textPart;
   final String? htmlPart;
   final List<MailAttachmentInfo> attachments;
@@ -101,6 +105,13 @@ class FlagUpdate {
   final bool value;
 }
 
+/// UIDs are mailbox-local. A move must report the destination identity.
+class MailMoveResult {
+  const MailMoveResult({required this.uids, this.uidValidity});
+  final Map<int, int> uids;
+  final int? uidValidity;
+}
+
 abstract class MailBackend {
   /// Open a session. Implementations may reuse a long-lived connection.
   Future<void> connect(MailCredentials credentials);
@@ -131,7 +142,7 @@ abstract class MailBackend {
   });
 
   /// Move messages between folders (used for Trash + Archive + Restore).
-  Future<void> moveMessages({
+  Future<MailMoveResult> moveMessages({
     required String sourceFolder,
     required String destinationFolder,
     required List<int> uids,

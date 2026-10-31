@@ -21,8 +21,7 @@ class BiometricAppLockGuard implements AppLockGuard {
     if (!supported) {
       return false;
     }
-    final canCheck = await _auth.canCheckBiometrics;
-    return canCheck;
+    return supported;
   }
 
   @override
@@ -30,12 +29,11 @@ class BiometricAppLockGuard implements AppLockGuard {
     try {
       return await _auth.authenticate(
         localizedReason: 'Unlock courrier',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
+        options: const AuthenticationOptions(stickyAuth: true),
       );
     } on Exception {
+      return false;
+    } on UnsupportedError {
       return false;
     }
   }

@@ -50,7 +50,16 @@ class IcalReader {
     return roots;
   }
 
-  void _readBody(Iterator<String> iter, IcalComponent current) {
+  void _readBody(
+    Iterator<String> iter,
+    IcalComponent current, [
+    int depth = 0,
+  ]) {
+    if (depth > 64) {
+      throw const FormatException(
+        'Calendar nesting exceeds the supported limit.',
+      );
+    }
     while (iter.moveNext()) {
       final line = iter.current;
       if (line.isEmpty) {
@@ -59,7 +68,7 @@ class IcalReader {
       final prop = _parseLine(line);
       if (prop.name == 'BEGIN') {
         final child = IcalComponent(prop.value);
-        _readBody(iter, child);
+        _readBody(iter, child, depth + 1);
         current.children.add(child);
         continue;
       }

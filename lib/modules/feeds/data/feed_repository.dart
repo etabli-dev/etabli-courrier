@@ -32,6 +32,7 @@ class FeedRepository {
       );
 
   Future<void> unsubscribe(int feedId) async {
+    await _checkFeed(feedId);
     await (db.delete(
       db.feedSubscriptions,
     )..where((t) => t.id.equals(feedId))).go();
@@ -53,7 +54,8 @@ class FeedRepository {
 
   // ---- Items -------------------------------------------------------------
 
-  Future<List<FeedItem>> listItemsForFeed(int feedId) {
+  Future<List<FeedItem>> listItemsForFeed(int feedId) async {
+    await _checkFeed(feedId);
     return (db.select(db.feedItems)
           ..where((t) => t.feedId.equals(feedId))
           ..orderBy([
@@ -85,6 +87,7 @@ class FeedRepository {
     String? content,
     DateTime? publishedAt,
   }) async {
+    await _checkFeed(feedId);
     final existing =
         await (db.select(db.feedItems)
               ..where((t) => t.feedId.equals(feedId) & t.guid.equals(guid)))
@@ -119,17 +122,23 @@ class FeedRepository {
   }
 
   Future<void> markRead(int itemId, {bool read = true}) async {
+    final item = await (db.select(
+      db.feedItems,
+    )..where((t) => t.id.equals(itemId))).getSingle();
+    await _checkFeed(item.feedId);
     await (db.update(db.feedItems)..where((t) => t.id.equals(itemId))).write(
       FeedItemsCompanion(read: Value(read)),
     );
   }
 
   Future<void> markFeedRead(int feedId) async {
+    await _checkFeed(feedId);
     await (db.update(db.feedItems)..where((t) => t.feedId.equals(feedId)))
         .write(const FeedItemsCompanion(read: Value(true)));
   }
 
   Future<int> unreadCountFor(int feedId) async {
+    await _checkFeed(feedId);
     final rows = await (db.select(
       db.feedItems,
     )..where((t) => t.feedId.equals(feedId) & t.read.equals(false))).get();
@@ -140,10 +149,23 @@ class FeedRepository {
     required int feedId,
     required int minutes,
   }) async {
+    await _checkFeed(feedId);
+    if (minutes < 1 || minutes > 10080) {
+      throw ArgumentError.value(minutes, 'minutes');
+    }
     await (db.update(
       db.feedSubscriptions,
     )..where((t) => t.id.equals(feedId))).write(
       FeedSubscriptionsCompanion(refreshIntervalMinutes: Value(minutes)),
     );
+  }
+
+  Future<void> _checkFeed(int feedId) async {
+    final feed =
+        await (db.select(db.feedSubscriptions)..where(
+              (t) => t.id.equals(feedId) & t.accountId.equals(accountId),
+            ))
+            .getSingleOrNull();
+    if (feed == null) throw StateError('Feed does not belong to this account.');
   }
 }

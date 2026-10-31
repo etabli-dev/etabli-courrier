@@ -68,6 +68,7 @@ void main() {
         await (db.update(db.noteItems)..where((t) => t.id.equals(id))).write(
           const NoteItemsCompanion(etag: Value('"e1"')),
         );
+        await db.delete(db.pendingChanges).go();
 
         await repo.updateNote(
           id,

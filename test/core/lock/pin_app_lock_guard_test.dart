@@ -75,6 +75,16 @@ class _InMemorySecureBackend implements FlutterSecureStorage {
 }
 
 void main() {
+  test(
+    'PBKDF2 SHA256 matches an independently derived standard-library vector',
+    () {
+      expect(
+        derivePinKey('password', 'c2FsdA==', 2),
+        'ae4d0c95af6b46d32d0adff928f06dd02a303f8ef3c251dfd6e2d85a95474c43',
+      );
+    },
+  );
+
   PinAppLockGuard makeGuard({required Future<String?> Function() prompt}) {
     return PinAppLockGuard(
       secrets: SecretsStore(backend: _InMemorySecureBackend()),

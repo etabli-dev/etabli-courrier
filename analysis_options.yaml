@@ -25,6 +25,10 @@ analyzer:
     - build/**
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - android/**
+    - ios/**
+    # Unchanged upstream Dart dependency; its Android patch has native tests.
+    - third_party/**
 
 linter:
   rules:

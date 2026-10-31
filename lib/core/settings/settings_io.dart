@@ -43,7 +43,9 @@ class SettingsExporter {
   Future<String> exportAsJson(PreferencesStore store) async {
     final envelope = SettingsExportEnvelope(
       version: currentVersion,
-      preferences: store.exportAll(),
+      preferences: Map.fromEntries(
+        store.exportAll().entries.where((e) => !e.key.startsWith('pref.lock.')),
+      ),
     );
     return jsonEncode(envelope.toJson());
   }
@@ -53,29 +55,54 @@ class SettingsImporter {
   const SettingsImporter();
 
   Future<int> importFromJson(String jsonSource, PreferencesStore store) async {
-    final decoded = jsonDecode(jsonSource);
-    if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('settings envelope is not an object');
+    if (jsonSource.length > 65536) {
+      throw const FormatException('Settings exceed 64 KiB.');
     }
-    final envelope = SettingsExportEnvelope.fromJson(decoded);
-    var imported = 0;
-    for (final entry in envelope.preferences.entries) {
-      final key = entry.key;
-      final value = entry.value;
-      if (!key.startsWith('pref.')) {
+    final decoded = jsonDecode(jsonSource);
+    if (decoded is! Map<String, dynamic> ||
+        decoded['version'] != SettingsExporter.currentVersion ||
+        decoded['preferences'] is! Map<String, dynamic>) {
+      throw const FormatException('Unsupported settings format or version.');
+    }
+    final values = decoded['preferences'] as Map<String, dynamic>;
+    final accepted = <String, Object>{};
+    for (final entry in values.entries) {
+      if (!entry.key.startsWith('pref.') ||
+          entry.key.startsWith('pref.lock.')) {
         continue;
       }
-      if (value is bool) {
-        await store.setBool(key, value: value);
-        imported += 1;
-      } else if (value is int) {
-        await store.setInt(key, value);
-        imported += 1;
-      } else if (value is String) {
-        await store.setString(key, value);
-        imported += 1;
+      final value = entry.value;
+      if (entry.key.length > 200 ||
+          !(value is bool || value is int || value is String)) {
+        throw const FormatException('Invalid preference value.');
       }
+      accepted[entry.key] = value as Object;
     }
-    return imported;
+    final previous = store.exportAll();
+    Future<void> write(String key, Object? value) async {
+      final bool saved;
+      if (value is bool) {
+        saved = await store.setBool(key, value: value);
+      } else if (value is int) {
+        saved = await store.setInt(key, value);
+      } else if (value is String) {
+        saved = await store.setString(key, value);
+      } else {
+        saved = await store.remove(key);
+      }
+      if (!saved) throw StateError('Could not persist settings.');
+    }
+
+    try {
+      for (final entry in accepted.entries) {
+        await write(entry.key, entry.value);
+      }
+    } catch (_) {
+      for (final key in accepted.keys) {
+        await write(key, previous[key]);
+      }
+      rethrow;
+    }
+    return accepted.length;
   }
 }

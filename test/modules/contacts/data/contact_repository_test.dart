@@ -139,6 +139,7 @@ void main() {
         await (db.update(db.contactCards)..where((t) => t.id.equals(id))).write(
           const ContactCardsCompanion(etag: Value('"server-etag-1"')),
         );
+        await db.delete(db.pendingChanges).go();
 
         await repo.deleteContact(id);
 

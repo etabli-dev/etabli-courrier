@@ -2,6 +2,7 @@ import 'package:courrier/core/db/database.dart';
 import 'package:courrier/modules/mail/backend/demo_mail_backend.dart';
 import 'package:courrier/modules/mail/backend/mail_credentials.dart';
 import 'package:courrier/modules/mail/data/mail_repository.dart';
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,6 +21,169 @@ Future<MailRepository> _wire(CourrierDatabase db) async {
 
 void main() {
   group('MailRepository', () {
+    test(
+      'move, fetch and restore use destination UIDs and retain cached attachments',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final repo = await _wire(db);
+        await repo.syncFolders();
+        await repo.syncEnvelopes(folderName: 'INBOX');
+        final folder = await repo.folderByName('INBOX');
+        final message =
+            await (db.select(db.mailMessages)..where(
+                  (t) =>
+                      t.folderId.equals(folder.id) &
+                      t.hasAttachments.equals(true),
+                ))
+                .getSingle();
+        await repo.moveToTrash(
+          sourceFolderName: 'INBOX',
+          messageIds: [message.id],
+        );
+        final moved = await (db.select(
+          db.mailMessages,
+        )..where((t) => t.id.equals(message.id))).getSingle();
+        expect(moved.uid, isNot(message.uid));
+        final remote = await repo.loadBody(
+          folderName: 'Trash',
+          messageId: message.id,
+        );
+        final cached = await repo.loadBody(
+          folderName: 'Trash',
+          messageId: message.id,
+        );
+        expect(remote.attachments, isNotEmpty);
+        expect(
+          cached.attachments.map((a) => a.filename),
+          remote.attachments.map((a) => a.filename),
+        );
+        await repo.restoreFromTrash(
+          messageIds: [message.id],
+          destinationFolderName: 'INBOX',
+        );
+        final restored = await (db.select(
+          db.mailMessages,
+        )..where((t) => t.id.equals(message.id))).getSingle();
+        expect(restored.uid, isNot(moved.uid));
+        await repo.setSeen(
+          folderName: 'INBOX',
+          messageId: message.id,
+          seen: true,
+        );
+        final envelopes = await repo.backend.fetchEnvelopes(
+          folderName: 'INBOX',
+        );
+        expect(
+          envelopes.singleWhere((e) => e.uid == restored.uid).flags.seen,
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'message access and search stay inside the selected account and folder',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final first = await _wire(db);
+        final second = await _wire(db);
+        for (final repo in [first, second]) {
+          await repo.syncFolders();
+          await repo.syncEnvelopes(folderName: 'INBOX');
+        }
+        final inbox = await second.folderByName('INBOX');
+        final message = (await (db.select(
+          db.mailMessages,
+        )..where((t) => t.folderId.equals(inbox.id))).get()).first;
+        await expectLater(
+          first.loadBody(folderName: 'INBOX', messageId: message.id),
+          throwsStateError,
+        );
+        await expectLater(
+          first.setSeen(folderName: 'INBOX', messageId: message.id, seen: true),
+          throwsStateError,
+        );
+        await expectLater(
+          first.setRemoteContentAllowed(messageId: message.id, allowed: true),
+          throwsStateError,
+        );
+        await expectLater(
+          first.archive(sourceFolderName: 'INBOX', messageIds: [message.id]),
+          throwsStateError,
+        );
+        final firstInbox = await first.folderByName('INBOX');
+        final hits = await first.search('newsletter');
+        expect(hits, isNotEmpty);
+        expect(
+          hits.every((hit) => hit.message.folderId == firstInbox.id),
+          isTrue,
+        );
+        await expectLater(
+          second.loadBody(folderName: 'Sent', messageId: message.id),
+          throwsStateError,
+        );
+      },
+    );
+
+    test('attachment write failure leaves the body fetch retryable', () async {
+      final db = _db();
+      addTearDown(db.close);
+      final repo = await _wire(db);
+      await repo.syncFolders();
+      await repo.syncEnvelopes(folderName: 'INBOX');
+      final message = await (db.select(
+        db.mailMessages,
+      )..where((t) => t.hasAttachments.equals(true))).getSingle();
+      await db.customStatement(
+        "CREATE TRIGGER fail_attachment BEFORE INSERT ON mail_attachments BEGIN SELECT RAISE(ABORT, 'full'); END",
+      );
+      await expectLater(
+        repo.loadBody(folderName: 'INBOX', messageId: message.id),
+        throwsA(anything),
+      );
+      final after = await (db.select(
+        db.mailMessages,
+      )..where((t) => t.id.equals(message.id))).getSingle();
+      expect(after.bodyDownloaded, isFalse);
+      expect(after.bodyText, isNull);
+      await db.customStatement('DROP TRIGGER fail_attachment');
+      expect(
+        (await repo.loadBody(
+          folderName: 'INBOX',
+          messageId: message.id,
+        )).attachments,
+        isNotEmpty,
+      );
+    });
+
+    test(
+      'cyclic References form one bounded thread without losing messages',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final repo = await _wire(db);
+        await repo.syncFolders();
+        final folder = await repo.folderByName('INBOX');
+        for (var i = 0; i < 3; i++) {
+          await db
+              .into(db.mailMessages)
+              .insert(
+                MailMessagesCompanion.insert(
+                  folderId: folder.id,
+                  uid: i + 1,
+                  messageIdHeader: Value('<$i>'),
+                  inReplyTo: Value('<${(i + 1) % 3}>'),
+                  subject: Value('Message $i'),
+                ),
+              );
+        }
+        final threads = await repo.threadsIn('INBOX');
+        expect(threads, hasLength(1));
+        expect(threads.single.messages.map((m) => m.uid).toSet(), {1, 2, 3});
+      },
+    );
+
     test('syncFolders mirrors backend folders into the DB', () async {
       final db = _db();
       addTearDown(db.close);

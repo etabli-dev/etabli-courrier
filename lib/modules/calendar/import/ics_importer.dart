@@ -37,23 +37,38 @@ class IcsImporter {
 
     final calendarHeader = _captureCalendarHeader(tree);
 
-    var upserted = 0;
-    for (final vevent in tree.childrenOf('VEVENT')) {
-      await _upsertVevent(
-        collectionId: collectionId,
-        header: calendarHeader,
-        vevent: vevent,
-      );
-      upserted += 1;
+    final grouped = <String, List<IcalComponent>>{};
+    for (final event in tree.childrenOf('VEVENT')) {
+      final uid = event.get('UID')?.value;
+      if (uid == null || uid.isEmpty) {
+        throw const FormatException('VEVENT missing UID');
+      }
+      grouped.putIfAbsent(uid, () => []).add(event);
     }
+    var upserted = 0;
+    await db.transaction(() async {
+      for (final events in grouped.values) {
+        final master =
+            events.where((e) => e.get('RECURRENCE-ID') == null).firstOrNull ??
+            events.first;
+        await _upsertVevent(
+          collectionId: collectionId,
+          header: calendarHeader,
+          vevent: master,
+          retainedComponents: [
+            ...tree.children.where((c) => c.name != 'VEVENT'),
+            ...events,
+          ],
+        );
+        upserted++;
+      }
+    });
     return upserted;
   }
 
   List<IcalProperty> _captureCalendarHeader(IcalComponent vcalendar) {
-    // Keep the VCALENDAR-level props (PRODID, VERSION, METHOD, CALSCALE,
-    // X-WR-CALNAME, X-WR-TIMEZONE, …) verbatim. Ignore embedded sub-components
-    // like VTIMEZONE here — for a one-VEVENT canonical render we don't need
-    // them, and the M3 typed accessors don't honour VTIMEZONE yet.
+    // Preserve calendar properties; grouped recurrence overrides and timezone
+    // definitions are retained alongside the master event below.
     return List<IcalProperty>.unmodifiable(vcalendar.properties);
   }
 
@@ -61,6 +76,7 @@ class IcsImporter {
     required int collectionId,
     required List<IcalProperty> header,
     required IcalComponent vevent,
+    required List<IcalComponent> retainedComponents,
   }) async {
     final lens = VEvent.from(vevent);
     final uid = lens.uid;
@@ -74,7 +90,7 @@ class IcsImporter {
 
     final canonical = IcalComponent('VCALENDAR')
       ..properties.addAll(header)
-      ..children.add(vevent);
+      ..children.addAll(retainedComponents);
     final canonicalIcs = _writer.render(canonical);
 
     final existing =

@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
             value: lockEnabled,
             onChanged: onToggleLock,
             title: Text(
-              'App lock (PIN / biometric)',
+              'App lock (device authentication)',
               style: theme.textTheme.bodyLarge,
             ),
             subtitle: Text(
@@ -79,17 +79,27 @@ class SettingsScreen extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.zero,
           title: Text('Support development', style: theme.textTheme.bodyLarge),
-          subtitle: Text(about.fundingLabel, style: theme.textTheme.bodySmall),
-          trailing: const Icon(Icons.open_in_new, size: 16),
+          subtitle: SelectableText(
+            '${about.fundingLabel} · ${about.fundingUrl}',
+            style: theme.textTheme.bodySmall,
+          ),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           title: Text('Documentation', style: theme.textTheme.bodyLarge),
-          subtitle: Text(
-            'Module how-tos and onboarding vignettes',
-            style: theme.textTheme.bodySmall,
+          subtitle: Text(about.docsUrl, style: theme.textTheme.bodySmall),
+        ),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.description_outlined),
+          title: const Text('Open-source licenses'),
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: 'Établi Courrier',
+            applicationVersion: about.versionLabel,
+            applicationLegalese:
+                'Copyright 2026 R. Heller. Apache-2.0.\nSource and distribution notices: https://github.com/etabli-dev/etabli-courrier',
           ),
-          trailing: const Icon(Icons.open_in_new, size: 16),
         ),
         const SizedBox(height: CourrierTokens.space5),
         Text(

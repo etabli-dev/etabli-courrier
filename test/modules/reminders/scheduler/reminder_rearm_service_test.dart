@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 class FakeScheduler implements NotificationScheduler {
   final Map<int, ScheduledNotification> active = {};
   bool initialized = false;
+  bool failSchedule = false;
   bool permissionGranted = true;
 
   @override
@@ -21,6 +22,7 @@ class FakeScheduler implements NotificationScheduler {
 
   @override
   Future<void> schedule(ScheduledNotification notification) async {
+    if (failSchedule) throw StateError('alarm service unavailable');
     active[notification.id] = notification;
   }
 
@@ -201,7 +203,37 @@ void main() {
     );
 
     test(
-      'cancelAll runs before scheduling — replaces, never accumulates',
+      'failed scheduling preserves existing alarms and the database plan is readable',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final fixed = DateTime.utc(2026, 7, 1, 12);
+        await _seedTaskWithDue(db, due: fixed.add(const Duration(days: 1)));
+        final old = ScheduledNotification(
+          id: 99,
+          title: 'Preserve',
+          body: '',
+          fireAt: fixed,
+        );
+        final scheduler = FakeScheduler()..active[99] = old;
+        final service = ReminderRearmService(
+          db: db,
+          scheduler: scheduler,
+          now: () => fixed,
+        );
+        expect((await service.upcoming()).single.title, 'Ship M5');
+        expect(scheduler.active, {99: old});
+        scheduler.failSchedule = true;
+        await expectLater(service.rearmAll(), throwsStateError);
+        expect(scheduler.active, {99: old});
+        scheduler.failSchedule = false;
+        expect(await service.rearmAll(), 1);
+        expect(scheduler.active.containsKey(99), isFalse);
+      },
+    );
+
+    test(
+      'successful reload replaces stale alarms without accumulating duplicates',
       () async {
         final db = _db();
         addTearDown(db.close);

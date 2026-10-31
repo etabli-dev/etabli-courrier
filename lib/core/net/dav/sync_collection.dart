@@ -43,15 +43,8 @@ class SyncCollectionClient {
         body: DavRequests.syncCollection(syncToken: syncToken),
       );
       return _parse(report, tokenWasReset: false);
-    } on NotFoundError {
-      // Stale sync-token — restart from scratch.
-      final fresh = await client.report(
-        url: collectionUrl,
-        body: DavRequests.syncCollection(),
-      );
-      return _parse(fresh, tokenWasReset: true);
-    } on ForbiddenError {
-      // Some servers (Nextcloud included) signal token invalidation via 403.
+    } on InvalidSyncTokenError {
+      if (syncToken == null) rethrow;
       final fresh = await client.report(
         url: collectionUrl,
         body: DavRequests.syncCollection(),
@@ -70,16 +63,22 @@ class SyncCollectionClient {
       // A `<status>HTTP/1.1 404 Not Found</status>` at the response level
       // signals a tombstone. We surface it by checking whether the resource
       // had any successful properties — if not, treat as deletion.
-      if (resource.properties.isEmpty && resource.resourceTypes.isEmpty) {
+      if (resource.statusCode == 404) {
         deleted.add(resource.href);
+      } else if (resource.statusCode != null && resource.statusCode != 200) {
+        throw mapHttpStatus(resource.statusCode!);
       } else {
         changed.add(resource.href);
       }
     }
+    final token = Multistatus.extractSyncToken(report.rawBody);
+    if (token == null || token.isEmpty) {
+      throw const ParseFailureError('missing sync token');
+    }
     return SyncCollectionResult(
       changedHrefs: changed,
       deletedHrefs: deleted,
-      newSyncToken: Multistatus.extractSyncToken(report.rawBody),
+      newSyncToken: token,
       tokenWasReset: tokenWasReset,
     );
   }

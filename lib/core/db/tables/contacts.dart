@@ -9,6 +9,7 @@ class ContactCards extends Table {
 
   TextColumn get uid => text()();
   TextColumn get etag => text().nullable()();
+  TextColumn get remoteHref => text().nullable()();
 
   TextColumn get formattedName => text().nullable()();
   TextColumn get givenName => text().nullable()();

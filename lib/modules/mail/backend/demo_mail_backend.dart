@@ -99,7 +99,7 @@ class DemoMailBackend implements MailBackend {
   }
 
   @override
-  Future<void> moveMessages({
+  Future<MailMoveResult> moveMessages({
     required String sourceFolder,
     required String destinationFolder,
     required List<int> uids,
@@ -107,18 +107,21 @@ class DemoMailBackend implements MailBackend {
     _ensureConnected();
     final source = _folder(sourceFolder);
     final destination = _folder(destinationFolder);
+    final mapping = <int, int>{};
     for (final uid in uids) {
       final entry = source.messages.remove(uid);
       if (entry == null) {
         continue;
       }
       final newUid = ++_autoUid;
+      mapping[uid] = newUid;
       final newEnvelope = entry.envelope.copyWith(uid: newUid);
       destination.messages[newUid] = _DemoMessage(
         envelope: newEnvelope,
         body: entry.body,
       );
     }
+    return MailMoveResult(uids: mapping);
   }
 
   @override

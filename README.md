@@ -1,53 +1,66 @@
-# Établi courrier
+# Établi Courrier
 
-> A privacy-first, offline-first Outlook-mobile alternative in one Flutter binary.
+An offline communication workspace for mail, calendar, contacts, tasks, reminders, notes and feeds. Flutter source for Android and iOS; Apache-2.0, with separately licensed dependencies.
 
-`Android` (planned: `iOS` `F-Droid` `Google Play` `App Store`) · Apache-2.0 · Part of the [Établi Suite](https://github.com/etabli-dev)
+This source tree includes the October 2026 refinement. The existing v0.1.0 development release does **not** contain these changes. Store/F-Droid acceptance, physical-device operation and live-account interoperability are not yet verified for this revision.
 
-Établi courrier brings **email, calendar, contacts, tasks, reminders, notes, and RSS** into a single offline-first app that syncs to self-hosted **Nextcloud** and treats **Microsoft 365 / Exchange Online mail** as a first-class account type via XOAUTH2 — no proprietary native MSAL binary, just open-source AppAuth with OAuth2 + PKCE. No analytics, no third-party SDKs, no accounts beyond the ones you connect.
+## What is available
 
-## Availability
+- **Mail:** connect a TLS or STARTTLS IMAP account, manually refresh the latest 100 envelopes in each folder, and open a message to download its body. Cached messages remain readable offline. A changed mailbox UIDVALIDITY preserves old messages in a separate local archive. Sending, mailbox administration and background/IDLE sync are not exposed in the production UI.
+- **Calendar and contacts:** browse cached/local records and manually pull configured Nextcloud DAV collections. Source ICS/vCard fields and resource identities are preserved. Full editing/import screens remain outside the current production interface.
+- **Tasks:** browse tasks and mark them complete, including repeat-after-completion tasks. Completion updates local ICS and queues a conditional server write. Task creation/editing UI is deferred.
+- **Notes:** create and edit local or Nextcloud notes, including checklists, favorites and per-note device authentication. Drafts remain visible after save failure. A lock controls access in this app; it does not encrypt the SQLite database or the server copy.
+- **Reminders:** show upcoming saved event reminders and task deadlines; request notification permission and reload the schedule. Android uses inexact scheduling when exact-alarm permission is unavailable. Device alarm/background/DST operation still requires acceptance testing.
+- **Feeds:** add or remove an HTTPS RSS/Atom feed and refresh local subscriptions, or refresh Nextcloud News from Accounts. Read cached articles as text. Read state is local; automatic polling and server read-state mirroring are deferred.
+- **Accounts and settings:** verify incoming access before enabling an account, retain credentials in platform secure storage, manually sync, disconnect while keeping cached data, use device-authenticated app lock, and import/export non-sensitive preferences.
 
-Établi courrier v0.1.0 is **released as an Android development build**. App Store, Google Play, and F-Droid releases are planned.
+Microsoft 365 OAuth remains an unenabled provider module pending project-owned tenant registration and device validation. It is not an available account type in this production screen. SMTP/OAuth implementation tests do not establish a usable sending or sign-in journey.
 
-- **Android:** install the signed split-per-ABI **APK** from **[GitHub Releases v0.1.0](https://github.com/etabli-dev/etabli-courrier/releases/tag/v0.1.0)**. Verify with the published `SHA256SUMS.txt`.
-- **App Store (iOS):** planned — not yet available.
-- **Google Play:** planned — not yet available.
-- **F-Droid:** planned — `NonFreeNet` recipe ready in `fastlane/metadata/android/FDROID_NONFREENET.md`.
+## First use from source
 
-## Privacy
+Prerequisites: Flutter **3.47.9** / Dart **3.13.7**, Python 3, JDK **17**, Android SDK platform **36**, build-tools **35.0.0**, and an Android device/emulator for installation. Set `JAVA_HOME` and `ANDROID_HOME`; accept the SDK licenses. iOS additionally requires a full Xcode installation and a suitable destination.
 
-No analytics. No third-party SDKs that collect data. No accounts beyond the ones the user chooses to connect. All content stays on device and on the user's chosen Nextcloud / M365 / IMAP account. OAuth tokens and passwords live only in the platform secure store (iOS Keychain / Android `EncryptedSharedPreferences`). Settings export only carries non-sensitive preferences.
-
-The Microsoft 365 provider is optional and triggers F-Droid's `NonFreeNet` anti-feature — users who never connect M365 never reach proprietary endpoints.
-
-## Documentation
-
-Hosted site: **<https://etabli-dev.github.io/etabli-courrier/>** — built with Quarto by `.github/workflows/pages.yml` from the [`docs/`](docs/) tree on every push to `main`.
-
-## Repository layout
-
-```
-lib/         app, modules, shell, core
-android/     Android runner
-ios/         iOS runner (planned)
-docs/        Quarto site source — en/, theme/, assets/, _quarto.yml
-fastlane/    store + F-Droid listing metadata
-test/        208 unit + integration tests
-assets/      sample content (bundled holidays, demo mail, etc.)
-.fdroid.yml  (planned — F-Droid main-repo submission)
+```sh
+flutter pub get --enforce-lockfile
+python3 tool/check_licenses.py
+flutter analyze --no-pub
+flutter test --no-pub
+flutter build apk --debug --no-pub --target-platform android-arm64
+adb install -r build/app/outputs/flutter-apk/app-debug.apk
+# Or run on a connected development device:
+flutter run
 ```
 
-## Tech
+Open the app to explore the bundled offline examples. On phones, **More** opens the complete module list; wider screens use the side rail. In **Notes**, open the sample note, edit it, save, and reopen it. In **Accounts**, connect your canonical HTTPS Nextcloud base URL (including any installation subfolder), username and app password, then select **Refresh**. Notes and News need the corresponding server apps. For IMAP use autoconfiguration or explicit secure host/port settings; credentials are sent only after TLS/STARTTLS establishes transport protection.
 
-Dart 3.x · Flutter · `drift` (SQLite) · `enough_mail` (MPL-2.0, the only MPL dep) · `flutter_appauth` (OAuth2 PKCE) · `flutter_local_notifications` · `flutter_secure_storage` · `local_auth` · hand-rolled CalDAV / CardDAV / iCal RFC 5545 / vCard RFC 6350 layers · `rrule` for recurrence · Nextcloud Notes REST · Nextcloud News API. **Forbidden:** `msal_auth` and any wrapper of Microsoft's proprietary MSAL binary.
+Sync is explicit. Errors preserve cached records and pending edits. **Accounts → Pending edits / recovery** can preserve a conflicted local record in a separate offline collection before a full server reload. It never forces an overwrite of an unseen remote version. A failed create whose response was lost requires review, because the server may already have accepted it.
 
-## Support development
+## Data, privacy and recovery
 
-- 💚 **[Liberapay](https://liberapay.com/rabanheller/)** — recurring, 0% commission. To be shown on the F-Droid listing once published.
+No analytics or author-operated account service is configured. Connected servers and feed URLs receive their requested network traffic; mail autoconfiguration contacts provider discovery services. Application dependencies are listed in `pubspec.lock` and the license manifest. Passwords/tokens use platform secure storage; the content database itself is not encrypted by this app. App lock and note lock use the device authentication prompt.
+
+Authenticated HTTP requests require HTTPS, reject cross-origin redirects, and enforce response-size/time bounds. Disconnection keeps cached content. Android automatic backup/device-transfer is excluded to avoid copying private content or restoring unusable secure-store keys. Settings JSON is **not** a content backup and cannot change lock state or include credentials. Full content backup/export is deferred; retain server-side backups and do not uninstall an app containing unique local data.
+
+The schema-2 upgrade adds DAV resource hrefs while retaining existing records. It resets old DAV tokens so the next sync can fetch the resources that earlier builds never ingested. Migration, rollback, recovery and failed-write behavior have local SQLite tests; an installed-device upgrade is a separate gate.
+
+## Verification and release preparation
+
+See [the refinement record](docs/refinement-2026-10.md) for exact observed checks, findings and remaining requirements, and [BUILD_LOG](BUILD_LOG.md) for the reason-first repair history.
+
+CI is pinned to the tested Flutter version and uses frozen dependency resolution, analysis, tests, license verification, Android builds and lint, plus an unsigned iOS build. These new workflows have not run remotely. The live Nextcloud integration test is intentionally conditional on test-account configuration; a skipped test is not live-service evidence.
+
+```sh
+# Produces an unsigned bundle when no private keystore is configured:
+flutter build appbundle --release --no-pub
+(cd android && ./gradlew --no-daemon :flutter_local_notifications:testDebugUnitTest :app:lintDebug)
+# Xcode required; not locally verified here:
+flutter build ios --debug --no-codesign --no-pub
+```
+
+For signing, create the ignored `android/keystore.properties` with `storeFile`, `storePassword`, `keyAlias` and `keyPassword`. Paths are relative to `android/`. A release never falls back to the debug key. The manual **Prepare signed release artifacts** workflow requires the four documented `COURRIER_*` repository environment secrets; it prepares artifacts without publishing them. First complete live-service/device/upgrade checks, review the signed package and notices, then authorize publication with a new version. Preserve existing tags and releases.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party provenance in [THIRD_PARTY_REFERENCES.md](THIRD_PARTY_REFERENCES.md). The clean-room posture (which GPL refs were consulted vs which MPL deps are linked) is in [LICENSING.md](LICENSING.md).
+[Apache-2.0](LICENSE). [NOTICE](NOTICE), [resolved license texts](THIRD_PARTY_LICENSES.md), [licensing process](LICENSING.md), and [source provenance](THIRD_PARTY_REFERENCES.md). `enough_mail`, `enough_convert` and desktop-only `dbus` are resolved MPL-2.0 dependencies; native plugin SDKs retain their own notices.
 
 Copyright 2026 R. Heller.

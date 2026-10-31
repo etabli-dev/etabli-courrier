@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'core/bootstrap/sample_content_installer.dart';
 import 'core/db/database.dart';
+import 'core/lock/app_security.dart';
 import 'core/theme/app_theme.dart';
 import 'dev/demo_app.dart';
 import 'dev/demo_services.dart';
@@ -27,28 +28,90 @@ Future<void> main() async {
     runApp(DemoApp(services: services));
     return;
   }
-  final db = CourrierDatabase();
-  await const SampleContentInstaller().installIfMissing(db);
-  runApp(CourrierApp(database: db));
+  runApp(const CourrierBootstrap());
 }
 
 class CourrierApp extends StatelessWidget {
-  const CourrierApp({this.database, super.key});
+  const CourrierApp({required this.database, super.key});
 
-  /// Provided by `main()` so the M11 shell-wiring milestone can reach it
-  /// without re-opening another CourrierDatabase. Tests + the legacy widget
-  /// test path can omit it (the shell uses placeholders for module screens
-  /// when no database is attached — see destinations.dart).
-  final CourrierDatabase? database;
+  final CourrierDatabase database;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'courrier',
+      builder: (context, child) =>
+          AppLockHost(child: child ?? const SizedBox.shrink()),
       debugShowCheckedModeBanner: false,
       theme: CourrierTheme.light(),
       darkTheme: CourrierTheme.dark(),
-      home: const AppShell(),
+      home: AppShell(database: database),
     );
   }
+}
+
+class CourrierBootstrap extends StatefulWidget {
+  const CourrierBootstrap({super.key});
+  @override
+  State<CourrierBootstrap> createState() => _CourrierBootstrapState();
+}
+
+class _CourrierBootstrapState extends State<CourrierBootstrap> {
+  CourrierDatabase? _database;
+  bool _ready = false;
+  String? _error;
+  @override
+  void initState() {
+    super.initState();
+    _open();
+  }
+
+  Future<void> _open() async {
+    setState(() => _error = null);
+    try {
+      await _database?.close();
+      final db = _database = CourrierDatabase();
+      await const SampleContentInstaller().installIfMissing(db);
+      if (mounted) setState(() => _ready = true);
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => _error =
+              'Could not open the local database. Free storage if necessary, then retry. Existing files have been retained.',
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _database?.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _ready
+      ? CourrierApp(database: _database!)
+      : MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: _error == null
+                    ? const CircularProgressIndicator()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_error!),
+                          const SizedBox(height: 16),
+                          FilledButton(
+                            onPressed: _open,
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        );
 }

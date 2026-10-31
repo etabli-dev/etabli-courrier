@@ -30,11 +30,11 @@ class _FakeBackend implements MailBackend {
     required List<FlagUpdate> updates,
   }) async {}
   @override
-  Future<void> moveMessages({
+  Future<MailMoveResult> moveMessages({
     required String sourceFolder,
     required String destinationFolder,
     required List<int> uids,
-  }) async {}
+  }) async => MailMoveResult(uids: {for (final uid in uids) uid: uid});
   @override
   Future<void> expungeTrash({required String trashFolderName}) async {}
   @override

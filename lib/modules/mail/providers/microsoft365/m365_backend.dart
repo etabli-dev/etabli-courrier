@@ -108,11 +108,13 @@ class M365Backend implements MailBackend {
   /// performs one silent refresh + retry. Subsequent failures classify the
   /// tenant state and re-throw.
   Future<T> _withRefreshRetry<T>(Future<T> Function() body) async {
-    try {
-      final current = _bundle;
-      if (current != null && current.willExpireSoon()) {
-        await silentReconnect();
+    final current = _bundle;
+    if (current != null && current.willExpireSoon()) {
+      if (await silentReconnect() is! TenantConnected) {
+        throw const UnauthorizedError();
       }
+    }
+    try {
       return await body();
     } on UnauthorizedError {
       final next = await silentReconnect();
@@ -172,7 +174,7 @@ class M365Backend implements MailBackend {
   );
 
   @override
-  Future<void> moveMessages({
+  Future<MailMoveResult> moveMessages({
     required String sourceFolder,
     required String destinationFolder,
     required List<int> uids,

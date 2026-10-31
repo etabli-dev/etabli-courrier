@@ -39,9 +39,11 @@ class DavResource {
     required this.href,
     required this.properties,
     required this.resourceTypes,
+    this.statusCode,
   });
 
   final String href;
+  final int? statusCode;
   final Map<DavPropertyKey, String> properties;
 
   /// Element names found inside `<resourcetype>` (e.g. `calendar`, `collection`,
@@ -96,9 +98,15 @@ class Multistatus {
   Multistatus(this.resources);
 
   factory Multistatus.parse(String xml) {
+    if (xml.toUpperCase().contains('<!DOCTYPE') ||
+        xml.toUpperCase().contains('<!ENTITY')) {
+      throw const FormatException(
+        'DTD and entity declarations are not supported.',
+      );
+    }
     final document = XmlDocument.parse(xml);
     final root = document.rootElement;
-    if (root.localName != 'multistatus') {
+    if (root.localName != 'multistatus' || root.namespaceUri != DavNs.dav) {
       throw FormatException(
         'Expected <multistatus> root, got <${root.qualifiedName}>',
       );
@@ -175,6 +183,16 @@ class Multistatus {
       resources.add(
         DavResource(
           href: href,
+          statusCode: int.tryParse(
+            response
+                    .findElements('status', namespace: DavNs.dav)
+                    .firstOrNull
+                    ?.innerText
+                    .trim()
+                    .split(RegExp(r'\s+'))
+                    .elementAtOrNull(1) ??
+                '',
+          ),
           properties: props,
           resourceTypes: resourceTypes,
         ),
@@ -189,6 +207,12 @@ class Multistatus {
   /// Distinct from the per-resource sync-token property (which doesn't appear
   /// in sync-collection responses anyway).
   static String? extractSyncToken(String xml) {
+    if (xml.toUpperCase().contains('<!DOCTYPE') ||
+        xml.toUpperCase().contains('<!ENTITY')) {
+      throw const FormatException(
+        'DTD and entity declarations are not supported.',
+      );
+    }
     final document = XmlDocument.parse(xml);
     final root = document.rootElement;
     final element = root

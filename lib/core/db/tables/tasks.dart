@@ -12,6 +12,7 @@ class TodoItems extends Table {
 
   TextColumn get uid => text()();
   TextColumn get etag => text().nullable()();
+  TextColumn get remoteHref => text().nullable()();
 
   TextColumn get summary => text().nullable()();
   TextColumn get description => text().nullable()();

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
+import '../../../core/net/bounded_http.dart';
 import '../../../core/net/dav/dav_client.dart' show DavCredentials;
 import '../../../core/net/net_error.dart';
 
@@ -96,14 +97,17 @@ class NextcloudNewsClient {
     required this.baseUrl,
     required this.credentials,
     http.Client? httpClient,
-  }) : _http = httpClient ?? http.Client();
+  }) : _http = BoundedClient(origin: baseUrl, client: httpClient);
 
   final Uri baseUrl;
   final DavCredentials credentials;
   final http.Client _http;
 
-  Uri _endpoint(String suffix) =>
-      baseUrl.resolve('/index.php/apps/news/api/v1-2$suffix');
+  void close() => _http.close();
+
+  Uri _endpoint(String suffix) => serverBase(
+    baseUrl.toString(),
+  ).resolve('index.php/apps/news/api/v1-2$suffix');
 
   Map<String, String> _headers() => {
     'authorization': credentials.basicAuthHeader,

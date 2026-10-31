@@ -20,7 +20,7 @@ format:
 
 website:
   title: "Établi courrier"
-  description: "Privacy-first, offline-first FOSS alternative to the Outlook mobile app — email, calendar, contacts, tasks, reminders, notes, and RSS in one Flutter binary."
+  description: "Offline communication workspace with manual Nextcloud sync, IMAP reading, notes and feeds. Local development candidate; sending and Microsoft 365 activation are deferred."
   reader-mode: true
   back-to-top-navigation: true
   navbar:

@@ -62,19 +62,17 @@ class TaskListView extends StatelessWidget {
       }
     }
     final result = <_FlatRow>[];
-    void visit(TodoItem task, int depth) {
-      result.add(_FlatRow(task: task, depth: depth));
-      final kids = childrenOf[task.uid];
-      if (kids == null) {
-        return;
+    final visited = <int>{};
+    for (final root in [...roots, ...tasks]) {
+      final stack = <(TodoItem, int)>[(root, 0)];
+      while (stack.isNotEmpty) {
+        final (task, depth) = stack.removeLast();
+        if (!visited.add(task.id)) continue;
+        result.add(_FlatRow(task: task, depth: depth.clamp(0, 10)));
+        for (final child in (childrenOf[task.uid] ?? <TodoItem>[]).reversed) {
+          stack.add((child, depth + 1));
+        }
       }
-      for (final kid in kids) {
-        visit(kid, depth + 1);
-      }
-    }
-
-    for (final root in roots) {
-      visit(root, 0);
     }
     return result;
   }

@@ -4,6 +4,7 @@ import '../../../core/db/database.dart';
 import '../../../core/ical/ical_property.dart';
 import '../../../core/ical/ical_reader.dart';
 import '../../../core/ical/ical_writer.dart';
+import '../../../core/sync/change_queue.dart';
 import 'task_draft.dart';
 import 'task_serializer.dart';
 
@@ -36,7 +37,7 @@ class TaskRepository {
 
   // ---- CRUD ---------------------------------------------------------------
 
-  Future<int> createTask(TaskDraft draft) async {
+  Future<int> createTask(TaskDraft draft) => db.transaction(() async {
     final uid = draft.uid ?? _uidGenerator();
     final ics = _serializer.render(draft, uid: uid);
     final id = await db
@@ -63,41 +64,48 @@ class TaskRepository {
       payload: ics,
     );
     return id;
-  }
+  });
 
-  Future<void> updateTask(int taskId, TaskDraft draft) async {
-    final existing = await (db.select(
-      db.todoItems,
-    )..where((t) => t.id.equals(taskId))).getSingleOrNull();
-    if (existing == null) {
-      throw StateError('Task $taskId not found');
-    }
-    final uid = existing.uid;
-    final patched = _patchExistingIcs(existing.rawIcs, draft, uid: uid);
-    await (db.update(db.todoItems)..where((t) => t.id.equals(taskId))).write(
-      TodoItemsCompanion(
-        summary: Value(draft.summary),
-        description: Value(draft.description),
-        due: Value(draft.due),
-        priority: Value(draft.priority),
-        percentComplete: Value(draft.percentComplete),
-        rrule: Value(draft.rrule),
-        repeatAfterCompletion: Value(draft.repeatAfterCompletion),
-        parentUid: Value(draft.parentUid),
-        rawIcs: Value(patched),
-        lastModified: Value(DateTime.now()),
-      ),
-    );
-    await _enqueue(
-      accountId: await _accountIdForCollection(draft.collectionId),
-      taskId: taskId,
-      operation: 'update',
-      payload: patched,
-      baseEtag: existing.etag,
-    );
-  }
+  Future<void> updateTask(int taskId, TaskDraft draft) => db.transaction(
+    () async {
+      final existing = await (db.select(
+        db.todoItems,
+      )..where((t) => t.id.equals(taskId))).getSingleOrNull();
+      if (existing == null) {
+        throw StateError('Task $taskId not found');
+      }
+      if (existing.collectionId != draft.collectionId) {
+        throw ArgumentError(
+          'Cannot move a task between collections through an edit.',
+        );
+      }
+      final uid = existing.uid;
+      final patched = _patchExistingIcs(existing.rawIcs, draft, uid: uid);
+      await (db.update(db.todoItems)..where((t) => t.id.equals(taskId))).write(
+        TodoItemsCompanion(
+          summary: Value(draft.summary),
+          description: Value(draft.description),
+          due: Value(draft.due),
+          priority: Value(draft.priority),
+          percentComplete: Value(draft.percentComplete),
+          rrule: Value(draft.rrule),
+          repeatAfterCompletion: Value(draft.repeatAfterCompletion),
+          parentUid: Value(draft.parentUid),
+          rawIcs: Value(patched),
+          lastModified: Value(DateTime.now()),
+        ),
+      );
+      await _enqueue(
+        accountId: await _accountIdForCollection(draft.collectionId),
+        taskId: taskId,
+        operation: 'update',
+        payload: patched,
+        baseEtag: existing.etag,
+      );
+    },
+  );
 
-  Future<void> deleteTask(int taskId) async {
+  Future<void> deleteTask(int taskId) => db.transaction(() async {
     final existing = await (db.select(
       db.todoItems,
     )..where((t) => t.id.equals(taskId))).getSingleOrNull();
@@ -113,7 +121,7 @@ class TaskRepository {
       operation: 'delete',
       baseEtag: existing.etag,
     );
-  }
+  });
 
   // ---- Completion (with both recurrence modes) ----------------------------
 
@@ -125,7 +133,10 @@ class TaskRepository {
   ///     in `RRULE` (FREQ=DAILY/WEEKLY/MONTHLY/YEARLY + INTERVAL), percent
   ///     reset to 0, completion timestamp persisted in the rawIcs
   ///     `LAST-COMPLETED` so the next sync surfaces the chain.
-  Future<TaskCompletionOutcome> completeTask(int taskId, {DateTime? at}) async {
+  Future<TaskCompletionOutcome> completeTask(
+    int taskId, {
+    DateTime? at,
+  }) => db.transaction(() async {
     final existing = await (db.select(
       db.todoItems,
     )..where((t) => t.id.equals(taskId))).getSingleOrNull();
@@ -134,30 +145,54 @@ class TaskRepository {
     }
     final now = at?.toUtc() ?? DateTime.now().toUtc();
 
+    final tree = _reader.parse(existing.rawIcs);
+    final todo = tree.firstChild('VTODO');
+    if (todo == null) {
+      throw const FormatException('Task is missing its VTODO component.');
+    }
     if (!existing.repeatAfterCompletion) {
+      todo
+        ..setSingle(IcalProperty(name: 'PERCENT-COMPLETE', value: '100'))
+        ..setSingle(IcalProperty(name: 'STATUS', value: 'COMPLETED'))
+        ..setSingle(IcalProperty(name: 'COMPLETED', value: _formatUtc(now)));
+      final raw = _writer.render(tree);
       await (db.update(db.todoItems)..where((t) => t.id.equals(taskId))).write(
         TodoItemsCompanion(
           percentComplete: const Value(100),
           completed: Value(now),
+          rawIcs: Value(raw),
           lastModified: Value(DateTime.now()),
         ),
       );
+      await _enqueue(
+        accountId: await _accountIdForCollection(existing.collectionId),
+        taskId: taskId,
+        operation: 'update',
+        payload: raw,
+        baseEtag: existing.etag,
+      );
       return const TaskCompletionOutcome();
     }
-
     final next = _advanceDue(existing.rrule, existing.due, now);
     final patched = _patchCompletionInIcs(existing.rawIcs, next, now);
     await (db.update(db.todoItems)..where((t) => t.id.equals(taskId))).write(
       TodoItemsCompanion(
         percentComplete: const Value(0),
-        completed: Value(now),
+        completed: const Value(null),
         due: Value(next),
         rawIcs: Value(patched),
         lastModified: Value(DateTime.now()),
       ),
     );
+    await _enqueue(
+      accountId: await _accountIdForCollection(existing.collectionId),
+      taskId: taskId,
+      operation: 'update',
+      payload: patched,
+      baseEtag: existing.etag,
+    );
     return TaskCompletionOutcome(advancedTo: next);
-  }
+  });
 
   // ---- Queries ------------------------------------------------------------
 
@@ -299,7 +334,9 @@ class TaskRepository {
     if (vtodo == null) {
       return existing;
     }
+    vtodo.properties.removeWhere((p) => p.name == 'COMPLETED');
     vtodo
+      ..setSingle(IcalProperty(name: 'STATUS', value: 'NEEDS-ACTION'))
       ..setSingle(IcalProperty(name: 'PERCENT-COMPLETE', value: '0'))
       ..setSingle(
         IcalProperty(name: 'LAST-COMPLETED', value: _formatUtc(completedAt)),
@@ -328,6 +365,9 @@ class TaskRepository {
     }
     final freq = parts['FREQ']?.toUpperCase();
     final interval = int.tryParse(parts['INTERVAL'] ?? '1') ?? 1;
+    if (interval < 1 || interval > 10000) {
+      throw const FormatException('Invalid recurrence interval.');
+    }
     final base = currentDue ?? now;
     final reference = base.isBefore(now) ? now : base;
     switch (freq) {
@@ -371,20 +411,15 @@ class TaskRepository {
     required String operation,
     String? payload,
     String? baseEtag,
-  }) async {
-    await db
-        .into(db.pendingChanges)
-        .insert(
-          PendingChangesCompanion.insert(
-            accountId: accountId,
-            entityTable: 'todo_items',
-            entityId: taskId,
-            operation: operation,
-            baseEtag: Value(baseEtag),
-            payload: Value(payload),
-          ),
-        );
-  }
+  }) => enqueueChange(
+    db,
+    accountId: accountId,
+    table: 'todo_items',
+    entityId: taskId,
+    operation: operation,
+    payload: payload,
+    baseEtag: baseEtag,
+  );
 
   String _formatUtc(DateTime dt) {
     final yyyy = dt.year.toString().padLeft(4, '0');

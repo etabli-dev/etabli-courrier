@@ -44,6 +44,7 @@ class ImapMailBackend implements MailBackend {
   Future<void> connect(MailCredentials credentials) async {
     try {
       await _client.connectToServer(host, port, isSecure: isSecure);
+      if (!isSecure) await _client.startTls();
       switch (credentials) {
         case PasswordCredentials():
           await _client.login(credentials.username, credentials.password);
@@ -62,7 +63,11 @@ class ImapMailBackend implements MailBackend {
   @override
   Future<void> disconnect() async {
     try {
+      await stopIdle();
       await _client.disconnect();
+      _selectedFolder = null;
+      _selectedMailbox = null;
+      _credentials = null;
     } on ImapException {
       // Tearing down anyway — surface no error.
     }
@@ -137,6 +142,7 @@ class ImapMailBackend implements MailBackend {
       );
     }
     return MailBodyPayload(
+      uidValidity: _selectedMailbox?.uidValidity,
       textPart: text,
       htmlPart: html,
       attachments: attachments,
@@ -161,20 +167,54 @@ class ImapMailBackend implements MailBackend {
   }
 
   @override
-  Future<void> moveMessages({
+  Future<MailMoveResult> moveMessages({
     required String sourceFolder,
     required String destinationFolder,
     required List<int> uids,
   }) async {
+    if (uids.isEmpty) return const MailMoveResult(uids: {});
+    if (!_client.serverInfo.supportsMove ||
+        !_client.serverInfo.supportsUidPlus) {
+      throw UnsupportedError('Safe moves require IMAP MOVE and UIDPLUS.');
+    }
     await _selectFolder(sourceFolder);
     final sequence = MessageSequence.fromIds(uids, isUid: true);
-    await _client.uidMove(sequence, targetMailboxPath: destinationFolder);
+    final result = await _client.uidMove(
+      sequence,
+      targetMailboxPath: destinationFolder,
+    );
+    final copy = result.responseCodeCopyUid;
+    final source = copy?.originalSequence?.toList();
+    final target = copy?.targetSequence.toList();
+    if (source == null ||
+        target == null ||
+        source.length != target.length ||
+        source.toSet().length != uids.toSet().length ||
+        !source.toSet().containsAll(uids)) {
+      throw StateError(
+        'Server moved messages without a complete UID mapping. Refresh both folders before retrying.',
+      );
+    }
+    return MailMoveResult(
+      uids: Map.fromIterables(source, target),
+      uidValidity: copy!.uidValidity,
+    );
   }
 
   @override
   Future<void> expungeTrash({required String trashFolderName}) async {
     await _selectFolder(trashFolderName);
-    await _client.expunge();
+    final found = await _client.uidSearchMessages(searchCriteria: 'ALL');
+    final ids = found.matchingSequence?.toList() ?? <int>[];
+    if (ids.isEmpty) return;
+    if (!_client.serverInfo.supportsUidPlus) {
+      throw UnsupportedError('Safe empty-trash requires IMAP UIDPLUS.');
+    }
+    final sequence = MessageSequence.fromIds(ids, isUid: true);
+    await _client.uidStore(sequence, [
+      MessageFlags.deleted,
+    ], action: StoreAction.add);
+    await _client.uidExpunge(sequence);
   }
 
   @override
@@ -288,6 +328,7 @@ class ImapMailBackend implements MailBackend {
       return null;
     }
     return MailEnvelope(
+      uidValidity: _selectedMailbox?.uidValidity,
       uid: uid,
       subject: m.decodeSubject(),
       fromAddress: m.fromEmail,

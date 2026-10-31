@@ -1,5 +1,5 @@
 name: courrier
-description: "Privacy-first, offline-first FOSS alternative to the Outlook mobile app — mail, calendar, contacts, tasks, reminders, notes, RSS — syncing to self-hosted Nextcloud, with Microsoft 365 mail as a first-class account type. Member of the Établi Suite."
+description: "Offline communication workspace with manual Nextcloud synchronization, IMAP reading, notes, tasks, reminders and feeds. Member of the Établi Suite."
 publish_to: 'none'
 
 version: 0.1.0+1
@@ -18,8 +18,10 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_appauth: ^9.0.0
-  flutter_local_notifications: ^20.1.0
+  flutter_local_notifications:
+    path: third_party/flutter_local_notifications
   flutter_secure_storage: ^10.0.0
+  flutter_timezone: 5.1.1
   html: ^0.15.4
   http: ^1.2.0
   intl: ^0.19.0
@@ -30,7 +32,7 @@ dependencies:
   rrule: ^0.2.16
   shared_preferences: ^2.3.0
   sqlite3_flutter_libs: ^0.5.24
-  timezone: ^0.10.0
+  timezone: ^0.11.2
   xml: ^6.5.0
 
 dev_dependencies:

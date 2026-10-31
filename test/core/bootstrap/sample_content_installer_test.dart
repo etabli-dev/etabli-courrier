@@ -23,8 +23,34 @@ class _RepoAssetBundle extends CachingAssetBundle {
 
 CourrierDatabase _db() => CourrierDatabase.forTesting(NativeDatabase.memory());
 
+class _MissingBundle extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) async => throw FlutterError('Missing $key');
+}
+
 void main() {
   group('SampleContentInstaller', () {
+    test(
+      'failed first launch rolls back and a later launch can retry',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        await expectLater(
+          SampleContentInstaller(bundle: _MissingBundle()).installIfMissing(db),
+          throwsA(isA<FlutterError>()),
+        );
+        expect(await db.select(db.accounts).get(), isEmpty);
+        expect(await db.select(db.collections).get(), isEmpty);
+        expect(await db.select(db.pendingChanges).get(), isEmpty);
+        expect(
+          await SampleContentInstaller(
+            bundle: _RepoAssetBundle(),
+          ).installIfMissing(db),
+          isTrue,
+        );
+        expect(await db.select(db.noteItems).get(), hasLength(2));
+      },
+    );
     test('seeds local account + holidays + welcome notes + sample feed on '
         'a fresh database', () async {
       final db = _db();

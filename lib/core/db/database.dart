@@ -44,7 +44,7 @@ class CourrierDatabase extends _$CourrierDatabase {
   CourrierDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -52,8 +52,15 @@ class CourrierDatabase extends _$CourrierDatabase {
       await m.createAll();
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      // No upgrades yet — schema_v1 is the M1 surface. Subsequent
-      // milestones add migrations and a step is added here for each.
+      if (from < 2) {
+        await m.addColumn(calendarEvents, calendarEvents.remoteHref);
+        await m.addColumn(contactCards, contactCards.remoteHref);
+        await m.addColumn(todoItems, todoItems.remoteHref);
+        // The old pull advanced tokens without ingesting any records.
+        await customStatement(
+          'UPDATE collections SET sync_token = NULL WHERE kind IN (\'calendar\', \'contacts\', \'tasks\')',
+        );
+      }
     },
     beforeOpen: (OpeningDetails details) async {
       await customStatement('PRAGMA foreign_keys = ON');

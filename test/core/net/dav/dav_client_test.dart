@@ -172,7 +172,10 @@ void main() {
           attempt += 1;
           if (attempt == 1) {
             expect(request.body.contains('stale-token'), isTrue);
-            return http.Response('', 403);
+            return http.Response(
+              '<d:error xmlns:d="DAV:"><d:valid-sync-token/></d:error>',
+              403,
+            );
           }
           // Second attempt MUST send an empty sync-token element.
           expect(request.body.contains('<D:sync-token/>'), isTrue);

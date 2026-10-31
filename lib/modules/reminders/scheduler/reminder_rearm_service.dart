@@ -8,8 +8,8 @@ import 'notification_scheduler.dart';
 //   * after the Android BOOT_COMPLETED receiver pushes us back into memory,
 //   * on demand from Settings → Reminders → "Reload" (M11).
 //
-// The rearm is idempotent: cancelAll() wipes whatever the OS is holding, then
-// we walk EventReminders + tasks-with-due-date and schedule each one.
+// Build the complete plan before changing OS state. Schedule replacements
+// before cancelling stale IDs so a failed reload cannot wipe working alarms.
 
 class ReminderRearmService {
   ReminderRearmService({
@@ -22,25 +22,47 @@ class ReminderRearmService {
   final NotificationScheduler scheduler;
   final DateTime Function() _now;
 
-  /// Returns the number of notifications armed.
-  Future<int> rearmAll({Duration horizon = const Duration(days: 30)}) async {
-    await scheduler.cancelAll();
-    final now = _now();
-    final cutoff = now.add(horizon);
+  Future<int>? _inFlight;
 
-    var armed = 0;
-    armed += await _rearmEventReminders(now: now, cutoff: cutoff);
-    armed += await _rearmTaskDueDates(now: now, cutoff: cutoff);
-    return armed;
+  /// Returns the number of notifications armed; concurrent reloads share work.
+  Future<int> rearmAll({Duration horizon = const Duration(days: 30)}) {
+    return _inFlight ??= _rearm(horizon).whenComplete(() => _inFlight = null);
   }
 
-  Future<int> _rearmEventReminders({
+  Future<int> _rearm(Duration horizon) async {
+    final desired = await upcoming(horizon: horizon);
+    final existing = await scheduler.scheduledIds();
+    for (final notification in desired) {
+      await scheduler.schedule(notification);
+    }
+    final desiredIds = desired.map((n) => n.id).toSet();
+    for (final id in existing) {
+      if (!desiredIds.contains(id)) await scheduler.cancel(id);
+    }
+    return desired.length;
+  }
+
+  Future<List<ScheduledNotification>> upcoming({
+    Duration horizon = const Duration(days: 30),
+  }) => db.transaction(() async {
+    if (horizon.isNegative) throw ArgumentError.value(horizon, 'horizon');
+    final now = _now();
+    final cutoff = now.add(horizon);
+    final result = [
+      ...await _eventReminders(now: now, cutoff: cutoff),
+      ...await _taskDueDates(now: now, cutoff: cutoff),
+    ];
+    result.sort((a, b) => a.fireAt.compareTo(b.fireAt));
+    return result;
+  });
+
+  Future<List<ScheduledNotification>> _eventReminders({
     required DateTime now,
     required DateTime cutoff,
   }) async {
     final reminders = await db.select(db.eventReminders).get();
     if (reminders.isEmpty) {
-      return 0;
+      return [];
     }
     final eventIds = reminders.map((r) => r.eventId).toSet().toList();
     final events =
@@ -50,7 +72,7 @@ class ReminderRearmService {
             .get();
     final eventsById = {for (final e in events) e.id: e};
 
-    var armed = 0;
+    final result = <ScheduledNotification>[];
     for (final reminder in reminders) {
       final event = eventsById[reminder.eventId];
       if (event == null) {
@@ -60,7 +82,7 @@ class ReminderRearmService {
       if (fireAt == null || fireAt.isBefore(now) || fireAt.isAfter(cutoff)) {
         continue;
       }
-      await scheduler.schedule(
+      result.add(
         ScheduledNotification(
           id: _eventReminderId(reminder.id),
           title: event.summary ?? 'Reminder',
@@ -69,12 +91,11 @@ class ReminderRearmService {
           label: reminder.label,
         ),
       );
-      armed += 1;
     }
-    return armed;
+    return result;
   }
 
-  Future<int> _rearmTaskDueDates({
+  Future<List<ScheduledNotification>> _taskDueDates({
     required DateTime now,
     required DateTime cutoff,
   }) async {
@@ -87,13 +108,13 @@ class ReminderRearmService {
                   t.due.isBetweenValues(now, cutoff),
             ))
             .get();
-    var armed = 0;
+    final result = <ScheduledNotification>[];
     for (final task in tasks) {
       final due = task.due;
       if (due == null) {
         continue;
       }
-      await scheduler.schedule(
+      result.add(
         ScheduledNotification(
           id: _taskDueId(task.id),
           title: task.summary ?? 'Task due',
@@ -101,9 +122,8 @@ class ReminderRearmService {
           fireAt: due,
         ),
       );
-      armed += 1;
     }
-    return armed;
+    return result;
   }
 
   DateTime? _eventReminderFireTime({

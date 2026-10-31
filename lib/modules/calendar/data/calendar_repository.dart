@@ -4,6 +4,7 @@ import '../../../core/db/database.dart';
 import '../../../core/ical/ical_property.dart';
 import '../../../core/ical/ical_reader.dart';
 import '../../../core/ical/ical_writer.dart';
+import '../../../core/sync/change_queue.dart';
 import 'event_draft.dart';
 import 'event_serializer.dart';
 
@@ -28,7 +29,7 @@ class CalendarRepository {
 
   // ---- CRUD ---------------------------------------------------------------
 
-  Future<int> createEvent(EventDraft draft) async {
+  Future<int> createEvent(EventDraft draft) => db.transaction(() async {
     final uid = draft.uid ?? _uidGenerator();
     final ics = _serializer.renderIcs(draft, uid: uid);
     final eventId = await db
@@ -58,46 +59,79 @@ class CalendarRepository {
       payload: ics,
     );
     return eventId;
-  }
+  });
 
-  Future<void> updateEvent(int eventId, EventDraft draft) async {
-    final existing = await (db.select(
-      db.calendarEvents,
-    )..where((t) => t.id.equals(eventId))).getSingleOrNull();
-    if (existing == null) {
-      throw StateError('Event $eventId not found');
-    }
-    final uid = existing.uid;
-    final ics = _serializer.renderIcs(draft.copyWith(), uid: uid);
-    await (db.update(
-      db.calendarEvents,
-    )..where((t) => t.id.equals(eventId))).write(
-      CalendarEventsCompanion(
-        summary: Value(draft.summary),
-        location: Value(draft.location),
-        description: Value(draft.description),
-        dtstart: Value(draft.start),
-        dtend: Value(draft.end),
-        allDay: Value(draft.allDay),
-        rrule: Value(draft.rrule),
-        organizer: Value(draft.organizer),
-        attendeesJson: Value(_encodeAttendees(draft.attendees)),
-        rawIcs: Value(ics),
-        lastModified: Value(DateTime.now()),
-      ),
-    );
-    await _replaceReminders(eventId, draft);
-    await _replaceExdates(eventId, draft.exdates);
-    await _enqueueChange(
-      accountId: await _accountIdForCollection(draft.collectionId),
-      eventId: eventId,
-      operation: 'update',
-      payload: ics,
-      baseEtag: existing.etag,
-    );
-  }
+  Future<void> updateEvent(int eventId, EventDraft draft) =>
+      db.transaction(() async {
+        final existing = await (db.select(
+          db.calendarEvents,
+        )..where((t) => t.id.equals(eventId))).getSingleOrNull();
+        if (existing == null) {
+          throw StateError('Event $eventId not found');
+        }
+        final uid = existing.uid;
+        final replacement = _reader.parse(
+          _serializer.renderIcs(draft.copyWith(), uid: uid),
+        );
+        final original = _reader.parse(existing.rawIcs);
+        final events = original.childrenOf('VEVENT').toList();
+        final master =
+            events.where((e) => e.get('RECURRENCE-ID') == null).firstOrNull ??
+            events.firstOrNull;
+        final revised = replacement.firstChild('VEVENT')!;
+        if (master != null) {
+          const managed = {
+            'UID',
+            'DTSTAMP',
+            'DTSTART',
+            'DTEND',
+            'DURATION',
+            'SUMMARY',
+            'DESCRIPTION',
+            'LOCATION',
+            'RRULE',
+            'ORGANIZER',
+            'ATTENDEE',
+            'EXDATE',
+          };
+          revised.properties.addAll(
+            master.properties.where((p) => !managed.contains(p.name)),
+          );
+          final index = original.children.indexOf(master);
+          original.children[index] = revised;
+        } else {
+          original.children.add(revised);
+        }
+        final ics = _writer.render(original);
+        await (db.update(
+          db.calendarEvents,
+        )..where((t) => t.id.equals(eventId))).write(
+          CalendarEventsCompanion(
+            summary: Value(draft.summary),
+            location: Value(draft.location),
+            description: Value(draft.description),
+            dtstart: Value(draft.start),
+            dtend: Value(draft.end),
+            allDay: Value(draft.allDay),
+            rrule: Value(draft.rrule),
+            organizer: Value(draft.organizer),
+            attendeesJson: Value(_encodeAttendees(draft.attendees)),
+            rawIcs: Value(ics),
+            lastModified: Value(DateTime.now()),
+          ),
+        );
+        await _replaceReminders(eventId, draft);
+        await _replaceExdates(eventId, draft.exdates);
+        await _enqueueChange(
+          accountId: await _accountIdForCollection(draft.collectionId),
+          eventId: eventId,
+          operation: 'update',
+          payload: ics,
+          baseEtag: existing.etag,
+        );
+      });
 
-  Future<void> deleteEvent(int eventId) async {
+  Future<void> deleteEvent(int eventId) => db.transaction(() async {
     final existing = await (db.select(
       db.calendarEvents,
     )..where((t) => t.id.equals(eventId))).getSingleOrNull();
@@ -112,38 +146,40 @@ class CalendarRepository {
       operation: 'delete',
       baseEtag: existing.etag,
     );
-  }
+  });
 
   // ---- Recurrence: delete-occurrence (M3 spec) ----------------------------
 
   /// Add an EXDATE so a single occurrence stops appearing.
-  Future<void> deleteOccurrence(int eventId, DateTime occurrence) async {
-    await db
-        .into(db.eventRecurrenceOverrides)
-        .insert(
-          EventRecurrenceOverridesCompanion.insert(
-            eventId: eventId,
-            kind: 'EXDATE',
-            value: _formatUtcIcsDate(occurrence),
-          ),
-        );
-    await _rerenderIcsForEvent(eventId);
-  }
+  Future<void> deleteOccurrence(int eventId, DateTime occurrence) =>
+      db.transaction(() async {
+        await db
+            .into(db.eventRecurrenceOverrides)
+            .insert(
+              EventRecurrenceOverridesCompanion.insert(
+                eventId: eventId,
+                kind: 'EXDATE',
+                value: _formatUtcIcsDate(occurrence),
+              ),
+            );
+        await _rerenderIcsForEvent(eventId);
+      });
 
   /// "This and following" — truncate the RRULE with UNTIL = occurrence - 1 sec.
-  Future<void> deleteThisAndFollowing(int eventId, DateTime occurrence) async {
-    final existing = await (db.select(
-      db.calendarEvents,
-    )..where((t) => t.id.equals(eventId))).getSingleOrNull();
-    if (existing == null || existing.rrule == null) {
-      return;
-    }
-    final cutoff = occurrence.subtract(const Duration(seconds: 1)).toUtc();
-    final truncatedRrule = _appendUntil(existing.rrule!, cutoff);
-    await (db.update(db.calendarEvents)..where((t) => t.id.equals(eventId)))
-        .write(CalendarEventsCompanion(rrule: Value(truncatedRrule)));
-    await _rerenderIcsForEvent(eventId);
-  }
+  Future<void> deleteThisAndFollowing(int eventId, DateTime occurrence) =>
+      db.transaction(() async {
+        final existing = await (db.select(
+          db.calendarEvents,
+        )..where((t) => t.id.equals(eventId))).getSingleOrNull();
+        if (existing == null || existing.rrule == null) {
+          return;
+        }
+        final cutoff = occurrence.subtract(const Duration(seconds: 1)).toUtc();
+        final truncatedRrule = _appendUntil(existing.rrule!, cutoff);
+        await (db.update(db.calendarEvents)..where((t) => t.id.equals(eventId)))
+            .write(CalendarEventsCompanion(rrule: Value(truncatedRrule)));
+        await _rerenderIcsForEvent(eventId);
+      });
 
   /// "All" — same as deleteEvent.
   Future<void> deleteAllOccurrences(int eventId) => deleteEvent(eventId);
@@ -282,20 +318,15 @@ class CalendarRepository {
     required String operation,
     String? payload,
     String? baseEtag,
-  }) async {
-    await db
-        .into(db.pendingChanges)
-        .insert(
-          PendingChangesCompanion.insert(
-            accountId: accountId,
-            entityTable: 'calendar_events',
-            entityId: eventId,
-            operation: operation,
-            baseEtag: Value(baseEtag),
-            payload: Value(payload),
-          ),
-        );
-  }
+  }) => enqueueChange(
+    db,
+    accountId: accountId,
+    table: 'calendar_events',
+    entityId: eventId,
+    operation: operation,
+    payload: payload,
+    baseEtag: baseEtag,
+  );
 
   String? _encodeAttendees(List<String> attendees) {
     if (attendees.isEmpty) {

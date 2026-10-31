@@ -46,7 +46,7 @@ void main() {
 
       final backend = FeedsSyncBackend(repository: repo, httpClient: mock);
 
-      final outcome = await backend.pull(accountId: 0);
+      final outcome = await backend.pull(accountId: repo.accountId);
       expect(outcome.success, isTrue);
 
       final subs = await repo.listSubscriptions();
@@ -57,7 +57,7 @@ void main() {
     });
 
     test(
-      'Malformed feed body is swallowed; other subs still process',
+      'Malformed feed fails visibly while other subscriptions still refresh',
       () async {
         final db = _db();
         addTearDown(db.close);
@@ -77,8 +77,9 @@ void main() {
 
         final backend = FeedsSyncBackend(repository: repo, httpClient: mock);
 
-        final outcome = await backend.pull(accountId: 0);
-        expect(outcome.success, isTrue);
+        final outcome = await backend.pull(accountId: repo.accountId);
+        expect(outcome.success, isFalse);
+        expect(outcome.error, isNotNull);
 
         final subs = await repo.listSubscriptions();
         final brokenItems = await repo.listItemsForFeed(

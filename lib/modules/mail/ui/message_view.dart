@@ -129,7 +129,8 @@ class _RemoteContentCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: CourrierTokens.space3),
-          TextButton(onPressed: onReveal, child: const Text('Show images')),
+          if (onReveal != null)
+            TextButton(onPressed: onReveal, child: const Text('Show images')),
         ],
       ),
     );

@@ -37,13 +37,11 @@ class AccountOrchestrator {
     if (backend == null) {
       return const SyncOutcome(success: false);
     }
-    final pull = await backend.pull(accountId: account.id);
-    if (!pull.success) {
-      return pull;
-    }
     final push = await backend.push(accountId: account.id);
+    if (!push.success) return push;
+    final pull = await backend.pull(accountId: account.id);
     return SyncOutcome(
-      success: push.success,
+      success: pull.success,
       pulled: pull.pulled,
       pushed: push.pushed,
       conflicts: pull.conflicts + push.conflicts,

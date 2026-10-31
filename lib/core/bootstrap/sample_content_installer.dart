@@ -18,9 +18,7 @@ import '../db/database.dart';
 //   * a sample RSS subscription for the courrier project blog so the Feeds
 //     tab shows a row even before the user adds their own
 //
-// Production users can wipe everything from Settings → Reset; the next
-// launch re-seeds (the welcome state is part of the product). A future
-// "starter content" preference toggle (M11 polish) suppresses the re-install.
+// Existing installations are never reseeded or overwritten.
 
 class SampleContentInstaller {
   const SampleContentInstaller({this.bundle});
@@ -30,14 +28,15 @@ class SampleContentInstaller {
 
   static const String holidaysAssetPath = 'assets/sample/holidays_2026.ics';
 
-  Future<bool> installIfMissing(CourrierDatabase db) async {
-    final accounts = await db.select(db.accounts).get();
-    if (accounts.isNotEmpty) {
-      return false;
-    }
-    await _install(db);
-    return true;
-  }
+  Future<bool> installIfMissing(CourrierDatabase db) =>
+      db.transaction(() async {
+        final accounts = await db.select(db.accounts).get();
+        if (accounts.isNotEmpty) {
+          return false;
+        }
+        await _install(db);
+        return true;
+      });
 
   Future<void> _install(CourrierDatabase db) async {
     final accountId = await db
@@ -80,9 +79,9 @@ class SampleContentInstaller {
         collectionId: notesCollectionId,
         title: 'Getting started',
         content:
-            'Tap Settings → Accounts to connect your Nextcloud, email, '
-            'or Microsoft 365 mailbox. Everything in courrier works offline '
-            'first — sync is optional.',
+            'Use the Accounts button to connect Nextcloud or a secure IMAP '
+            'mailbox, then tap Refresh. You can create and edit local notes '
+            'without connecting an account.',
         favorite: true,
       ),
     );
@@ -91,19 +90,19 @@ class SampleContentInstaller {
         collectionId: notesCollectionId,
         title: 'Checklist demo',
         content:
-            '- [ ] Try the mail demo\n'
+            '- [ ] Edit this checklist\n'
             '- [x] Read the welcome note\n'
-            '- [ ] Connect a real account from Settings',
+            '- [ ] Open Accounts to connect a server',
         kind: NoteKind.checklist,
       ),
     );
 
-    // Sample feed — points at the courrier project blog. The first sync
+    // Sample feed — points at GitHub release notes. The first sync
     // pulls in the real items; until then the title alone tells the user
     // the Feeds module is wired.
     final feeds = FeedRepository(db: db, accountId: accountId);
     await feeds.subscribe(
-      url: 'https://etabli.dev/courrier/feed.xml',
+      url: 'https://github.com/etabli-dev/etabli-courrier/releases.atom',
       title: 'courrier release notes',
       folder: 'Suite',
     );

@@ -77,11 +77,50 @@ class MailRepository {
     required String folderName,
     int windowSize = 100,
   }) async {
-    final folder = await folderByName(folderName);
+    var folder = await folderByName(folderName);
     final envelopes = await backend.fetchEnvelopes(
       folderName: folderName,
       windowSize: windowSize,
     );
+    final validity = envelopes.firstOrNull?.uidValidity;
+    if (validity != null && (folder.uidValidity != validity)) {
+      final oldCount = await (db.select(
+        db.mailMessages,
+      )..where((t) => t.folderId.equals(folder.id))).get();
+      if (oldCount.isNotEmpty) {
+        // Preserve the previous cache under a local archive when the server
+        // reuses UIDs, including old caches that never recorded UIDVALIDITY.
+        await db.transaction(() async {
+          final archiveId = await db
+              .into(db.accounts)
+              .insert(
+                AccountsCompanion.insert(
+                  kind: 'local',
+                  displayName:
+                      'Archived mail · ${DateTime.now().toIso8601String()}',
+                ),
+              );
+          await (db.update(db.mailFolders)
+                ..where((t) => t.id.equals(folder.id)))
+              .write(MailFoldersCompanion(accountId: Value(archiveId)));
+          await db
+              .into(db.mailFolders)
+              .insert(
+                MailFoldersCompanion.insert(
+                  accountId: accountId,
+                  name: folder.name,
+                  specialUse: Value(folder.specialUse),
+                  delimiter: Value(folder.delimiter),
+                  uidValidity: Value(validity),
+                ),
+              );
+        });
+        folder = await folderByName(folderName);
+      } else {
+        await (db.update(db.mailFolders)..where((t) => t.id.equals(folder.id)))
+            .write(MailFoldersCompanion(uidValidity: Value(validity)));
+      }
+    }
     var upserted = 0;
     for (final envelope in envelopes) {
       final existing =
@@ -137,41 +176,62 @@ class MailRepository {
     required String folderName,
     required int messageId,
   }) async {
-    final message = await (db.select(
-      db.mailMessages,
-    )..where((t) => t.id.equals(messageId))).getSingle();
+    final message = await _messageInFolder(messageId, folderName);
     if (message.bodyDownloaded) {
+      final attachments = await (db.select(
+        db.mailAttachments,
+      )..where((t) => t.messageId.equals(messageId))).get();
       return MailBodyPayload(
         textPart: message.bodyText,
         htmlPart: message.bodyHtml,
+        attachments: attachments
+            .map(
+              (a) => MailAttachmentInfo(
+                filename: a.filename,
+                mimeType: a.mimeType,
+                sizeBytes: a.sizeBytes,
+                contentId: a.contentId,
+              ),
+            )
+            .toList(growable: false),
       );
     }
     final payload = await backend.fetchBody(
       folderName: folderName,
       uid: message.uid,
     );
-    await (db.update(
-      db.mailMessages,
-    )..where((t) => t.id.equals(messageId))).write(
-      MailMessagesCompanion(
-        bodyText: Value(payload.textPart),
-        bodyHtml: Value(payload.htmlPart),
-        bodyDownloaded: const Value(true),
-      ),
-    );
-    for (final attachment in payload.attachments) {
-      await db
-          .into(db.mailAttachments)
-          .insert(
-            MailAttachmentsCompanion.insert(
-              messageId: messageId,
-              filename: attachment.filename,
-              mimeType: attachment.mimeType,
-              sizeBytes: attachment.sizeBytes,
-              contentId: Value(attachment.contentId),
-            ),
-          );
+    if (payload.uidValidity != null) {
+      final folder = await folderByName(folderName);
+      if (folder.uidValidity != payload.uidValidity) {
+        throw StateError(
+          'The mailbox identity changed. Sync the account before downloading this message.',
+        );
+      }
     }
+    await db.transaction(() async {
+      await (db.update(
+        db.mailMessages,
+      )..where((t) => t.id.equals(messageId))).write(
+        MailMessagesCompanion(
+          bodyText: Value(payload.textPart),
+          bodyHtml: Value(payload.htmlPart),
+          bodyDownloaded: const Value(true),
+        ),
+      );
+      for (final attachment in payload.attachments) {
+        await db
+            .into(db.mailAttachments)
+            .insert(
+              MailAttachmentsCompanion.insert(
+                messageId: messageId,
+                filename: attachment.filename,
+                mimeType: attachment.mimeType,
+                sizeBytes: attachment.sizeBytes,
+                contentId: Value(attachment.contentId),
+              ),
+            );
+      }
+    });
     return payload;
   }
 
@@ -182,9 +242,7 @@ class MailRepository {
     required int messageId,
     required bool seen,
   }) async {
-    final message = await (db.select(
-      db.mailMessages,
-    )..where((t) => t.id.equals(messageId))).getSingle();
+    final message = await _messageInFolder(messageId, folderName);
     await backend.applyFlags(
       folderName: folderName,
       updates: [FlagUpdate(uid: message.uid, flag: 'seen', value: seen)],
@@ -197,6 +255,7 @@ class MailRepository {
     required int messageId,
     required bool allowed,
   }) async {
+    await _messageInAccount(messageId);
     await (db.update(db.mailMessages)..where((t) => t.id.equals(messageId)))
         .write(MailMessagesCompanion(remoteContentAllowed: Value(allowed)));
   }
@@ -265,7 +324,7 @@ class MailRepository {
               )
               ..orderBy([(t) => OrderingTerm.asc(t.receivedAt)]))
             .get();
-    return _groupIntoThreads(rows);
+    return groupIntoThreads(rows);
   }
 
   /// Local-first search across snippet/subject/from/bodyText. Returns
@@ -274,16 +333,22 @@ class MailRepository {
     if (term.trim().isEmpty) {
       return const <SearchHit>[];
     }
+    final folders = await (db.select(
+      db.mailFolders,
+    )..where((t) => t.accountId.equals(accountId))).get();
+    final folderIds = folders.map((f) => f.id).toList();
     final lower = term.toLowerCase();
     final pattern = '%${term.toLowerCase().replaceAll(' ', '%')}%';
     final messages =
         await (db.select(db.mailMessages)
               ..where(
                 (t) =>
-                    t.subject.lower().like(pattern) |
-                    t.fromAddress.lower().like(pattern) |
-                    t.snippet.lower().like(pattern) |
-                    t.bodyText.lower().like(pattern),
+                    t.folderId.isIn(folderIds) &
+                    t.trashed.equals(false) &
+                    (t.subject.lower().like(pattern) |
+                        t.fromAddress.lower().like(pattern) |
+                        t.snippet.lower().like(pattern) |
+                        t.bodyText.lower().like(pattern)),
               )
               ..orderBy([(t) => OrderingTerm.desc(t.receivedAt)])
               ..limit(50))
@@ -294,6 +359,31 @@ class MailRepository {
   }
 
   // ---- Internals ----------------------------------------------------------
+
+  Future<MailMessage> _messageInAccount(int id) async {
+    final message = await (db.select(
+      db.mailMessages,
+    )..where((t) => t.id.equals(id))).getSingle();
+    final folder =
+        await (db.select(db.mailFolders)..where(
+              (t) =>
+                  t.id.equals(message.folderId) & t.accountId.equals(accountId),
+            ))
+            .getSingleOrNull();
+    if (folder == null) {
+      throw StateError('Message does not belong to this account.');
+    }
+    return message;
+  }
+
+  Future<MailMessage> _messageInFolder(int id, String folderName) async {
+    final folder = await folderByName(folderName);
+    final message = await _messageInAccount(id);
+    if (message.folderId != folder.id) {
+      throw StateError('Message does not belong to this folder.');
+    }
+    return message;
+  }
 
   Future<void> _moveLocallyAndRemote({
     required String sourceFolderName,
@@ -306,33 +396,61 @@ class MailRepository {
     final messages = await (db.select(
       db.mailMessages,
     )..where((t) => t.id.isIn(messageIds))).get();
+    if (messages.length != messageIds.toSet().length ||
+        messages.any((m) => m.folderId != sourceFolder.id)) {
+      throw StateError(
+        'Every message must belong to the selected source folder.',
+      );
+    }
+    if (messages.isEmpty || sourceFolder.id == destinationFolder.id) return;
     final uids = messages.map((m) => m.uid).toList(growable: false);
-    await backend.moveMessages(
+    final moved = await backend.moveMessages(
       sourceFolder: sourceFolderName,
       destinationFolder: destinationFolderName,
       uids: uids,
     );
-    for (final message in messages) {
-      await (db.update(
-        db.mailMessages,
-      )..where((t) => t.id.equals(message.id))).write(
-        MailMessagesCompanion(
-          folderId: Value(destinationFolder.id),
-          trashed: tombstone == null
-              ? Value(message.trashed)
-              : Value(tombstone),
-          trashedAt: tombstone == true
-              ? Value(DateTime.now())
-              : tombstone == false
-              ? const Value(null)
-              : Value(message.trashedAt),
-        ),
+    if (uids.any((uid) => (moved.uids[uid] ?? 0) <= 0) ||
+        moved.uids.values.toSet().length != uids.length) {
+      throw StateError(
+        'Incomplete destination UID mapping; refresh both folders.',
       );
     }
-    // Bump the source folder's lastSyncedAt — the move is a delta we know about.
-    await (db.update(db.mailFolders)
-          ..where((t) => t.id.equals(sourceFolder.id)))
-        .write(MailFoldersCompanion(lastSyncedAt: Value(DateTime.now())));
+    if (destinationFolder.uidValidity != null &&
+        moved.uidValidity != null &&
+        destinationFolder.uidValidity != moved.uidValidity) {
+      throw StateError(
+        'Destination UID validity changed; refresh both folders.',
+      );
+    }
+    await db.transaction(() async {
+      for (final message in messages) {
+        await (db.update(
+          db.mailMessages,
+        )..where((t) => t.id.equals(message.id))).write(
+          MailMessagesCompanion(
+            folderId: Value(destinationFolder.id),
+            uid: Value(moved.uids[message.uid]!),
+            trashed: tombstone == null
+                ? Value(message.trashed)
+                : Value(tombstone),
+            trashedAt: tombstone == true
+                ? Value(DateTime.now())
+                : tombstone == false
+                ? const Value(null)
+                : Value(message.trashedAt),
+          ),
+        );
+      }
+      // Bump the source folder's lastSyncedAt — the move is a delta we know about.
+      await (db.update(db.mailFolders)
+            ..where((t) => t.id.equals(sourceFolder.id)))
+          .write(MailFoldersCompanion(lastSyncedAt: Value(DateTime.now())));
+      if (moved.uidValidity != null) {
+        await (db.update(db.mailFolders)
+              ..where((t) => t.id.equals(destinationFolder.id)))
+            .write(MailFoldersCompanion(uidValidity: Value(moved.uidValidity)));
+      }
+    });
   }
 
   Future<String> _specialFolderName(String specialUse) async {
@@ -349,7 +467,7 @@ class MailRepository {
     return folder.name;
   }
 
-  List<MailThread> _groupIntoThreads(List<MailMessage> messages) {
+  static List<MailThread> groupIntoThreads(List<MailMessage> messages) {
     final byMessageId = <String, MailMessage>{};
     for (final message in messages) {
       if (message.messageIdHeader != null) {
@@ -371,12 +489,25 @@ class MailRepository {
     // Union-find by walking each message up to its root.
     final rootOf = <int, int>{};
     int root(int id) {
+      final path = <int>[];
+      final visited = <int>{};
       var cursor = id;
-      while (parentOf.containsKey(cursor)) {
+      while (parentOf.containsKey(cursor) && !rootOf.containsKey(cursor)) {
+        if (!visited.add(cursor)) {
+          // Malformed References can form a cycle. Use a stable cycle root.
+          final cycle = path.sublist(path.indexOf(cursor));
+          cursor = cycle.reduce((a, b) => a < b ? a : b);
+          break;
+        }
+        path.add(cursor);
         cursor = parentOf[cursor]!;
       }
-      rootOf[id] = cursor;
-      return cursor;
+      final resolved = rootOf[cursor] ?? cursor;
+      for (final node in path) {
+        rootOf[node] = resolved;
+      }
+      rootOf[id] = resolved;
+      return resolved;
     }
 
     // Subject fallback: collapse same-subject messages without headers into
@@ -411,7 +542,7 @@ class MailRepository {
     return threads;
   }
 
-  String? _parentReference(MailMessage message) {
+  static String? _parentReference(MailMessage message) {
     final inReplyTo = message.inReplyTo;
     if (inReplyTo != null && inReplyTo.isNotEmpty) {
       return inReplyTo.split(RegExp(r'\s+')).first;
@@ -424,7 +555,7 @@ class MailRepository {
     return tokens.isEmpty ? null : tokens.last;
   }
 
-  String _normalisedSubject(String? subject) {
+  static String _normalisedSubject(String? subject) {
     if (subject == null) {
       return '';
     }

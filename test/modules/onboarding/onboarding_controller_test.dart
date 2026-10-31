@@ -3,6 +3,7 @@ import 'package:courrier/core/config/secrets_store.dart';
 import 'package:courrier/core/db/database.dart';
 import 'package:courrier/modules/mail/autoconfig/autoconfig_models.dart';
 import 'package:courrier/modules/mail/autoconfig/autoconfig_resolver.dart';
+import 'package:courrier/modules/mail/backend/demo_mail_backend.dart';
 import 'package:courrier/modules/onboarding/onboarding_controller.dart';
 import 'package:courrier/modules/onboarding/onboarding_state.dart';
 import 'package:drift/native.dart';
@@ -127,6 +128,7 @@ void main() {
         emailAddress: 'user@example.org',
         password: 'pw',
         resolver: fakeResolver,
+        backendBuilder: (_) => DemoMailBackend(),
       );
       expect(outcome, isA<StepSucceeded>());
       final accounts = await db.select(db.accounts).get();

@@ -4,6 +4,7 @@ import '../../../core/db/database.dart';
 import '../../../core/ical/ical_property.dart';
 import '../../../core/ical/ical_reader.dart';
 import '../../../core/ical/ical_writer.dart';
+import '../../../core/sync/change_queue.dart';
 import 'contact_draft.dart';
 import 'contact_serializer.dart';
 
@@ -28,7 +29,7 @@ class ContactRepository {
 
   // ---- CRUD ---------------------------------------------------------------
 
-  Future<int> createContact(ContactDraft draft) async {
+  Future<int> createContact(ContactDraft draft) => db.transaction(() async {
     final uid = draft.uid ?? _uidGenerator();
     final vcard = _serializer.render(draft, uid: uid);
     final contactId = await db
@@ -55,9 +56,12 @@ class ContactRepository {
       payload: vcard,
     );
     return contactId;
-  }
+  });
 
-  Future<void> updateContact(int contactId, ContactDraft draft) async {
+  Future<void> updateContact(
+    int contactId,
+    ContactDraft draft,
+  ) => db.transaction(() async {
     final existing = await (db.select(
       db.contactCards,
     )..where((t) => t.id.equals(contactId))).getSingleOrNull();
@@ -89,9 +93,9 @@ class ContactRepository {
       payload: patched,
       baseEtag: existing.etag,
     );
-  }
+  });
 
-  Future<void> deleteContact(int contactId) async {
+  Future<void> deleteContact(int contactId) => db.transaction(() async {
     final existing = await (db.select(
       db.contactCards,
     )..where((t) => t.id.equals(contactId))).getSingleOrNull();
@@ -106,7 +110,7 @@ class ContactRepository {
       operation: 'delete',
       baseEtag: existing.etag,
     );
-  }
+  });
 
   // ---- Groups -------------------------------------------------------------
 
@@ -278,20 +282,15 @@ class ContactRepository {
     required String operation,
     String? payload,
     String? baseEtag,
-  }) async {
-    await db
-        .into(db.pendingChanges)
-        .insert(
-          PendingChangesCompanion.insert(
-            accountId: accountId,
-            entityTable: 'contact_cards',
-            entityId: contactId,
-            operation: operation,
-            baseEtag: Value(baseEtag),
-            payload: Value(payload),
-          ),
-        );
-  }
+  }) => enqueueChange(
+    db,
+    accountId: accountId,
+    table: 'contact_cards',
+    entityId: contactId,
+    operation: operation,
+    payload: payload,
+    baseEtag: baseEtag,
+  );
 }
 
 int _uidCounter = 0;

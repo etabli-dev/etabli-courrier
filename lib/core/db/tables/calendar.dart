@@ -14,6 +14,7 @@ class CalendarEvents extends Table {
   // Server identity vs object identity — UID is stable, etag changes per write.
   TextColumn get uid => text()();
   TextColumn get etag => text().nullable()();
+  TextColumn get remoteHref => text().nullable()();
 
   TextColumn get summary => text().nullable()();
   TextColumn get location => text().nullable()();

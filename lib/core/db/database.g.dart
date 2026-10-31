@@ -1224,6 +1224,17 @@ class $CalendarEventsTable extends CalendarEvents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _remoteHrefMeta = const VerificationMeta(
+    'remoteHref',
+  );
+  @override
+  late final GeneratedColumn<String> remoteHref = GeneratedColumn<String>(
+    'remote_href',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _summaryMeta = const VerificationMeta(
     'summary',
   );
@@ -1363,6 +1374,7 @@ class $CalendarEventsTable extends CalendarEvents
     collectionId,
     uid,
     etag,
+    remoteHref,
     summary,
     location,
     description,
@@ -1414,6 +1426,12 @@ class $CalendarEventsTable extends CalendarEvents
       context.handle(
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('remote_href')) {
+      context.handle(
+        _remoteHrefMeta,
+        remoteHref.isAcceptableOrUnknown(data['remote_href']!, _remoteHrefMeta),
       );
     }
     if (data.containsKey('summary')) {
@@ -1531,6 +1549,10 @@ class $CalendarEventsTable extends CalendarEvents
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
+      remoteHref: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_href'],
+      ),
       summary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}summary'],
@@ -1593,6 +1615,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
   final int collectionId;
   final String uid;
   final String? etag;
+  final String? remoteHref;
   final String? summary;
   final String? location;
   final String? description;
@@ -1610,6 +1633,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
     required this.collectionId,
     required this.uid,
     this.etag,
+    this.remoteHref,
     this.summary,
     this.location,
     this.description,
@@ -1631,6 +1655,9 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
     map['uid'] = Variable<String>(uid);
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
+    }
+    if (!nullToAbsent || remoteHref != null) {
+      map['remote_href'] = Variable<String>(remoteHref);
     }
     if (!nullToAbsent || summary != null) {
       map['summary'] = Variable<String>(summary);
@@ -1669,6 +1696,9 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
       collectionId: Value(collectionId),
       uid: Value(uid),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      remoteHref: remoteHref == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteHref),
       summary: summary == null && nullToAbsent
           ? const Value.absent()
           : Value(summary),
@@ -1710,6 +1740,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
       collectionId: serializer.fromJson<int>(json['collectionId']),
       uid: serializer.fromJson<String>(json['uid']),
       etag: serializer.fromJson<String?>(json['etag']),
+      remoteHref: serializer.fromJson<String?>(json['remoteHref']),
       summary: serializer.fromJson<String?>(json['summary']),
       location: serializer.fromJson<String?>(json['location']),
       description: serializer.fromJson<String?>(json['description']),
@@ -1732,6 +1763,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
       'collectionId': serializer.toJson<int>(collectionId),
       'uid': serializer.toJson<String>(uid),
       'etag': serializer.toJson<String?>(etag),
+      'remoteHref': serializer.toJson<String?>(remoteHref),
       'summary': serializer.toJson<String?>(summary),
       'location': serializer.toJson<String?>(location),
       'description': serializer.toJson<String?>(description),
@@ -1752,6 +1784,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
     int? collectionId,
     String? uid,
     Value<String?> etag = const Value.absent(),
+    Value<String?> remoteHref = const Value.absent(),
     Value<String?> summary = const Value.absent(),
     Value<String?> location = const Value.absent(),
     Value<String?> description = const Value.absent(),
@@ -1769,6 +1802,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
     collectionId: collectionId ?? this.collectionId,
     uid: uid ?? this.uid,
     etag: etag.present ? etag.value : this.etag,
+    remoteHref: remoteHref.present ? remoteHref.value : this.remoteHref,
     summary: summary.present ? summary.value : this.summary,
     location: location.present ? location.value : this.location,
     description: description.present ? description.value : this.description,
@@ -1792,6 +1826,9 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
           : this.collectionId,
       uid: data.uid.present ? data.uid.value : this.uid,
       etag: data.etag.present ? data.etag.value : this.etag,
+      remoteHref: data.remoteHref.present
+          ? data.remoteHref.value
+          : this.remoteHref,
       summary: data.summary.present ? data.summary.value : this.summary,
       location: data.location.present ? data.location.value : this.location,
       description: data.description.present
@@ -1822,6 +1859,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('summary: $summary, ')
           ..write('location: $location, ')
           ..write('description: $description, ')
@@ -1844,6 +1882,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
     collectionId,
     uid,
     etag,
+    remoteHref,
     summary,
     location,
     description,
@@ -1865,6 +1904,7 @@ class CalendarEvent extends DataClass implements Insertable<CalendarEvent> {
           other.collectionId == this.collectionId &&
           other.uid == this.uid &&
           other.etag == this.etag &&
+          other.remoteHref == this.remoteHref &&
           other.summary == this.summary &&
           other.location == this.location &&
           other.description == this.description &&
@@ -1884,6 +1924,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
   final Value<int> collectionId;
   final Value<String> uid;
   final Value<String?> etag;
+  final Value<String?> remoteHref;
   final Value<String?> summary;
   final Value<String?> location;
   final Value<String?> description;
@@ -1901,6 +1942,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
     this.collectionId = const Value.absent(),
     this.uid = const Value.absent(),
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.summary = const Value.absent(),
     this.location = const Value.absent(),
     this.description = const Value.absent(),
@@ -1919,6 +1961,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
     required int collectionId,
     required String uid,
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.summary = const Value.absent(),
     this.location = const Value.absent(),
     this.description = const Value.absent(),
@@ -1939,6 +1982,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
     Expression<int>? collectionId,
     Expression<String>? uid,
     Expression<String>? etag,
+    Expression<String>? remoteHref,
     Expression<String>? summary,
     Expression<String>? location,
     Expression<String>? description,
@@ -1957,6 +2001,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
       if (collectionId != null) 'collection_id': collectionId,
       if (uid != null) 'uid': uid,
       if (etag != null) 'etag': etag,
+      if (remoteHref != null) 'remote_href': remoteHref,
       if (summary != null) 'summary': summary,
       if (location != null) 'location': location,
       if (description != null) 'description': description,
@@ -1977,6 +2022,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
     Value<int>? collectionId,
     Value<String>? uid,
     Value<String?>? etag,
+    Value<String?>? remoteHref,
     Value<String?>? summary,
     Value<String?>? location,
     Value<String?>? description,
@@ -1995,6 +2041,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
       collectionId: collectionId ?? this.collectionId,
       uid: uid ?? this.uid,
       etag: etag ?? this.etag,
+      remoteHref: remoteHref ?? this.remoteHref,
       summary: summary ?? this.summary,
       location: location ?? this.location,
       description: description ?? this.description,
@@ -2024,6 +2071,9 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
     }
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
+    }
+    if (remoteHref.present) {
+      map['remote_href'] = Variable<String>(remoteHref.value);
     }
     if (summary.present) {
       map['summary'] = Variable<String>(summary.value);
@@ -2071,6 +2121,7 @@ class CalendarEventsCompanion extends UpdateCompanion<CalendarEvent> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('summary: $summary, ')
           ..write('location: $location, ')
           ..write('description: $description, ')
@@ -2866,6 +2917,17 @@ class $ContactCardsTable extends ContactCards
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _remoteHrefMeta = const VerificationMeta(
+    'remoteHref',
+  );
+  @override
+  late final GeneratedColumn<String> remoteHref = GeneratedColumn<String>(
+    'remote_href',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _formattedNameMeta = const VerificationMeta(
     'formattedName',
   );
@@ -2987,6 +3049,7 @@ class $ContactCardsTable extends ContactCards
     collectionId,
     uid,
     etag,
+    remoteHref,
     formattedName,
     givenName,
     familyName,
@@ -3036,6 +3099,12 @@ class $ContactCardsTable extends ContactCards
       context.handle(
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('remote_href')) {
+      context.handle(
+        _remoteHrefMeta,
+        remoteHref.isAcceptableOrUnknown(data['remote_href']!, _remoteHrefMeta),
       );
     }
     if (data.containsKey('formatted_name')) {
@@ -3147,6 +3216,10 @@ class $ContactCardsTable extends ContactCards
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
+      remoteHref: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_href'],
+      ),
       formattedName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}formatted_name'],
@@ -3201,6 +3274,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
   final int collectionId;
   final String uid;
   final String? etag;
+  final String? remoteHref;
   final String? formattedName;
   final String? givenName;
   final String? familyName;
@@ -3216,6 +3290,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
     required this.collectionId,
     required this.uid,
     this.etag,
+    this.remoteHref,
     this.formattedName,
     this.givenName,
     this.familyName,
@@ -3235,6 +3310,9 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
     map['uid'] = Variable<String>(uid);
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
+    }
+    if (!nullToAbsent || remoteHref != null) {
+      map['remote_href'] = Variable<String>(remoteHref);
     }
     if (!nullToAbsent || formattedName != null) {
       map['formatted_name'] = Variable<String>(formattedName);
@@ -3269,6 +3347,9 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
       collectionId: Value(collectionId),
       uid: Value(uid),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      remoteHref: remoteHref == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteHref),
       formattedName: formattedName == null && nullToAbsent
           ? const Value.absent()
           : Value(formattedName),
@@ -3306,6 +3387,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
       collectionId: serializer.fromJson<int>(json['collectionId']),
       uid: serializer.fromJson<String>(json['uid']),
       etag: serializer.fromJson<String?>(json['etag']),
+      remoteHref: serializer.fromJson<String?>(json['remoteHref']),
       formattedName: serializer.fromJson<String?>(json['formattedName']),
       givenName: serializer.fromJson<String?>(json['givenName']),
       familyName: serializer.fromJson<String?>(json['familyName']),
@@ -3326,6 +3408,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
       'collectionId': serializer.toJson<int>(collectionId),
       'uid': serializer.toJson<String>(uid),
       'etag': serializer.toJson<String?>(etag),
+      'remoteHref': serializer.toJson<String?>(remoteHref),
       'formattedName': serializer.toJson<String?>(formattedName),
       'givenName': serializer.toJson<String?>(givenName),
       'familyName': serializer.toJson<String?>(familyName),
@@ -3344,6 +3427,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
     int? collectionId,
     String? uid,
     Value<String?> etag = const Value.absent(),
+    Value<String?> remoteHref = const Value.absent(),
     Value<String?> formattedName = const Value.absent(),
     Value<String?> givenName = const Value.absent(),
     Value<String?> familyName = const Value.absent(),
@@ -3359,6 +3443,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
     collectionId: collectionId ?? this.collectionId,
     uid: uid ?? this.uid,
     etag: etag.present ? etag.value : this.etag,
+    remoteHref: remoteHref.present ? remoteHref.value : this.remoteHref,
     formattedName: formattedName.present
         ? formattedName.value
         : this.formattedName,
@@ -3380,6 +3465,9 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
           : this.collectionId,
       uid: data.uid.present ? data.uid.value : this.uid,
       etag: data.etag.present ? data.etag.value : this.etag,
+      remoteHref: data.remoteHref.present
+          ? data.remoteHref.value
+          : this.remoteHref,
       formattedName: data.formattedName.present
           ? data.formattedName.value
           : this.formattedName,
@@ -3414,6 +3502,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('formattedName: $formattedName, ')
           ..write('givenName: $givenName, ')
           ..write('familyName: $familyName, ')
@@ -3434,6 +3523,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
     collectionId,
     uid,
     etag,
+    remoteHref,
     formattedName,
     givenName,
     familyName,
@@ -3453,6 +3543,7 @@ class ContactCard extends DataClass implements Insertable<ContactCard> {
           other.collectionId == this.collectionId &&
           other.uid == this.uid &&
           other.etag == this.etag &&
+          other.remoteHref == this.remoteHref &&
           other.formattedName == this.formattedName &&
           other.givenName == this.givenName &&
           other.familyName == this.familyName &&
@@ -3470,6 +3561,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
   final Value<int> collectionId;
   final Value<String> uid;
   final Value<String?> etag;
+  final Value<String?> remoteHref;
   final Value<String?> formattedName;
   final Value<String?> givenName;
   final Value<String?> familyName;
@@ -3485,6 +3577,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
     this.collectionId = const Value.absent(),
     this.uid = const Value.absent(),
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.formattedName = const Value.absent(),
     this.givenName = const Value.absent(),
     this.familyName = const Value.absent(),
@@ -3501,6 +3594,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
     required int collectionId,
     required String uid,
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.formattedName = const Value.absent(),
     this.givenName = const Value.absent(),
     this.familyName = const Value.absent(),
@@ -3519,6 +3613,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
     Expression<int>? collectionId,
     Expression<String>? uid,
     Expression<String>? etag,
+    Expression<String>? remoteHref,
     Expression<String>? formattedName,
     Expression<String>? givenName,
     Expression<String>? familyName,
@@ -3535,6 +3630,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
       if (collectionId != null) 'collection_id': collectionId,
       if (uid != null) 'uid': uid,
       if (etag != null) 'etag': etag,
+      if (remoteHref != null) 'remote_href': remoteHref,
       if (formattedName != null) 'formatted_name': formattedName,
       if (givenName != null) 'given_name': givenName,
       if (familyName != null) 'family_name': familyName,
@@ -3553,6 +3649,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
     Value<int>? collectionId,
     Value<String>? uid,
     Value<String?>? etag,
+    Value<String?>? remoteHref,
     Value<String?>? formattedName,
     Value<String?>? givenName,
     Value<String?>? familyName,
@@ -3569,6 +3666,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
       collectionId: collectionId ?? this.collectionId,
       uid: uid ?? this.uid,
       etag: etag ?? this.etag,
+      remoteHref: remoteHref ?? this.remoteHref,
       formattedName: formattedName ?? this.formattedName,
       givenName: givenName ?? this.givenName,
       familyName: familyName ?? this.familyName,
@@ -3596,6 +3694,9 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
     }
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
+    }
+    if (remoteHref.present) {
+      map['remote_href'] = Variable<String>(remoteHref.value);
     }
     if (formattedName.present) {
       map['formatted_name'] = Variable<String>(formattedName.value);
@@ -3637,6 +3738,7 @@ class ContactCardsCompanion extends UpdateCompanion<ContactCard> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('formattedName: $formattedName, ')
           ..write('givenName: $givenName, ')
           ..write('familyName: $familyName, ')
@@ -4218,6 +4320,17 @@ class $TodoItemsTable extends TodoItems
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _remoteHrefMeta = const VerificationMeta(
+    'remoteHref',
+  );
+  @override
+  late final GeneratedColumn<String> remoteHref = GeneratedColumn<String>(
+    'remote_href',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _summaryMeta = const VerificationMeta(
     'summary',
   );
@@ -4359,6 +4472,7 @@ class $TodoItemsTable extends TodoItems
     collectionId,
     uid,
     etag,
+    remoteHref,
     summary,
     description,
     due,
@@ -4410,6 +4524,12 @@ class $TodoItemsTable extends TodoItems
       context.handle(
         _etagMeta,
         etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('remote_href')) {
+      context.handle(
+        _remoteHrefMeta,
+        remoteHref.isAcceptableOrUnknown(data['remote_href']!, _remoteHrefMeta),
       );
     }
     if (data.containsKey('summary')) {
@@ -4530,6 +4650,10 @@ class $TodoItemsTable extends TodoItems
         DriftSqlType.string,
         data['${effectivePrefix}etag'],
       ),
+      remoteHref: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_href'],
+      ),
       summary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}summary'],
@@ -4592,6 +4716,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
   final int collectionId;
   final String uid;
   final String? etag;
+  final String? remoteHref;
   final String? summary;
   final String? description;
   final DateTime? due;
@@ -4609,6 +4734,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
     required this.collectionId,
     required this.uid,
     this.etag,
+    this.remoteHref,
     this.summary,
     this.description,
     this.due,
@@ -4630,6 +4756,9 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
     map['uid'] = Variable<String>(uid);
     if (!nullToAbsent || etag != null) {
       map['etag'] = Variable<String>(etag);
+    }
+    if (!nullToAbsent || remoteHref != null) {
+      map['remote_href'] = Variable<String>(remoteHref);
     }
     if (!nullToAbsent || summary != null) {
       map['summary'] = Variable<String>(summary);
@@ -4668,6 +4797,9 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
       collectionId: Value(collectionId),
       uid: Value(uid),
       etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      remoteHref: remoteHref == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteHref),
       summary: summary == null && nullToAbsent
           ? const Value.absent()
           : Value(summary),
@@ -4707,6 +4839,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
       collectionId: serializer.fromJson<int>(json['collectionId']),
       uid: serializer.fromJson<String>(json['uid']),
       etag: serializer.fromJson<String?>(json['etag']),
+      remoteHref: serializer.fromJson<String?>(json['remoteHref']),
       summary: serializer.fromJson<String?>(json['summary']),
       description: serializer.fromJson<String?>(json['description']),
       due: serializer.fromJson<DateTime?>(json['due']),
@@ -4731,6 +4864,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
       'collectionId': serializer.toJson<int>(collectionId),
       'uid': serializer.toJson<String>(uid),
       'etag': serializer.toJson<String?>(etag),
+      'remoteHref': serializer.toJson<String?>(remoteHref),
       'summary': serializer.toJson<String?>(summary),
       'description': serializer.toJson<String?>(description),
       'due': serializer.toJson<DateTime?>(due),
@@ -4751,6 +4885,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
     int? collectionId,
     String? uid,
     Value<String?> etag = const Value.absent(),
+    Value<String?> remoteHref = const Value.absent(),
     Value<String?> summary = const Value.absent(),
     Value<String?> description = const Value.absent(),
     Value<DateTime?> due = const Value.absent(),
@@ -4768,6 +4903,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
     collectionId: collectionId ?? this.collectionId,
     uid: uid ?? this.uid,
     etag: etag.present ? etag.value : this.etag,
+    remoteHref: remoteHref.present ? remoteHref.value : this.remoteHref,
     summary: summary.present ? summary.value : this.summary,
     description: description.present ? description.value : this.description,
     due: due.present ? due.value : this.due,
@@ -4791,6 +4927,9 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
           : this.collectionId,
       uid: data.uid.present ? data.uid.value : this.uid,
       etag: data.etag.present ? data.etag.value : this.etag,
+      remoteHref: data.remoteHref.present
+          ? data.remoteHref.value
+          : this.remoteHref,
       summary: data.summary.present ? data.summary.value : this.summary,
       description: data.description.present
           ? data.description.value
@@ -4823,6 +4962,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('summary: $summary, ')
           ..write('description: $description, ')
           ..write('due: $due, ')
@@ -4845,6 +4985,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
     collectionId,
     uid,
     etag,
+    remoteHref,
     summary,
     description,
     due,
@@ -4866,6 +5007,7 @@ class TodoItem extends DataClass implements Insertable<TodoItem> {
           other.collectionId == this.collectionId &&
           other.uid == this.uid &&
           other.etag == this.etag &&
+          other.remoteHref == this.remoteHref &&
           other.summary == this.summary &&
           other.description == this.description &&
           other.due == this.due &&
@@ -4885,6 +5027,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
   final Value<int> collectionId;
   final Value<String> uid;
   final Value<String?> etag;
+  final Value<String?> remoteHref;
   final Value<String?> summary;
   final Value<String?> description;
   final Value<DateTime?> due;
@@ -4902,6 +5045,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
     this.collectionId = const Value.absent(),
     this.uid = const Value.absent(),
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.summary = const Value.absent(),
     this.description = const Value.absent(),
     this.due = const Value.absent(),
@@ -4920,6 +5064,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
     required int collectionId,
     required String uid,
     this.etag = const Value.absent(),
+    this.remoteHref = const Value.absent(),
     this.summary = const Value.absent(),
     this.description = const Value.absent(),
     this.due = const Value.absent(),
@@ -4940,6 +5085,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
     Expression<int>? collectionId,
     Expression<String>? uid,
     Expression<String>? etag,
+    Expression<String>? remoteHref,
     Expression<String>? summary,
     Expression<String>? description,
     Expression<DateTime>? due,
@@ -4958,6 +5104,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
       if (collectionId != null) 'collection_id': collectionId,
       if (uid != null) 'uid': uid,
       if (etag != null) 'etag': etag,
+      if (remoteHref != null) 'remote_href': remoteHref,
       if (summary != null) 'summary': summary,
       if (description != null) 'description': description,
       if (due != null) 'due': due,
@@ -4979,6 +5126,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
     Value<int>? collectionId,
     Value<String>? uid,
     Value<String?>? etag,
+    Value<String?>? remoteHref,
     Value<String?>? summary,
     Value<String?>? description,
     Value<DateTime?>? due,
@@ -4997,6 +5145,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
       collectionId: collectionId ?? this.collectionId,
       uid: uid ?? this.uid,
       etag: etag ?? this.etag,
+      remoteHref: remoteHref ?? this.remoteHref,
       summary: summary ?? this.summary,
       description: description ?? this.description,
       due: due ?? this.due,
@@ -5027,6 +5176,9 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
     }
     if (etag.present) {
       map['etag'] = Variable<String>(etag.value);
+    }
+    if (remoteHref.present) {
+      map['remote_href'] = Variable<String>(remoteHref.value);
     }
     if (summary.present) {
       map['summary'] = Variable<String>(summary.value);
@@ -5076,6 +5228,7 @@ class TodoItemsCompanion extends UpdateCompanion<TodoItem> {
           ..write('collectionId: $collectionId, ')
           ..write('uid: $uid, ')
           ..write('etag: $etag, ')
+          ..write('remoteHref: $remoteHref, ')
           ..write('summary: $summary, ')
           ..write('description: $description, ')
           ..write('due: $due, ')
@@ -12367,6 +12520,7 @@ typedef $$CalendarEventsTableCreateCompanionBuilder =
       required int collectionId,
       required String uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> summary,
       Value<String?> location,
       Value<String?> description,
@@ -12386,6 +12540,7 @@ typedef $$CalendarEventsTableUpdateCompanionBuilder =
       Value<int> collectionId,
       Value<String> uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> summary,
       Value<String?> location,
       Value<String?> description,
@@ -12497,6 +12652,11 @@ class $$CalendarEventsTableFilterComposer
 
   ColumnFilters<String> get etag => $composableBuilder(
     column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12660,6 +12820,11 @@ class $$CalendarEventsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get summary => $composableBuilder(
     column: $table.summary,
     builder: (column) => ColumnOrderings(column),
@@ -12761,6 +12926,11 @@ class $$CalendarEventsTableAnnotationComposer
 
   GeneratedColumn<String> get etag =>
       $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get summary =>
       $composableBuilder(column: $table.summary, builder: (column) => column);
@@ -12920,6 +13090,7 @@ class $$CalendarEventsTableTableManager
                 Value<int> collectionId = const Value.absent(),
                 Value<String> uid = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> summary = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -12937,6 +13108,7 @@ class $$CalendarEventsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 summary: summary,
                 location: location,
                 description: description,
@@ -12956,6 +13128,7 @@ class $$CalendarEventsTableTableManager
                 required int collectionId,
                 required String uid,
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> summary = const Value.absent(),
                 Value<String?> location = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -12973,6 +13146,7 @@ class $$CalendarEventsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 summary: summary,
                 location: location,
                 description: description,
@@ -13779,6 +13953,7 @@ typedef $$ContactCardsTableCreateCompanionBuilder =
       required int collectionId,
       required String uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> formattedName,
       Value<String?> givenName,
       Value<String?> familyName,
@@ -13796,6 +13971,7 @@ typedef $$ContactCardsTableUpdateCompanionBuilder =
       Value<int> collectionId,
       Value<String> uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> formattedName,
       Value<String?> givenName,
       Value<String?> familyName,
@@ -13877,6 +14053,11 @@ class $$ContactCardsTableFilterComposer
 
   ColumnFilters<String> get etag => $composableBuilder(
     column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -14003,6 +14184,11 @@ class $$ContactCardsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get formattedName => $composableBuilder(
     column: $table.formattedName,
     builder: (column) => ColumnOrderings(column),
@@ -14094,6 +14280,11 @@ class $$ContactCardsTableAnnotationComposer
 
   GeneratedColumn<String> get etag =>
       $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get formattedName => $composableBuilder(
     column: $table.formattedName,
@@ -14226,6 +14417,7 @@ class $$ContactCardsTableTableManager
                 Value<int> collectionId = const Value.absent(),
                 Value<String> uid = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> formattedName = const Value.absent(),
                 Value<String?> givenName = const Value.absent(),
                 Value<String?> familyName = const Value.absent(),
@@ -14241,6 +14433,7 @@ class $$ContactCardsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 formattedName: formattedName,
                 givenName: givenName,
                 familyName: familyName,
@@ -14258,6 +14451,7 @@ class $$ContactCardsTableTableManager
                 required int collectionId,
                 required String uid,
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> formattedName = const Value.absent(),
                 Value<String?> givenName = const Value.absent(),
                 Value<String?> familyName = const Value.absent(),
@@ -14273,6 +14467,7 @@ class $$ContactCardsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 formattedName: formattedName,
                 givenName: givenName,
                 familyName: familyName,
@@ -15152,6 +15347,7 @@ typedef $$TodoItemsTableCreateCompanionBuilder =
       required int collectionId,
       required String uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> summary,
       Value<String?> description,
       Value<DateTime?> due,
@@ -15171,6 +15367,7 @@ typedef $$TodoItemsTableUpdateCompanionBuilder =
       Value<int> collectionId,
       Value<String> uid,
       Value<String?> etag,
+      Value<String?> remoteHref,
       Value<String?> summary,
       Value<String?> description,
       Value<DateTime?> due,
@@ -15228,6 +15425,11 @@ class $$TodoItemsTableFilterComposer
 
   ColumnFilters<String> get etag => $composableBuilder(
     column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15339,6 +15541,11 @@ class $$TodoItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get summary => $composableBuilder(
     column: $table.summary,
     builder: (column) => ColumnOrderings(column),
@@ -15440,6 +15647,11 @@ class $$TodoItemsTableAnnotationComposer
 
   GeneratedColumn<String> get etag =>
       $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteHref => $composableBuilder(
+    column: $table.remoteHref,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get summary =>
       $composableBuilder(column: $table.summary, builder: (column) => column);
@@ -15543,6 +15755,7 @@ class $$TodoItemsTableTableManager
                 Value<int> collectionId = const Value.absent(),
                 Value<String> uid = const Value.absent(),
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> summary = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> due = const Value.absent(),
@@ -15560,6 +15773,7 @@ class $$TodoItemsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 summary: summary,
                 description: description,
                 due: due,
@@ -15579,6 +15793,7 @@ class $$TodoItemsTableTableManager
                 required int collectionId,
                 required String uid,
                 Value<String?> etag = const Value.absent(),
+                Value<String?> remoteHref = const Value.absent(),
                 Value<String?> summary = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> due = const Value.absent(),
@@ -15596,6 +15811,7 @@ class $$TodoItemsTableTableManager
                 collectionId: collectionId,
                 uid: uid,
                 etag: etag,
+                remoteHref: remoteHref,
                 summary: summary,
                 description: description,
                 due: due,

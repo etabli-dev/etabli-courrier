@@ -15,6 +15,7 @@ class TasksScreen extends StatefulWidget {
 
 class _TasksScreenState extends State<TasksScreen> {
   late Future<List<TodoItem>> _future;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -31,13 +32,41 @@ class _TasksScreenState extends State<TasksScreen> {
     return FutureBuilder<List<TodoItem>>(
       future: _future,
       builder: (context, snapshot) {
-        final tasks = snapshot.data ?? const <TodoItem>[];
+        if (snapshot.hasError) {
+          return Center(
+            child: TextButton(
+              onPressed: _reload,
+              child: const Text('Could not load tasks. Retry'),
+            ),
+          );
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final tasks = snapshot.data!;
         return TaskListView(
           tasks: tasks,
-          onToggleComplete: (task) async {
-            await widget.repository.completeTask(task.id);
-            _reload();
-          },
+          onToggleComplete: _saving
+              ? null
+              : (task) async {
+                  setState(() => _saving = true);
+                  try {
+                    await widget.repository.completeTask(task.id);
+                    if (mounted) _reload();
+                  } catch (_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Could not complete the task. Your saved task is retained.',
+                          ),
+                        ),
+                      );
+                    }
+                  } finally {
+                    if (mounted) setState(() => _saving = false);
+                  }
+                },
         );
       },
     );

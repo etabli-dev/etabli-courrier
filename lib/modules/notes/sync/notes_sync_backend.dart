@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/net/net_error.dart';
+import '../../../core/sync/change_queue.dart';
 import '../../../core/sync/sync_backend.dart';
 import 'nextcloud_notes_client.dart';
 
@@ -54,6 +55,15 @@ class NotesSyncBackend extends SyncBackend {
                 );
             pulled += 1;
           } else {
+            final pending =
+                await (db.select(db.pendingChanges)..where(
+                      (t) =>
+                          t.entityTable.equals('note_items') &
+                          t.entityId.equals(existing.id) &
+                          t.accountId.equals(accountId),
+                    ))
+                    .get();
+            if (pending.isNotEmpty) continue;
             await (db.update(
               db.noteItems,
             )..where((t) => t.id.equals(existing.id))).write(
@@ -129,7 +139,15 @@ class NotesSyncBackend extends SyncBackend {
       return;
     }
 
+    if (note.remoteId != null && change.baseEtag == null) {
+      throw const ParseFailureError(
+        'remote version is unknown; preserve the local copy and reload before writing',
+      );
+    }
     if (change.operation == 'delete') {
+      if (note.remoteId == null && change.attempts > 0) {
+        throw const ConflictError();
+      }
       if (note.remoteId != null) {
         await client.deleteNote(
           id: int.parse(note.remoteId!),
@@ -140,7 +158,9 @@ class NotesSyncBackend extends SyncBackend {
       return;
     }
 
-    if (change.operation == 'create' || note.remoteId == null) {
+    if (note.remoteId == null) {
+      if (change.attempts > 0) throw const ConflictError();
+      await markDispatched(db, change);
       final created = await client.createNote(
         title: note.title,
         content: note.content,
@@ -154,6 +174,7 @@ class NotesSyncBackend extends SyncBackend {
           modified: Value(created.modified),
         ),
       );
+      await acknowledgeEtag(db, change, created.etag);
       return;
     }
 
@@ -171,6 +192,7 @@ class NotesSyncBackend extends SyncBackend {
         modified: Value(updated.modified),
       ),
     );
+    await acknowledgeEtag(db, change, updated.etag);
   }
 
   Future<void> _recordConflict(

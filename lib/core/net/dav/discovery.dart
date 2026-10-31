@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../bounded_http.dart';
 import 'dav_client.dart';
 import 'multistatus.dart';
 import 'requests.dart';
@@ -66,7 +67,7 @@ class DavDiscovery {
   }
 
   Future<String?> _discoverPrincipal() async {
-    final candidate = _resolve('/.well-known/caldav');
+    final candidate = _resolve('remote.php/dav/');
     final multistatus = await client.propfind(
       url: candidate,
       body: DavRequests.currentUserPrincipal,
@@ -102,10 +103,7 @@ class DavDiscovery {
   }
 
   Uri _resolve(String hrefOrPath) {
-    if (hrefOrPath.startsWith('http')) {
-      return Uri.parse(hrefOrPath);
-    }
-    return baseUrl.resolve(hrefOrPath);
+    return sameOrigin(serverBase(baseUrl.toString()), hrefOrPath);
   }
 }
 

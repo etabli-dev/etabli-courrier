@@ -1,5 +1,94 @@
 # BUILD_LOG.md — `courrier` running log
 
+### F-OCT-13 — phone navigation and feed management
+
+Observed production rendering at 390 px showed seven bottom-navigation labels wrapping and clipping. Keep four frequent destinations and a More drawer that exposes all seven modules; retain the wide navigation rail. Verify the actual phone routes and captured production forms. Add explicit, confirmed local-feed removal using the account-scoped repository so an invalid subscription can be corrected without deleting an account. Existing remote News subscriptions remain managed on the server.
+
+
+### F-OCT-12 — notification dependency lint and production onboarding review
+
+Observed: whole-project Android lint reports three MissingPermission errors in flutter_local_notifications 20.1.0. Review the supported 22.3.3 upstream release (including its Android DST correction), update the compatible timezone dependency, and repeat the actual lint/build gates. Do not baseline or suppress the errors. Production first-launch text also advertises unenabled Microsoft 365 and a nonexistent sample feed; replace new-install guidance with implemented Accounts workflows and the verified GitHub Atom release feed while preserving existing installations.
+
+
+### F-OCT-11 — platform readiness and recovery
+
+Reason-first review: release Android lacks INTERNET permission; exact alarms can fail after permission denial; weekly times use UTC and duration arithmetic across DST. Pin the device time-zone plugin, choose an allowed alarm mode, preserve wall-clock recurrence, configure biometric themes and prevent insecure backup/signing defaults. Add bounded direct-feed refresh/subscription and a preserving conflict recovery action: archive the local version before reloading the server. Reserve OAuth identities before external storage writes. Validate DST, database rollback, account failures, production widgets and actual Android packaging. CI must use the tested toolchain and frozen dependencies; it must never publish a debug-signed release.
+
+
+### F-OCT-10 — local edits and pending-change acknowledgement
+
+Reason-first review: calendar/contact/task writes and their sync intents are separate transactions. Repeated offline edits create duplicate intents with obsolete etags, and acknowledging a queue row while it is edited can lose the newer change. Make each mutation transactional and coalesce pending edits by replacing them with a new queue identity while retaining the original precondition. Send pending work before pulls; never upload a second create after a remote identity has been recorded. Preserve calendar source components and reject malformed dates/deeply nested input. Verify rollback and repeated-edit behavior in actual SQLite fixtures.
+
+
+### F-OCT-09 — retained PIN helper hardening
+
+Reason-first review: the legacy PIN helper uses a predictable time-derived salt and one SHA-256 operation, with separate writes that can strand an existing PIN. Although the current production lock uses platform device authentication, this reusable helper must preserve existing users safely. Replace new records with a random salt and PBKDF2-HMAC-SHA256 (600,000 rounds), write one versioned secure-store record, validate PIN shape, and migrate legacy credentials only after successful authentication. Run a standard-library cross-checked derivation vector and existing unlock/disable tests.
+
+
+### F-OCT-08 — settings and startup safety
+
+Reason-first review: settings callbacks are not connected, settings import accepts unknown versions and can change lock state, and startup failures prevent any recovery screen. Connect non-sensitive settings export/import with full validation and rollback. Gate the production application and locked notes with platform device authentication; avoid presenting an unconfigured custom PIN as protection. Add a retryable startup surface and verify import failure paths plus production navigation. Device authentication/secure-storage runtime remains a separate device gate.
+
+
+### F-OCT-07 — account and synchronization integrity
+
+Reason-first review: production has no account/settings route. DAV pulls advance tokens without fetching resources; an empty property set is incorrectly interpreted as deletion. Discovered URLs and automatic redirects can send credentials outside the configured origin. Account rows and secure-store writes can leave partial setup, IMAP connection settings are lost, and Notes pull can overwrite pending edits.
+
+Strategy: bounded HTTPS transport with same-origin DAV resolution; download and parse records before committing data and sync tokens together; persist actual resource hrefs via a preserving schema migration; retain pending local work on conflicts. Configure accounts atomically with compensation for secure storage. Expose explicit account setup/manual synchronization and honest unsupported-provider states. Validate protocol fixtures, rollback, real database migration, production widgets, analyzer/full tests and Android build before claiming readiness.
+
+
+## 2026-10-30 refinement — current work
+
+### F-OCT-05 — mail identity and bounded threading
+
+- Hypothesis: moved messages retain their source mailbox UID even though the server assigns a new UID; a later body/flag operation can address another message. Search and message mutations also lack consistent account/folder checks. Cyclic References headers can hang the thread walk.
+- Strategy: return and persist server UID mappings, scope operations to the selected account/folder, preserve attachment metadata in cached bodies, and make grouping terminate on cyclic headers. Keep database changes atomic.
+- Verification: move → fetch → restore using the demo backend's distinct UIDs, cross-account refusal, cached attachment reload, cyclic-header grouping, and failed attachment persistence rollback.
+- Fallback: refuse unsafe operations when the server cannot supply a complete UID mapping; keep local cached content and require reconciliation.
+
+### F-OCT-06 — reminders without destructive rescheduling
+
+- Hypothesis: cancellation precedes database reads and scheduling, so a read or scheduling failure discards existing reminders; the screen always displays an empty list.
+- Strategy: derive an upcoming plan from the database, schedule desired notifications before cancelling stale IDs, and display the same plan with permission/error handling.
+- Verification: failed database reads and injected scheduler failure retain prior alarms; successful reload replaces stale entries and matches the displayed plan.
+- Fallback: retain existing alarms and show the failure instead of claiming a successful reload.
+
+### F-OCT-04 — notes editing and durable writes
+
+- Hypothesis: the normal notes list has no tap handler, while writes and their sync queue entries are separate transactions; users cannot edit notes through production navigation and interrupted writes can lose synchronization work.
+- Strategy: connect list/create/edit routes to the existing repository, retain drafts on save errors, prevent cross-collection updates, and commit note changes with their queue records atomically. Require an unlock callback before exposing locked content.
+- Verification: exercise the seeded note through the production shell at phone width, reload the saved value, and test failure rollback and locked-note refusal.
+- Fallback: leave the draft visible on failure and preserve existing locked notes without exposing their contents.
+
+### F-OCT-03 — atomic sample installation
+
+- Hypothesis: inserting the local account before loading the calendar asset leaves a partial first launch if the asset fails; the account then prevents retries.
+- Strategy: run the account check and all sample inserts in one database transaction.
+- Verification: fail asset loading, verify rollback, then retry successfully.
+- Fallback: retain the prior database unchanged when installation fails; never reset user data.
+
+The maintainer authorized audit, implementation and validation across the suite, including continuation between repair milestones. External service/device/store gates remain unverified until exercised. Historical milestone statements below are retained as provenance, not adopted as current verification.
+
+### F-OCT-01 — reproducible Flutter toolchain
+
+Hypothesis: the committed lockfile targets an older Flutter SDK; Flutter 3.47.9 / Dart 3.13.7 requires four SDK-pinned package changes, so `flutter pub get --enforce-lockfile` correctly fails before analysis.
+
+Strategy: refresh only the compatible resolution with `flutter pub get`, inspect the lockfile delta, and pin the tested Flutter version in build instructions and CI.
+
+Verification plan: rerun frozen installation, analyzer, existing tests and Android compilation. Record every failure, including unavailable live services.
+
+Fallback: retain the observed failing baseline and investigate a matching older SDK if the newer SDK changes supported behavior. Do not weaken the dependency constraints or checks.
+
+### F-OCT-02 — production navigation
+
+Hypothesis: `CourrierApp` discards its database when creating `AppShell`, and the destination builders route all seven modules to placeholders. Existing widget tests assert only navigation labels, so they cannot detect this.
+
+Strategy: pass the persistent database through startup, wire actual module repositories/screens, add visible loading/error states, and exercise seeded content through production startup. Preserve the separate in-memory screenshot harness.
+
+Verification plan: widget tests open production tabs against a real in-memory SQLite database, read seeded content and perform a persisted note edit; narrow/wide navigation, existing repository tests and analyzer must pass.
+
+Fallback: keep the production defect open if a module cannot be wired safely; document the exact missing integration rather than presenting a placeholder as functional.
+
 > Maintained continuously. Every fix gets a reason-first entry. Every milestone gets an
 > audit report (AUDIT_LOOP.md §5.2). This file is a deliverable, not optional.
 
@@ -1230,3 +1319,15 @@ Outstanding findings: <ledger excerpt>
 Strategies tried:     <list>
 Decision requested:   <what you need from the human>
 ```
+
+### F-OCT-14 — native dependency permission checks
+
+Whole-build `lintDebug` found real unguarded notification delivery calls in both 20.1.0 and 22.3.3. Vendor the published 22.3.3 package with its BSD license/provenance and a small shared posting guard: check permission before delivery and catch revocation races. Three Robolectric permission tests accompany the patch; retain the upstream native tests.
+
+The same command then linted secure-storage in isolation and reported USE_BIOMETRIC absent and an API-24 call under the library's API-23 floor. Courrier already declares USE_BIOMETRIC and minSdk 24; these are not reachable defects in this application. Follow Android's documented application-plus-dependencies analysis (`checkDependencies = true`, `:app:lintDebug`) so every dependency is checked against the real merged app context. No issue IDs, severities, baselines or abort settings are suppressed. Standalone upstream-library lint failures remain recorded in the raw receipt.
+
+Reference: https://developer.android.com/studio/write/lint
+
+### F-OCT-15 — reachable licenses and accurate distribution policy
+
+The license checklist required an in-app page, but Settings had no route to it. Add Flutter's packaged license page and exercise opening it through the production phone screen. Correct the unsupported claim that native MSAL is proprietary using Microsoft's actual MIT license files; preserve the existing dependency exclusion as project policy. Document MPL source availability and distinguish the Dart inventory from final native-platform/store review.

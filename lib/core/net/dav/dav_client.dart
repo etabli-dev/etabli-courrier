@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 
+import '../bounded_http.dart';
 import '../net_error.dart';
 import 'multistatus.dart';
 
@@ -30,6 +30,24 @@ class DavClient {
 
   final DavCredentials credentials;
   final http.Client _http;
+  Uri? _origin;
+
+  Uri _checked(Uri uri) {
+    requireHttps(uri);
+    final origin = _origin ??= uri;
+    return sameOrigin(origin, uri.toString());
+  }
+
+  Future<http.Response> get({required Uri url}) async {
+    final response = await boundedRequest(
+      _http,
+      'GET',
+      _checked(url),
+      headers: {'authorization': credentials.basicAuthHeader},
+    );
+    _throwForStatus(response);
+    return response;
+  }
 
   /// PROPFIND with explicit Depth + body.
   Future<Multistatus> propfind({
@@ -86,7 +104,13 @@ class DavClient {
     } else if (ifNoneMatchAny) {
       headers['if-none-match'] = '*';
     }
-    final response = await _http.put(url, headers: headers, body: body);
+    final response = await boundedRequest(
+      _http,
+      'PUT',
+      _checked(url),
+      headers: headers,
+      body: body,
+    );
     _throwForStatus(response);
     return DavPutResult(etag: response.headers['etag']);
   }
@@ -99,7 +123,12 @@ class DavClient {
     if (ifMatchEtag != null) {
       headers['if-match'] = ifMatchEtag;
     }
-    final response = await _http.delete(url, headers: headers);
+    final response = await boundedRequest(
+      _http,
+      'DELETE',
+      _checked(url),
+      headers: headers,
+    );
     _throwForStatus(response);
   }
 
@@ -110,23 +139,32 @@ class DavClient {
     required String depth,
     required String contentType,
   }) async {
-    final request = http.Request(method, url)
-      ..body = body
-      ..headers.addAll({
-        'authorization': credentials.basicAuthHeader,
-        'content-type': contentType,
-        'depth': depth,
-      });
-    try {
-      final streamed = await _http.send(request);
-      final response = await http.Response.fromStream(streamed);
+    var target = _checked(url);
+    for (var redirects = 0; redirects <= 5; redirects++) {
+      final response = await boundedRequest(
+        _http,
+        method,
+        target,
+        body: body,
+        headers: {
+          'authorization': credentials.basicAuthHeader,
+          'content-type': contentType,
+          'depth': depth,
+        },
+      );
+      if (method == 'PROPFIND' &&
+          [301, 302, 307, 308].contains(response.statusCode)) {
+        final location = response.headers['location'];
+        if (location == null) {
+          throw const ParseFailureError('redirect without a location');
+        }
+        target = _checked(target.resolve(location));
+        continue;
+      }
       _throwForStatus(response);
       return response;
-    } on SocketException catch (e) {
-      throw OfflineError(cause: e);
-    } on HttpException catch (e) {
-      throw OfflineError(cause: e);
     }
+    throw const ParseFailureError('too many DAV redirects');
   }
 
   void _throwForStatus(http.Response response) {
@@ -137,6 +175,9 @@ class DavClient {
     // Multi-Status (207) is success — only PROPFIND/REPORT reach here.
     if (code == 207) {
       return;
+    }
+    if (code == 403 && response.body.contains('valid-sync-token')) {
+      throw const InvalidSyncTokenError();
     }
     if (code == 412) {
       throw PreconditionFailedError(observedEtag: response.headers['etag']);
@@ -159,4 +200,8 @@ class DavReportResult {
 class DavPutResult {
   const DavPutResult({this.etag});
   final String? etag;
+}
+
+class InvalidSyncTokenError extends ForbiddenError {
+  const InvalidSyncTokenError();
 }

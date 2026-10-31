@@ -1,95 +1,25 @@
-# LICENSING.md — keeping `courrier` Apache-2.0
+# Licensing and distribution
 
-> Standing reference. Not legal advice; the rules below are well-settled practice.
-> The whole strategy rests on one fact: **copyleft attaches to shipped code, not to
-> learning.** Keep copyleft code out of the binary and Apache-2.0 holds.
+Courrier application code is Apache-2.0. Dependencies retain their own licenses. The license gate is a project policy and inventory check; it does not certify acceptance by an app store or F-Droid.
 
-## The principle
-- **Reference ≠ dependency.** Reading GPL/MPL code to learn *what a feature must do* does
-  not bind `courrier`. **Linking or copying** code does. Only what ships constrains us.
-- Therefore: **no GPL/AGPL code is ever copied or linked.** MPL is allowed as per-file
-  copyleft. Apache/MIT/BSD link freely.
+## Dependency policy and reproducible checks
 
-## Dependency allow-list (enforced by CI — see `.github/workflows/license-gate.yml`)
-- **GREEN (link freely):** Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unlicense, CC0.
-- **YELLOW (allowed; obligations below):** MPL-2.0, EPL-2.0, CDDL-1.x.
-- **RED (build fails):** GPL-2.0, GPL-3.0, AGPL-3.0, **LGPL-* ** (static Flutter linking
-  makes LGPL effectively viral — treat as red), SSPL, BUSL, "no-license".
-- **BANNED packages (regardless of their wrapper's license):** `msal_auth` and any wrapper
-  of Microsoft's **proprietary native MSAL** binaries — they inject a non-free dependency
-  that **breaks F-Droid**.
-- Applies to **direct and transitive** packages. New license not on the list → **STOP**, do
-  not add the dep, ask.
+Run `flutter pub get --enforce-lockfile`, then `python3 tool/check_licenses.py`. The gate compares every resolved Dart/Flutter package version and license-file SHA-256 against `tool/license_manifest.json`. It fails on additions, missing notices, changed license bytes, unreviewed versions and licenses outside the allow-list. Review the actual source/license before changing that inventory; update `THIRD_PARTY_LICENSES.md` at the same time. The earlier unpinned very_good_cli command is superseded by this executable check.
 
-### OAuth dependencies (all GREEN — verify SPDX at pin time, record in NOTICE)
-- **`flutter_appauth`** — wraps the open-source AppAuth SDKs (Apache-2.0 upstream); the Dart
-  package is permissively licensed. **Preferred** OAuth flow lib.
-- **`aad_oauth`** — Dart/Flutter Azure AD OAuth (webview), permissive. Acceptable alternative.
-- **`oauth2`** (Dart team) — BSD-3-Clause building blocks.
+The existing project allow-list is Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unlicense, CC0-1.0, MPL-2.0, EPL-2.0 and CDDL-1.x. Other licenses, including GPL/AGPL/LGPL and unlicensed code, remain outside this project's current dependency policy. This is a conservative distribution choice, not a claim that every such license is incompatible in every context.
 
-## Clean-room rules for GPL references (Fossify, Etar, Tasks.org, DavMail)
-- Work from the **abstracted requirements** (the addenda / vignettes), not open source files
-  side-by-side.
-- Do **not** copy code, comments, distinctive identifiers, or transcribe non-obvious
-  algorithms. Field lists, protocol behaviors, and UX flows are facts you may reimplement;
-  specific code expression is not.
-- Keep `THIRD_PARTY_REFERENCES.md` current as provenance.
+`msal_auth` remains excluded by project policy; OAuth currently uses AppAuth. The earlier statement that Microsoft's native MSAL libraries are proprietary was incorrect: the official [Android](https://github.com/AzureAD/microsoft-authentication-library-for-android/blob/dev/LICENSE) and [Apple](https://github.com/AzureAD/microsoft-authentication-library-for-objc/blob/dev/LICENSE) repositories carry MIT licenses. This correction does not add MSAL or enable Microsoft 365. A future provider change requires review of the exact wrapper, native dependency graph, build reproducibility and distribution requirements.
 
-## MPL dependencies (`enough_mail`; Thunderbird as reference)
-- **Unmodified dependency:** keep its files MPL-2.0; add a NOTICE entry with a source link.
-  That is the entire obligation. MPL is **per-file** — it does not infect Apache code.
-- **If ever modified:** the modified files stay MPL-2.0 and that source must be published;
-  the rest stays Apache-2.0. **Prefer upstream over forking.** Never paste MPL into an
-  Apache-licensed file.
+## Notices, source and local modifications
 
-## K-9 / Thunderbird-Android
-- **Apache-2.0** — compatible. Clean-room still preferred (Kotlin→Dart). If a small utility
-  were ever adapted, Apache-2.0 permits it **with attribution** (record in NOTICE).
+- Retain `LICENSE`, `NOTICE`, `THIRD_PARTY_LICENSES.md` and `THIRD_PARTY_REFERENCES.md` with source distributions. The resolved license texts include package/version source links. The in-app Settings license page exposes Flutter's packaged dependency licenses.
+- Resolved MPL-2.0 packages are `enough_mail`, `enough_convert` and desktop-only `dbus`. Preserve their covered source and notices and tell binary recipients how to obtain the corresponding version. Modified covered files retain MPL obligations. [MPL 2.0 section 3](https://www.mozilla.org/en-US/MPL/2.0/) requires source availability for distributed covered executables; merely noting a dependency name is insufficient.
+- `third_party/flutter_local_notifications` contains published 22.3.3 source plus a small Android permission-handling patch. Its BSD-3-Clause license, archive checksum, changed behavior and replacement criteria are recorded in `UPSTREAM.md`. Dart analyzer exclusions cover this external dependency's unchanged Dart source; its Android patch has separate native tests and application/dependency lint. Do not modify the shared Pub cache.
+- Keep abstract behavioral references separate from copied/adapted code. `THIRD_PARTY_REFERENCES.md` records the original project's provenance policy. DavMail is an external companion, never bundled. Any future copied or adapted code needs its actual license and attribution preserved.
+- Contributions follow `CONTRIBUTING.md` (Apache-2.0 inbound terms and DCO). Third-party attribution is retained separately from application authorship.
 
-## Microsoft 365 / Exchange Online integration
-- **OAuth is mandatory** (Basic Auth retired for legacy protocols Oct 1 2022, SMTP AUTH
-  ≈Sept 2025 — verify against Microsoft sources). v1 uses **IMAP/SMTP XOAUTH2** via
-  `enough_mail` + `flutter_appauth`.
-- **App registration:** one **project-level Entra public-client** app, **no client secret**,
-  **PKCE**. The **embedded client ID is public and acceptable** (security comes from PKCE +
-  redirect-URI restrictions, not ID secrecy) — this is the same pattern Thunderbird/K-9 use.
-  **End users register nothing.** Pursue **publisher verification** to reduce consent
-  friction / "unverified app" warnings in managed tenants.
-- **Do NOT reuse another project's client ID** (e.g., Thunderbird's) — fragile and against
-  their terms. Register your own.
-- **Microsoft API Terms:** embedding a public client ID and calling Outlook/IMAP/Graph is
-  permitted; comply with throttling, branding, and acceptable-use rules.
-- **F-Droid:** connecting to a proprietary network service is **allowed** but earns the
-  **`NonFreeNet`** anti-feature label (informational, non-blocking). Keep all M365/OAuth code
-  in the **optional `mail/providers/` module** so the core stays clean; declare the
-  anti-feature in F-Droid metadata. Never ship a proprietary native lib (see BANNED).
-- **DavMail (GPLv2)** is an **external companion**, documented for on-prem Exchange and for
-  surfacing Exchange calendar/contacts as CalDAV/CardDAV. **Never bundled.**
+## Before distributing a binary
 
-## NOTICE & attribution
-- `LICENSE` = Apache-2.0 text.
-- `NOTICE` = Apache notice **+ a Third-Party Licenses section** listing every shipped dep,
-  its license, and source URL, with explicit MPL-2.0 entry for `enough_mail` and entries for
-  the OAuth libs. Apache §4(d) requires NOTICE be propagated.
-- **In-app:** wire Flutter `showLicensePage()` into Settings → About to aggregate package
-  licenses for end-user notice on store builds.
+The current inventory covers 140 resolved packages, including SDK/development/desktop packages. This is broader than the Android shipped Dart set, but does not enumerate every Maven, CocoaPods or system component. Review the final platform dependency notices and archive the corresponding source versions, including local patches, with the chosen release.
 
-## Why this matters for distribution (App Store)
-- Apache-2.0 + MPL-2.0 are App-Store-distributable. **GPL is not** (Apple's terms conflict
-  with GPL's no-further-restrictions clause) — which is why Etar/Tasks/Fossify/DavMail ship
-  outside the App Store. Keeping RED licenses and proprietary native libs out is what makes
-  the App Store target legal **and** keeps F-Droid inclusion possible.
-
-## Inbound contributions = outbound license
-- `CONTRIBUTING.md` states **inbound = outbound (Apache-2.0)**.
-- Require a **DCO** (`Signed-off-by`) so contributors assert they have the rights and aren't
-  pasting copyleft code. Lightweight; no CLA.
-
-## Standing checklist (the audit's license dimension verifies these)
-1. CI license gate present and green; **no banned package** in the tree.
-2. `NOTICE` lists every shipped dep incl. MPL `enough_mail` + OAuth deps.
-3. No RED license anywhere in the resolved dependency tree.
-4. `THIRD_PARTY_REFERENCES.md` provenance intact; no copied code.
-5. `showLicensePage()` reachable from About.
-6. CONTRIBUTING has inbound=outbound + DCO.
-7. M365/OAuth code isolated in the optional module; F-Droid NonFreeNet declared.
+Run the pinned CI/license checks, inspect the actual packaged license page and source links on an installed build, review native notices and platform/store requirements, and retain the source/build instructions for that version. Microsoft 365 remains disabled pending project-owned registration and device validation. No F-Droid or store acceptance is established by a permissive application license or a passing inventory check.

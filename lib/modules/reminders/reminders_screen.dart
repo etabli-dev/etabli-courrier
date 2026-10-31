@@ -19,8 +19,10 @@ class RemindersScreen extends StatefulWidget {
 }
 
 class _RemindersScreenState extends State<RemindersScreen> {
-  bool _hasPermission = true;
-  final List<ScheduledNotification> _upcoming = const <ScheduledNotification>[];
+  bool _hasPermission = false;
+  bool _loading = true;
+  String? _error;
+  List<ScheduledNotification> _upcoming = const <ScheduledNotification>[];
 
   @override
   void initState() {
@@ -29,33 +31,78 @@ class _RemindersScreenState extends State<RemindersScreen> {
   }
 
   Future<void> _refresh() async {
-    final granted = await widget.scheduler.hasPermission();
-    if (!mounted) {
-      return;
+    try {
+      await widget.scheduler.initialize();
+      final granted = await widget.scheduler.hasPermission();
+      final upcoming = await widget.rearmService.upcoming();
+      if (!mounted) return;
+      setState(() {
+        _hasPermission = granted;
+        _upcoming = upcoming;
+        _loading = false;
+        _error = null;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _error = 'Could not load reminders. Please try Reload.';
+        });
+      }
     }
-    setState(() => _hasPermission = granted);
-    // M5 surfaces a one-line summary instead of the full list — the scheduler
-    // doesn't yet round-trip full ScheduledNotification objects. M11 polish
-    // wires a notifications database for richer surfacing.
   }
 
   Future<void> _requestPermission() async {
-    await widget.scheduler.requestPermission();
-    await _refresh();
+    try {
+      final granted = await widget.scheduler.requestPermission();
+      if (granted) await widget.rearmService.rearmAll();
+      await _refresh();
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => _error =
+              'Could not enable reminders. Check notification permissions.',
+        );
+      }
+    }
   }
 
   Future<void> _reload() async {
-    await widget.rearmService.rearmAll();
-    await _refresh();
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      await widget.scheduler.initialize();
+      if (await widget.scheduler.hasPermission()) {
+        await widget.rearmService.rearmAll();
+      }
+      await _refresh();
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _error =
+              'Reload failed. Existing reminders have been retained where possible.';
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return RemindersListView(
-      reminders: _upcoming,
-      hasPermission: _hasPermission,
-      onRequestPermission: _requestPermission,
-      onReload: _reload,
+    return Column(
+      children: [
+        if (_loading) const LinearProgressIndicator(),
+        if (_error != null)
+          Padding(padding: const EdgeInsets.all(16), child: Text(_error!)),
+        Expanded(
+          child: RemindersListView(
+            reminders: _upcoming,
+            hasPermission: _hasPermission,
+            onRequestPermission: _requestPermission,
+            onReload: _loading ? null : _reload,
+          ),
+        ),
+      ],
     );
   }
 }

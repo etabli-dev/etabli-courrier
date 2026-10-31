@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../core/db/database.dart';
+import '../../../core/sync/change_queue.dart';
 import 'note_draft.dart';
 
 // Offline-first notes repository. Reads/writes hit CourrierDatabase first
@@ -19,7 +20,7 @@ class NoteRepository {
 
   // ---- CRUD ---------------------------------------------------------------
 
-  Future<int> createNote(NoteDraft draft) async {
+  Future<int> createNote(NoteDraft draft) => db.transaction(() async {
     final id = await db
         .into(db.noteItems)
         .insert(
@@ -40,36 +41,43 @@ class NoteRepository {
       payload: draft.content,
     );
     return id;
-  }
+  });
 
-  Future<void> updateNote(int noteId, NoteDraft draft) async {
-    final existing = await (db.select(
-      db.noteItems,
-    )..where((t) => t.id.equals(noteId))).getSingleOrNull();
-    if (existing == null) {
-      throw StateError('Note $noteId not found');
-    }
-    await (db.update(db.noteItems)..where((t) => t.id.equals(noteId))).write(
-      NoteItemsCompanion(
-        title: Value(draft.title),
-        content: Value(draft.content),
-        kind: Value(draft.kind.name),
-        category: Value(draft.category),
-        favorite: Value(draft.favorite),
-        locked: Value(draft.locked),
-        modified: Value(DateTime.now()),
-      ),
-    );
-    await _enqueue(
-      accountId: await _accountIdForCollection(draft.collectionId),
-      noteId: noteId,
-      operation: 'update',
-      payload: draft.content,
-      baseEtag: existing.etag,
-    );
-  }
+  Future<void> updateNote(int noteId, NoteDraft draft) => db.transaction(
+    () async {
+      final existing = await (db.select(
+        db.noteItems,
+      )..where((t) => t.id.equals(noteId))).getSingleOrNull();
+      if (existing == null) {
+        throw StateError('Note $noteId not found');
+      }
+      if (draft.collectionId != existing.collectionId) {
+        throw ArgumentError(
+          'A note cannot be moved by changing its draft collection.',
+        );
+      }
+      await (db.update(db.noteItems)..where((t) => t.id.equals(noteId))).write(
+        NoteItemsCompanion(
+          title: Value(draft.title),
+          content: Value(draft.content),
+          kind: Value(draft.kind.name),
+          category: Value(draft.category),
+          favorite: Value(draft.favorite),
+          locked: Value(draft.locked),
+          modified: Value(DateTime.now()),
+        ),
+      );
+      await _enqueue(
+        accountId: await _accountIdForCollection(draft.collectionId),
+        noteId: noteId,
+        operation: 'update',
+        payload: draft.content,
+        baseEtag: existing.etag,
+      );
+    },
+  );
 
-  Future<void> deleteNote(int noteId) async {
+  Future<void> deleteNote(int noteId) => db.transaction(() async {
     final existing = await (db.select(
       db.noteItems,
     )..where((t) => t.id.equals(noteId))).getSingleOrNull();
@@ -85,7 +93,7 @@ class NoteRepository {
       operation: 'delete',
       baseEtag: existing.etag,
     );
-  }
+  });
 
   // ---- Lock --------------------------------------------------------------
 
@@ -147,18 +155,13 @@ class NoteRepository {
     required String operation,
     String? payload,
     String? baseEtag,
-  }) async {
-    await db
-        .into(db.pendingChanges)
-        .insert(
-          PendingChangesCompanion.insert(
-            accountId: accountId,
-            entityTable: 'note_items',
-            entityId: noteId,
-            operation: operation,
-            baseEtag: Value(baseEtag),
-            payload: Value(payload),
-          ),
-        );
-  }
+  }) => enqueueChange(
+    db,
+    accountId: accountId,
+    table: 'note_items',
+    entityId: noteId,
+    operation: operation,
+    payload: payload,
+    baseEtag: baseEtag,
+  );
 }

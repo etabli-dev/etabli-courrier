@@ -20,10 +20,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final fresh = await PreferencesStore.open();
     final imported = await const SettingsImporter().importFromJson(json, fresh);
-    expect(imported, 3);
+    expect(imported, 2);
     expect(fresh.getString('pref.theme.mode'), 'dark');
     expect(fresh.getInt('pref.sync.interval_minutes'), 30);
-    expect(fresh.getBool('pref.lock.enabled'), isTrue);
+    expect(fresh.getBool('pref.lock.enabled'), isNull);
   });
 
   test('Importer skips non-pref keys', () async {
@@ -33,9 +33,30 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final fresh = await PreferencesStore.open();
     final imported = await const SettingsImporter().importFromJson(json, fresh);
-    // Only the 3 namespaced keys land — the unprefixed one is filtered out.
-    expect(imported, 3);
+    // Only the 2 non-security namespaced keys land — the unprefixed one is filtered out.
+    expect(imported, 2);
     final shared = await SharedPreferences.getInstance();
     expect(shared.getKeys(), isNot(contains('unprefixed.junk')));
   });
+  test(
+    'unknown version and invalid value never partially change preferences',
+    () async {
+      final store = await PreferencesStore.open();
+      for (final source in [
+        '{"version":99,"preferences":{"pref.theme.mode":"light"}}',
+        '{"version":1,"preferences":{"pref.theme.mode":"light","pref.bad":[]}}',
+      ]) {
+        await expectLater(
+          const SettingsImporter().importFromJson(source, store),
+          throwsFormatException,
+        );
+        expect(store.getString('pref.theme.mode'), 'dark');
+      }
+      await const SettingsImporter().importFromJson(
+        '{"version":1,"preferences":{"pref.lock.enabled":false}}',
+        store,
+      );
+      expect(store.getBool('pref.lock.enabled'), isTrue);
+    },
+  );
 }

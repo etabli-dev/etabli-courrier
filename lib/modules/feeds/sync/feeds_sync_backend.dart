@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 
+import '../../../core/net/bounded_http.dart';
 import '../../../core/net/net_error.dart';
 import '../../../core/sync/sync_backend.dart';
 import '../data/feed_repository.dart';
@@ -35,17 +36,28 @@ class FeedsSyncBackend extends SyncBackend {
 
   @override
   Future<SyncOutcome> pull({required int accountId}) async {
+    if (accountId != repository.accountId) {
+      throw ArgumentError('Account does not match the feed repository');
+    }
     var pulled = 0;
     try {
       if (newsClient != null) {
         pulled += await _pullViaNews();
       }
-      pulled += await _pullViaDirect();
+      if (newsClient == null) return await _pullViaDirect();
       return SyncOutcome(success: true, pulled: pulled);
     } on NetError catch (e) {
-      return SyncOutcome(success: false, error: e);
+      return SyncOutcome(success: false, pulled: pulled, error: e);
+    } on FormatException catch (e) {
+      return SyncOutcome(
+        success: false,
+        pulled: pulled,
+        error: ParseFailureError('invalid feed', cause: e),
+      );
     }
   }
+
+  void close() => _http.close();
 
   Future<int> _pullViaNews() async {
     final client = newsClient!;
@@ -84,21 +96,16 @@ class FeedsSyncBackend extends SyncBackend {
     return inserted;
   }
 
-  Future<int> _pullViaDirect() async {
+  Future<SyncOutcome> _pullViaDirect() async {
     var inserted = 0;
+    NetError? failure;
     final subs = await repository.listSubscriptions();
     for (final sub in subs) {
-      // Skip rows that already came from News API — by convention they live
-      // in the same FeedSubscriptions table; the wiring layer flags them
-      // by storing a "newsapi:" prefix on the URL when needed. For M10 we
-      // attempt every URL that looks like a public HTTP(S) feed.
-      if (!sub.url.startsWith('http')) {
-        continue;
-      }
       try {
-        final response = await _http.get(Uri.parse(sub.url));
+        requireHttps(Uri.parse(sub.url));
+        final response = await boundedRequest(_http, 'GET', Uri.parse(sub.url));
         if (response.statusCode < 200 || response.statusCode >= 300) {
-          continue;
+          throw mapHttpStatus(response.statusCode);
         }
         final parsed = parser.parse(response.body);
         for (final item in parsed.items) {
@@ -113,14 +120,17 @@ class FeedsSyncBackend extends SyncBackend {
           );
           inserted += 1;
         }
-      } on FormatException {
-        // Malformed feed — leave the existing items in place + retry later.
-        continue;
-      } on Exception {
-        continue;
+      } on NetError catch (error) {
+        failure = error;
+      } on Exception catch (error) {
+        failure = ParseFailureError('a feed could not be read', cause: error);
       }
     }
-    return inserted;
+    return SyncOutcome(
+      success: failure == null,
+      pulled: inserted,
+      error: failure,
+    );
   }
 
   @override
