@@ -4,7 +4,7 @@ title: "Current implementation and first use"
 
 Offline mail, calendar, contacts, tasks, reminders, notes and feeds, with explicit account refresh. IMAP reading and manual Nextcloud sync are connected; sending, Microsoft 365 sign-in and background sync are unavailable in the production UI.
 
-This page describes the October 2026 source revision. These source changes are not part of older development release downloads. Local checks are distinct from device, live-service and store acceptance.
+This page describes the October–November 2026 source revision. These source changes are not part of older development release downloads. Local checks are distinct from device, live-service and store acceptance.
 
 ## Build from a clean checkout
 
@@ -22,6 +22,8 @@ These commands build from this source tree. Debug APKs are development artifacts
 
 ## Use and verification
 
-Read the [repository README](https://github.com/etabli-dev/etabli-courrier/blob/main/README.md) for the exact application workflow, privacy/storage behavior and platform differences. The [October refinement record](https://github.com/etabli-dev/etabli-courrier/blob/main/docs/refinement-2026-10.md) records findings, changes, observed checks, deferred work and the next release action. Local checks alone do not establish remote CI results.
+Read the [repository README](https://github.com/etabli-dev/etabli-courrier/blob/main/README.md) for the exact application workflow, privacy/storage behavior and platform differences. The [October–November refinement record](https://github.com/etabli-dev/etabli-courrier/blob/main/docs/refinement-2026-10.md) records findings, changes, observed checks, deferred work and the next release action. Local checks alone do not establish remote CI results.
 
-For published source `7ca7cef025ba`, [application CI](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136886) passed on 2026-10-31, including Android packaging and full unsigned iOS compilation. Installed-device behavior, live-account acceptance and signed distribution remain separate gates.
+For published source `7ca7cef025ba`, [application CI](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136886) passed on 2026-10-31, including Android packaging and full unsigned iOS compilation. This historical compilation result does not establish installed iOS behavior, live-account acceptance or signed distribution; the later scoped Android result follows below.
+
+On 2026-11-02, the debug APK identified in the refinement record passed offline note creation → save → force-stop/relaunch → exact title/body recovery on an API 35 ARM64/4 KiB emulator. Keep editing retained an unsaved draft; Discard preserved the saved note. The October 31 system failure remains historical evidence. Notifications, locking, live accounts, broader device acceptance and signed distribution remain open.

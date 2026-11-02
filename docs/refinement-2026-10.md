@@ -1,4 +1,4 @@
-# October 2026 refinement
+# October–November 2026 refinement
 
 ## Scope and acceptance
 
@@ -38,7 +38,7 @@ Raw receipts are in the suite workspace `.refinement/2026-10-30/logs/`; each rec
 
 Published source commit `7ca7cef025ba3641fc544f1f66eaff5ed9e6813a` passed [application CI](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136886): Android analysis, tests, APK/AAB packaging and native notification checks, plus the full unsigned iOS compilation. The separate [license gate](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136888) and [documentation Pages build/deployment](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136871) also passed. These are observed remote results for that source commit, separate from the local checks above.
 
-Unsigned iOS compilation closes the compilation gate for that revision; installed iOS behavior, private signing, live-account acceptance and store submission remain unverified. Android installation and the unsuccessful interactive attempt are recorded below. No signed application release or store submission occurred.
+Unsigned iOS compilation closes the compilation gate for that revision; installed iOS behavior, private signing, live-account acceptance and store submission remain unverified. Android installation, the unsuccessful October 31 attempt and the scoped November 2 note journey are recorded below. No signed application release or store submission occurred.
 
 ### Android device attempt — 2026-10-31
 
@@ -47,6 +47,26 @@ The final debug APK installed successfully on the local API 35 arm64 emulator (4
 The first startup exceeded its 90-second limit; screenshot and window-service inspection also timed out. After stopping the separate test emulator and idle build JVMs, one bounded retry produced a black screenshot, a null accessibility root and an inaccessible shared-storage mount. Android's crash buffer reported `DeadSystemException` in Courrier, System UI, the keyboard and other services; system logs showed watchdog/lock contention during recovery. A transient activity-resolution failure during that recovery was contradicted by the subsequent installed-package dump, which lists the correct `.MainActivity` launcher. No isolated application exception was established.
 
 Note creation and persistence after restart were not exercised on Android. Production-shell/database tests remain the observed evidence for that behavior. Repeat the prepared note journey on a responsive emulator or physical device, followed by notification permission/delivery and lock lifecycle checks, before claiming device acceptance. Evidence is in `.refinement/2026-10-30/android-local/` (`api35-installs.json`, `flutter-api35-first-attempt.json`, `flutter-api35-retry.json`, `courrier-api35-package.txt`, `flutter-api35-system-failure.log`); `FLUTTER_JOURNEYS.md` there gives runnable steps. API 36/16 KiB runtime execution remains unverified despite the successful package alignment checks.
+
+### Installed Android note journey — 2026-11-02
+
+The debug APK with SHA-256
+`5562dfb67ba9ce0e9ff8edcb59a6fa76da9392a588828f00d389eb106444b1d6`
+passed an actual API 35 ARM64 emulator journey with 4 KiB pages and guest external
+networking disabled. In the production UI, a new note titled
+`LocalAudit20261102` with body `Saved offline and reopened after restart` was
+saved, then reopened with the exact title and body after force-stop/relaunch.
+Keep editing retained a modified draft; deliberate Discard preserved the prior
+saved text. Existing sample notes and the saved synthetic note were retained.
+
+This later result closes the scoped Android note creation/persistence and draft
+guard checks left unexercised by the October 31 system failure above. It does not
+verify notification permission/delivery, device locking, live accounts, broader
+lifecycle/accessibility, physical-device, 16 KiB or installed iOS behavior.
+Screenshots, fresh UI hierarchies, process logs and the exact install receipt are
+retained in the suite workspace
+`.refinement/2026-10-30/android-local/games-flutter-20261102-pass1/`
+(`courrier-result.json`, `RESULTS.md`). No signed release or submission is implied.
 
 ## Final implementation review
 
