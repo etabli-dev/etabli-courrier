@@ -34,6 +34,12 @@ Milestone order: restore reproducible toolchain and production shell; repair loc
 
 Raw receipts are in the suite workspace `.refinement/2026-10-30/logs/`; each records the exact command, exit code, UTC start and duration. Earlier failed rounds remain as evidence and are superseded only by a named successful run.
 
+### Published CI outcome — 2026-10-31
+
+Published source commit `7ca7cef025ba3641fc544f1f66eaff5ed9e6813a` passed [application CI](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136886): Android analysis, tests, APK/AAB packaging and native notification checks, plus the full unsigned iOS compilation. The separate [license gate](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136888) and [documentation Pages build/deployment](https://github.com/etabli-dev/etabli-courrier/actions/runs/41200136871) also passed. These are observed remote results for that source commit, separate from the local checks above.
+
+Unsigned iOS compilation closes the compilation gate for that revision; installed iOS behavior, private signing, live-account acceptance and store submission remain unverified. Android installation and the unsuccessful interactive attempt are recorded below. No signed application release or store submission occurred.
+
 ### Android device attempt — 2026-10-31
 
 The final debug APK installed successfully on the local API 35 arm64 emulator (4 KiB pages), SHA-256 `5562dfb67ba9ce0e9ff8edcb59a6fa76da9392a588828f00d389eb106444b1d6`. Package inspection confirms the enabled launcher, arm64 ABI and API 24 minimum/API 36 target. This later installation evidence does not establish successful app use.
@@ -52,6 +58,6 @@ Settings now exposes packaged open-source licenses. The final APK contains the d
 
 [README](https://github.com/etabli-dev/etabli-courrier/blob/main/README.md) gives exact prerequisites, source-build commands, offline and account workflows, and release signing preparation.
 
-Before release: run the prepared iOS build on Xcode; exercise Nextcloud DAV/Notes/News and a TLS/STARTTLS IMAP test account on installed Android/iOS builds; verify upgrade, device credential denial/cancellation, background/resume, timezone changes and notification permissions; inspect accessibility and secure-store restoration on devices. Review native dependency licenses and final signed packages. A test server/account, device/Xcode environment and private signing material are external dependencies. No credentials were requested or fabricated.
+Before release: prepare the signed iOS build with Xcode and private signing material; exercise Nextcloud DAV/Notes/News and a TLS/STARTTLS IMAP test account on installed Android/iOS builds; verify upgrade, device credential denial/cancellation, background/resume, timezone changes and notification permissions; inspect accessibility and secure-store restoration on devices. Review native dependency licenses and final signed packages. A test server/account, device/Xcode environment and private signing material are external dependencies. No credentials were requested or fabricated.
 
 Deferred product work: composition/send UI, Microsoft 365 activation, background/IDLE scheduling, full calendar/contact/task editors, server News read-state mirroring, automated conflict merge and full local-content backup/export. Existing backend seams do not make these production journeys available. Prepare a new version only after acceptance; do not overwrite existing tags or releases.
