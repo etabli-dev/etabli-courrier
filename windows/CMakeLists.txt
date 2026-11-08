@@ -57,6 +57,17 @@ add_subdirectory("runner")
 # them to the application.
 include(flutter/generated_plugins.cmake)
 
+# local_auth_windows 1.0.11 already requests C++20, but its legacy /await
+# option selects experimental coroutine headers rejected by current MSVC.
+# Keep standard C++20 coroutines without suppressing compiler diagnostics.
+if(TARGET local_auth_windows_plugin)
+  get_target_property(LOCAL_AUTH_OPTIONS local_auth_windows_plugin COMPILE_OPTIONS)
+  if(LOCAL_AUTH_OPTIONS)
+    list(FILTER LOCAL_AUTH_OPTIONS EXCLUDE REGEX "^/await$")
+    set_property(TARGET local_auth_windows_plugin PROPERTY COMPILE_OPTIONS "${LOCAL_AUTH_OPTIONS}")
+  endif()
+endif()
+
 
 # === Installation ===
 # Support files are copied into place next to the executable, so that it can
