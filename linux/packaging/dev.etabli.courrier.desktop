@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Établi Courrier
+GenericName=Communication workspace
+Comment=Offline mail, calendar, contacts, tasks, reminders, notes and feeds
+Exec=etabli-courrier
+Icon=dev.etabli.courrier
+Terminal=false
+Categories=Office;Email;Calendar;ContactManagement;
+Keywords=mail;IMAP;calendar;contacts;tasks;notes;RSS;Nextcloud;
+StartupNotify=true
+StartupWMClass=dev.etabli.courrier
