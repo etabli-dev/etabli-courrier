@@ -153,3 +153,5 @@ links are in THIRD_PARTY_LICENSES.md and tool/license_manifest.json. No package
 was modified in its upstream cache. flutter_local_notifications 22.3.3 is vendored
 with a small Android permission handling patch; its BSD-3-Clause license and
 upstream provenance remain in third_party/flutter_local_notifications.
+
+local_auth_windows 1.0.11 is included as a BSD-3-Clause source dependency with a standard-C++20 coroutine compatibility patch. See third_party/local_auth_windows/UPSTREAM.md and its retained LICENSE.
