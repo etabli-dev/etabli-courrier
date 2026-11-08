@@ -94,7 +94,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build macos --release --no-pub
+      - run: scripts/build-macos-preview.sh
       - name: Zip and DMG (ad-hoc signed, not notarized)
         run: |
           version=$(sed -n 's/^version:[[:space:]]*\([0-9][0-9.]*\).*/\1/p' pubspec.yaml)

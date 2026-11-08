@@ -48,4 +48,7 @@ jobs:
           flutter-version: '3.47.9'
           channel: stable
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build ios --debug --no-codesign --no-pub
+      - name: iOS simulator Debug
+        run: flutter build ios --simulator --debug --no-codesign --no-pub
+      - name: iOS device Release (unsigned)
+        run: flutter build ios --release --no-codesign --no-pub

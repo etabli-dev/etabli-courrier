@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/config/secrets_store.dart';
 import '../core/db/database.dart';
 import '../core/sync/account_services.dart';
 import '../modules/accounts/accounts_screen.dart';
+import '../modules/notes/notes_screen.dart';
 import '../modules/shell/settings/production_settings.dart';
 import 'destinations.dart';
 
@@ -31,6 +33,43 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    const numberKeys = [
+      LogicalKeyboardKey.digit1,
+      LogicalKeyboardKey.digit2,
+      LogicalKeyboardKey.digit3,
+      LogicalKeyboardKey.digit4,
+      LogicalKeyboardKey.digit5,
+      LogicalKeyboardKey.digit6,
+      LogicalKeyboardKey.digit7,
+    ];
+    return CallbackShortcuts(
+      bindings: {
+        for (var index = 0; index < numberKeys.length; index++) ...{
+          SingleActivator(numberKeys[index], control: true): () =>
+              _onSelected(index),
+          SingleActivator(numberKeys[index], meta: true): () =>
+              _onSelected(index),
+        },
+        const SingleActivator(LogicalKeyboardKey.comma, control: true):
+            _openSettings,
+        const SingleActivator(LogicalKeyboardKey.comma, meta: true):
+            _openSettings,
+        const SingleActivator(
+          LogicalKeyboardKey.keyA,
+          control: true,
+          shift: true,
+        ): _openAccounts,
+        const SingleActivator(LogicalKeyboardKey.keyA, meta: true, shift: true):
+            _openAccounts,
+        const SingleActivator(LogicalKeyboardKey.keyN, control: true): _newNote,
+        const SingleActivator(LogicalKeyboardKey.keyN, meta: true): _newNote,
+        const SingleActivator(LogicalKeyboardKey.f1): _showShortcuts,
+      },
+      child: Focus(autofocus: true, child: _buildShell(context)),
+    );
+  }
+
+  Widget _buildShell(BuildContext context) {
     final destination = _destinations[_index];
     final media = MediaQuery.of(context);
     final useRail = media.size.width >= 720;
@@ -118,27 +157,63 @@ class _AppShellState extends State<AppShell> {
       title: Text('courrier · $label'),
       centerTitle: false,
       actions: [
+        if (MediaQuery.sizeOf(context).width >= 720)
+          IconButton(
+            tooltip: 'Keyboard shortcuts',
+            icon: const Icon(Icons.keyboard_outlined),
+            onPressed: _showShortcuts,
+          ),
         IconButton(
           tooltip: 'Settings',
           icon: const Icon(Icons.settings_outlined),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const ProductionSettings()),
-          ),
+          onPressed: _openSettings,
         ),
         IconButton(
           tooltip: 'Accounts',
           icon: const Icon(Icons.manage_accounts_outlined),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => AccountsScreen(
-                db: widget.database,
-                services: _services,
-                secrets: _secrets,
-              ),
-            ),
-          ),
+          onPressed: _openAccounts,
         ),
       ],
     );
   }
+
+  void _newNote() {
+    if (_index != 5) return;
+    final screen = _destinations[_index].builder(context);
+    if (screen is NotesScreen) screen.createNote(context);
+  }
+
+  void _openSettings() => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const ProductionSettings()));
+
+  void _openAccounts() => Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => AccountsScreen(
+        db: widget.database,
+        services: _services,
+        secrets: _secrets,
+      ),
+    ),
+  );
+
+  void _showShortcuts() => showDialog<void>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Keyboard shortcuts'),
+      content: const Text(
+        'Ctrl / Cmd + 1–7: switch module\n'
+        'Ctrl / Cmd + comma: settings\n'
+        'Ctrl / Cmd + Shift + A: accounts\n'
+        'Ctrl / Cmd + N: new note (in Notes)\n'
+        'F1: show this help',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Close'),
+        ),
+      ],
+    ),
+  );
 }

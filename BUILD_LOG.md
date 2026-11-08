@@ -1337,3 +1337,65 @@ The license checklist required an in-app page, but Settings had no route to it. 
 Hypothesis: the shared Dart code runs on desktop once Flutter's runners exist, but mobile-only plugin paths fail at runtime. Audit of every plugin confirmed three such paths. `local_auth` has no Linux implementation, so app lock could never unlock; Linux now disables the switch and note locking with an explanation and ignores a stored lock flag so it cannot lock anyone out. `flutter_local_notifications` throws `ArgumentError` from `initialize` on Linux and Windows unless settings for those platforms are passed (plugin source), which Reminders would only surface as a load error; both platforms now list due reminders with an explicit "not delivered" notice until real scheduling exists (Linux cannot schedule; Windows needs an app identity and per-occurrence schedules). On macOS the permission check and request returned true without asking the OS; it now uses the macOS permission API. The navigation rail used on every desktop window hid the selected icon (accent icon on accent indicator); the indicator now uses the surface color.
 
 Verification on Ubuntu 26.04: analyzer clean, 243 tests passed with the live-service test skipped, Linux release build, `.deb` built and inspected, and the packaged binary launched under Xvfb, navigated to Reminders and Settings, and showed both fallbacks without exceptions. Windows and macOS builds exist only in `.github/workflows/desktop.yml` and have not run. The `msix` packaging tool and its three new dependencies (all MIT) were reviewed and added to the license inventory; the transitive `jni` library, which links `libjvm.so` and is unused on Linux, is left out of the `.deb`. Open work and owner decisions are in `docs/platform-roadmap.md`.
+
+## 2026-11-08 Apple and desktop refinement
+
+The maintainer authorized continuing the audit and roadmap work across the suite and publishing verified milestones to main. Signing, live-service and store acceptance remain separate gates.
+
+### F-NOV-01 — Apple credential-store configuration
+
+Hypothesis: the Darwin secure-storage plugin requires Keychain Sharing entitlements, but the iOS target has no entitlements file and the macOS entitlements omit the required key. Account credentials can fail to persist despite successful compilation.
+
+Strategy: add the plugin-documented empty keychain access-group capability to the iOS runner and both macOS build configurations; retain platform Keychain protection and existing sandbox/network settings. Do not invent a team identity or switch to plaintext storage.
+
+Verification plan: parse all entitlements, verify every iOS runner configuration references them, build iOS/macOS and inspect the effective app entitlements. Keep actual team-signed Keychain round-trip acceptance open until tested.
+
+Fallback: preserve the existing stored credentials and surface setup failures; never downgrade secure storage to bypass a signing requirement.
+
+### F-NOV-02 — native dependency resolution and build evidence
+
+Hypothesis: desktop scaffolding and CI-only claims do not demonstrate that the current Apple plugin graph compiles with the locked Flutter dependencies on this Mac.
+
+Strategy: run frozen package installation, analyzer, offline tests and native builds; repair concrete configuration failures and commit the generated Apple dependency locks where supported.
+
+Verification plan: unsigned iOS build, macOS release build and package signature inspection, license manifest verification, repeat the affected tests after repairs.
+
+Fallback: record exact signing/toolchain/live-service limitations rather than claiming a shipping build.
+
+### F-NOV-03 — desktop keyboard navigation and window bounds
+
+Hypothesis: the roadmap's desktop keyboard support is absent and the macOS window can shrink below a usable navigation layout.
+
+Strategy: add discoverable keyboard shortcuts for module navigation, accounts and settings, preserve normal typing shortcuts, and establish a usable macOS minimum window size. Leave the larger two-pane redesign as its own tracked milestone.
+
+Verification plan: desktop widget tests invoke shortcuts, assert destination changes and ensure text entry is unaffected; analyze and native compilation must pass.
+
+Fallback: retain mouse/touch routes and avoid binding shortcuts that would consume text-editing commands.
+
+### F-NOV-04 — privacy manifest packaging
+
+Hypothesis: the iOS privacy manifest exists in the source tree but is absent from the Xcode resource phase, and the macOS runner has no app-level manifest. A source-only manifest does not describe the distributed binary.
+
+Strategy: include the existing reviewed manifest in both Apple resource phases, keeping its no-tracking declaration and required-reason entries synchronized.
+
+Verification plan: native build output must contain the manifest; parse the resulting plist and compare it with the source.
+
+Fallback: keep native release acceptance open if the generated bundle omits or alters the manifest.
+
+F-NOV-03 first test round: module navigation works, but switching to Notes by keyboard leaves focus in the shell, so a shortcut installed only under the note list is unreachable. Strategy: route the new-note command from the shell when Notes is selected, while retaining the existing editor and authentication path. Verification: the same failing navigation → new-note test must pass, including ordinary text entry. Fallback: retain the visible New note button if the keyboard route cannot be made reliable.
+
+F-NOV-01 native verification found Xcode refuses ad-hoc signing when Keychain Sharing is present. Hypothesis: this is a certificate requirement, not a source compile error. Strategy: preserve the production entitlement and add a clearly named preview build with separate sandbox/network-only entitlements; preview accounts must still use the secure-storage plugin and surface any Keychain failure. Verification: compile and inspect the ad-hoc preview separately from the unverified team-signed credential acceptance gate. Fallback: retain the build failure evidence and do not weaken production entitlements or substitute plaintext secrets.
+
+F-NOV-03 visual round: the test font renders the Command symbol as a missing glyph. Strategy: spell the modifier as Cmd in in-app help so the same explanation remains readable across platform fonts. Verification: screenshot help after the native-build contention clears. Fallback: plain Ctrl/Cmd text remains usable without font-specific symbols.
+
+F-NOV-01/02/04 verification: macOS universal Release preview compiled successfully; deep strict signature verification passed and packaged privacy manifest equals the source plist. Startup stayed alive20s without logged exceptions. Team-signed credential acceptance remains open. The full follow-up suite under host load above700 hit PBKDF2 30s timeouts despite the clean baseline; serial retry still timed out once. No crypto parameters or timeout thresholds were weakened.
+
+F-NOV-01 preview warning review: a global CODE_SIGN_ENTITLEMENTS override also reaches unsigned Swift package resource bundles and produces entitlement warnings. Strategy: route only Runner through a custom COURRIER_CODE_SIGN_ENTITLEMENTS setting whose defaults retain production entitlements. Verification: rerun the preview incrementally and inspect warnings/signature. Fallback: keep production capabilities untouched and retain evidence of the prior successful preview.
+
+F-NOV-02/04 iOS verification: full unsigned device Release compiled successfully (24.7MB); packaged app privacy manifest exactly matches the source. No simulator/device installation or distribution claim is made. CocoaPods emitted its migration advisory because the existing Flutter-only Podfile coexists with Swift Package Manager; generated Podfile.lock and Swift package locks are retained for reproducibility.
+
+F-NOV-02 CI audit: the existing iOS debug command implicitly targets devices, leaving simulator compilation uncovered. Strategy: make simulator Debug and unsigned device Release separate explicit jobs steps. Verification: inspect arguments and use exact-commit CI for both SDKs after publication; local device Release already passed. Fallback: report any remote job failure without claiming simulator coverage from a device build.
+
+F-NOV-01 final macOS preview rebuilt successfully with the Runner-only override. Deep strict signature verification and privacy resource presence passed again; the previous package-resource entitlement warnings are absent from the final incremental log.
+
+F-NOV-03 final serial regression passed all12 tests covering desktop shortcuts, Notes, phone/desktop navigation and all PBKDF2 PIN-lock cases (32s). Final screenshot confirms the Cmd text is readable. Earlier load-related timeout runs remain recorded; no crypto setting or test timeout changed. A test-only import ordering lint was corrected before the last analyzer pass.

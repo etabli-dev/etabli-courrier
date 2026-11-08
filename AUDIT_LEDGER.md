@@ -76,3 +76,7 @@ engine, the device pass proves the user experience:
 - NOTICE current; every shipped dep enumerated; MPL `enough_mail` entry present.
 - THIRD_PARTY_REFERENCES.md clean-room provenance intact (Fossify / Etar / Tasks.org / DavMail / Thunderbird / K-9 references documented).
 - No GPL / AGPL / LGPL in the resolved dependency tree.
+
+## Current Apple and desktop follow-up — 2026-11-08
+
+Historical release-gate results above remain dated evidence. The current Apple capability, privacy-resource and keyboard review is recorded in [the November Apple refinement](docs/apple-refinement-2026-11-08.md). Signed distribution and live-account/device acceptance remain open; a local preview compilation is not a release gate.

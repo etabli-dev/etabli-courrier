@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/db/database.dart';
 import 'data/note_draft.dart';
@@ -11,6 +12,8 @@ class NotesScreen extends StatelessWidget {
 
   final NoteRepository repository;
   final Future<bool> Function()? unlock;
+
+  Future<void> createNote(BuildContext context) => _edit(context, null);
 
   Future<void> _edit(BuildContext context, NoteItem? note) async {
     try {
@@ -110,26 +113,37 @@ class NotesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _edit(context, null),
-        tooltip: 'New note',
-        child: const Icon(Icons.add),
-      ),
-      body: StreamBuilder<List<NoteItem>>(
-        stream: repository.watchNotes(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('Could not load notes.'));
-          }
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return NoteListView(
-            notes: snapshot.data!,
-            onNoteTap: (note) => _edit(context, note),
-          );
-        },
+    return CallbackShortcuts(
+      bindings: {
+        const SingleActivator(LogicalKeyboardKey.keyN, control: true): () =>
+            _edit(context, null),
+        const SingleActivator(LogicalKeyboardKey.keyN, meta: true): () =>
+            _edit(context, null),
+      },
+      child: Focus(
+        autofocus: true,
+        child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _edit(context, null),
+            tooltip: 'New note',
+            child: const Icon(Icons.add),
+          ),
+          body: StreamBuilder<List<NoteItem>>(
+            stream: repository.watchNotes(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Center(child: Text('Could not load notes.'));
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return NoteListView(
+                notes: snapshot.data!,
+                onNoteTap: (note) => _edit(context, note),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
