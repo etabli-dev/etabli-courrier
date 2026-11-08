@@ -10,6 +10,7 @@ class SettingsScreen extends StatelessWidget {
     required this.onToggleLock,
     required this.onExport,
     required this.onImport,
+    this.lockUnavailableReason,
     super.key,
   });
 
@@ -18,6 +19,9 @@ class SettingsScreen extends StatelessWidget {
   final ValueChanged<bool> onToggleLock;
   final VoidCallback onExport;
   final VoidCallback onImport;
+
+  /// Disables the app-lock switch and explains why when non-null.
+  final String? lockUnavailableReason;
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +37,14 @@ class SettingsScreen extends StatelessWidget {
           child: SwitchListTile(
             contentPadding: EdgeInsets.zero,
             value: lockEnabled,
-            onChanged: onToggleLock,
+            onChanged: lockUnavailableReason == null ? onToggleLock : null,
             title: Text(
               'App lock (device authentication)',
               style: theme.textTheme.bodyLarge,
             ),
             subtitle: Text(
-              'Require unlocking when courrier resumes from background.',
+              lockUnavailableReason ??
+                  'Require unlocking when courrier resumes from background.',
               style: theme.textTheme.bodySmall,
             ),
           ),

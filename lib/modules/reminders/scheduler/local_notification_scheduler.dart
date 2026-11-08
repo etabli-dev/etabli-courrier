@@ -17,6 +17,8 @@ import 'notification_scheduler.dart';
 // iOS:    uses UNUserNotificationCenter. Schedules survive reboot but if the
 //   user hasn't opened the app in months iOS may garbage-collect them; we
 //   re-arm on every cold start regardless.
+// macOS:  same UNUserNotificationCenter path and permission prompt as iOS.
+// Linux/Windows: not used; see PlatformCapabilities.scheduledReminders.
 
 class LocalNotificationScheduler implements NotificationScheduler {
   LocalNotificationScheduler({FlutterLocalNotificationsPlugin? plugin})
@@ -71,6 +73,14 @@ class LocalNotificationScheduler implements NotificationScheduler {
       final granted = await darwin?.checkPermissions();
       return granted?.isEnabled ?? false;
     }
+    if (Platform.isMacOS) {
+      final macos = _plugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >();
+      final granted = await macos?.checkPermissions();
+      return granted?.isEnabled ?? false;
+    }
     if (Platform.isAndroid) {
       final android = _plugin
           .resolvePlatformSpecificImplementation<
@@ -89,6 +99,18 @@ class LocalNotificationScheduler implements NotificationScheduler {
             IOSFlutterLocalNotificationsPlugin
           >();
       return await darwin?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          ) ??
+          false;
+    }
+    if (Platform.isMacOS) {
+      final macos = _plugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >();
+      return await macos?.requestPermissions(
             alert: true,
             badge: true,
             sound: true,

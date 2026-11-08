@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
 import '../config/preferences_store.dart';
+import '../platform/platform_capabilities.dart';
 import 'biometric_app_lock_guard.dart';
 
 class AppSecurity {
   static final revision = ValueNotifier(0);
   static bool authenticating = false;
   static Future<bool> unlock() async {
-    if (authenticating) return false;
+    if (authenticating || !PlatformCapabilities.deviceAuthentication) {
+      return false;
+    }
     authenticating = true;
     try {
       return await BiometricAppLockGuard().unlock();
@@ -45,7 +48,10 @@ class _AppLockHostState extends State<AppLockHost> with WidgetsBindingObserver {
   Future<void> _refresh() async {
     try {
       final prefs = await PreferencesStore.open();
-      final enabled = prefs.getBool('pref.lock.enabled') ?? false;
+      // Without device authentication a stored lock could never be opened.
+      final enabled =
+          PlatformCapabilities.deviceAuthentication &&
+          (prefs.getBool('pref.lock.enabled') ?? false);
       if (mounted) {
         setState(() {
           _enabled = enabled;

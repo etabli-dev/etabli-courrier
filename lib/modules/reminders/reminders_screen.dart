@@ -8,11 +8,16 @@ class RemindersScreen extends StatefulWidget {
   const RemindersScreen({
     required this.scheduler,
     required this.rearmService,
+    this.unavailableReason,
     super.key,
   });
 
   final NotificationScheduler scheduler;
   final ReminderRearmService rearmService;
+
+  /// Set where system notifications cannot be scheduled. The screen then
+  /// lists what is due without touching the notification plugin.
+  final String? unavailableReason;
 
   @override
   State<RemindersScreen> createState() => _RemindersScreenState();
@@ -32,8 +37,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
   Future<void> _refresh() async {
     try {
-      await widget.scheduler.initialize();
-      final granted = await widget.scheduler.hasPermission();
+      final available = widget.unavailableReason == null;
+      if (available) await widget.scheduler.initialize();
+      final granted = available && await widget.scheduler.hasPermission();
       final upcoming = await widget.rearmService.upcoming();
       if (!mounted) return;
       setState(() {
@@ -71,9 +77,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
     if (_loading) return;
     setState(() => _loading = true);
     try {
-      await widget.scheduler.initialize();
-      if (await widget.scheduler.hasPermission()) {
-        await widget.rearmService.rearmAll();
+      if (widget.unavailableReason == null) {
+        await widget.scheduler.initialize();
+        if (await widget.scheduler.hasPermission()) {
+          await widget.rearmService.rearmAll();
+        }
       }
       await _refresh();
     } catch (_) {
@@ -100,6 +108,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
             hasPermission: _hasPermission,
             onRequestPermission: _requestPermission,
             onReload: _loading ? null : _reload,
+            unavailableReason: widget.unavailableReason,
           ),
         ),
       ],

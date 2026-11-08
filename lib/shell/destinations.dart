@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/db/database.dart';
 import '../core/lock/app_security.dart';
+import '../core/platform/platform_capabilities.dart';
 import '../core/sync/account_services.dart';
 import '../modules/calendar/calendar_screen.dart';
 import '../modules/calendar/data/calendar_repository.dart';
@@ -63,6 +64,11 @@ List<ModuleDestination> moduleDestinations(
       return RemindersScreen(
         scheduler: scheduler,
         rearmService: ReminderRearmService(db: db, scheduler: scheduler),
+        unavailableReason: PlatformCapabilities.scheduledReminders
+            ? null
+            : 'Reminder notifications are not delivered in '
+                  '${PlatformCapabilities.buildName} yet. The list below shows '
+                  'what is due; check it while courrier is open.',
       );
     },
   ),
@@ -71,7 +77,9 @@ List<ModuleDestination> moduleDestinations(
     icon: Icons.notes,
     builder: (_) => NotesScreen(
       repository: NoteRepository(db: db),
-      unlock: services == null ? null : AppSecurity.unlock,
+      unlock: services == null || !PlatformCapabilities.deviceAuthentication
+          ? null
+          : AppSecurity.unlock,
     ),
   ),
   ModuleDestination(

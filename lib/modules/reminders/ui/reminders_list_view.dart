@@ -10,6 +10,7 @@ class RemindersListView extends StatelessWidget {
     required this.hasPermission,
     this.onRequestPermission,
     this.onReload,
+    this.unavailableReason,
     super.key,
   });
 
@@ -17,6 +18,10 @@ class RemindersListView extends StatelessWidget {
   final bool hasPermission;
   final VoidCallback? onRequestPermission;
   final VoidCallback? onReload;
+
+  /// Replaces the permission card when this platform cannot deliver
+  /// reminder notifications.
+  final String? unavailableReason;
 
   final DateFormat _whenFmt = DateFormat('MMM d, HH:mm');
 
@@ -29,8 +34,12 @@ class RemindersListView extends StatelessWidget {
         vertical: CourrierTokens.space4,
       ),
       children: [
-        if (!hasPermission) _PermissionCard(onRequest: onRequestPermission),
-        if (!hasPermission) const SizedBox(height: CourrierTokens.space4),
+        if (unavailableReason != null)
+          _UnavailableCard(reason: unavailableReason!)
+        else if (!hasPermission)
+          _PermissionCard(onRequest: onRequestPermission),
+        if (unavailableReason != null || !hasPermission)
+          const SizedBox(height: CourrierTokens.space4),
         Row(
           children: [
             Text('Upcoming reminders', style: theme.textTheme.titleMedium),
@@ -92,6 +101,34 @@ class _PermissionCard extends StatelessWidget {
               child: const Text('Allow notifications'),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UnavailableCard extends StatelessWidget {
+  const _UnavailableCard({required this.reason});
+
+  final String reason;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(CourrierTokens.space4),
+      decoration: BoxDecoration(
+        border: Border.all(color: theme.dividerTheme.color!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Reminder notifications unavailable',
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: CourrierTokens.space2),
+          Text(reason, style: theme.textTheme.bodyMedium),
         ],
       ),
     );

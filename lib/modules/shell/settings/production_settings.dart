@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/config/preferences_store.dart';
 import '../../../core/lock/app_security.dart';
+import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/settings/about_info.dart';
 import '../../../core/settings/settings_io.dart';
 import 'settings_screen.dart';
@@ -116,6 +117,10 @@ class _ProductionSettingsState extends State<ProductionSettings> {
             onToggleLock: _toggle,
             onExport: _export,
             onImport: _import,
+            lockUnavailableReason: PlatformCapabilities.deviceAuthentication
+                ? null
+                : 'Not available in ${PlatformCapabilities.buildName}: it has no '
+                      'device-authentication service.',
           ),
         );
       },
