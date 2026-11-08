@@ -27,6 +27,9 @@ analyzer:
     - "**/*.freezed.dart"
     - android/**
     - ios/**
+    - linux/**
+    - macos/**
+    - windows/**
     # Unchanged upstream Dart dependency; its Android patch has native tests.
     - third_party/**
 
