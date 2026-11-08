@@ -113,6 +113,8 @@ class CourrierTheme {
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: background,
+        // The default indicator is the accent, which hid the accent icon.
+        indicatorColor: surface,
         selectedIconTheme: const IconThemeData(color: CourrierTokens.accent),
         unselectedIconTheme: IconThemeData(color: textSecondary),
         selectedLabelTextStyle: textTheme.labelLarge?.copyWith(
