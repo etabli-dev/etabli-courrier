@@ -14,6 +14,7 @@ import '../modules/notes/data/note_repository.dart';
 import '../modules/notes/notes_screen.dart';
 import '../modules/reminders/reminders_screen.dart';
 import '../modules/reminders/scheduler/local_notification_scheduler.dart';
+import '../modules/reminders/scheduler/reminder_coordinator.dart';
 import '../modules/reminders/scheduler/reminder_rearm_service.dart';
 import '../modules/tasks/data/task_repository.dart';
 import '../modules/tasks/tasks_screen.dart';
@@ -34,6 +35,7 @@ class ModuleDestination {
 List<ModuleDestination> moduleDestinations(
   CourrierDatabase db, {
   AccountServices? services,
+  ReminderCoordinator? reminders,
 }) => [
   ModuleDestination(
     label: 'mail',
@@ -60,10 +62,13 @@ List<ModuleDestination> moduleDestinations(
     label: 'reminders',
     icon: Icons.alarm,
     builder: (_) {
-      final scheduler = LocalNotificationScheduler();
+      final scheduler = reminders?.scheduler ?? LocalNotificationScheduler();
       return RemindersScreen(
         scheduler: scheduler,
-        rearmService: ReminderRearmService(db: db, scheduler: scheduler),
+        refreshSchedule: reminders?.refresh,
+        rearmService:
+            reminders?.service ??
+            ReminderRearmService(db: db, scheduler: scheduler),
         unavailableReason: PlatformCapabilities.scheduledReminders
             ? null
             : 'Reminder notifications are not delivered in '

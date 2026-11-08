@@ -6,13 +6,15 @@ import '../core/db/database.dart';
 import '../core/sync/account_services.dart';
 import '../modules/accounts/accounts_screen.dart';
 import '../modules/notes/notes_screen.dart';
+import '../modules/reminders/scheduler/reminder_coordinator.dart';
 import '../modules/shell/settings/production_settings.dart';
 import 'destinations.dart';
 
 class AppShell extends StatefulWidget {
-  const AppShell({required this.database, super.key});
+  const AppShell({required this.database, this.reminders, super.key});
 
   final CourrierDatabase database;
+  final ReminderCoordinator? reminders;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -29,7 +31,25 @@ class _AppShellState extends State<AppShell> {
   late final List<ModuleDestination> _destinations = moduleDestinations(
     widget.database,
     services: _services,
+    reminders: widget.reminders,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    widget.reminders?.addListener(_remindersChanged);
+    widget.reminders?.start();
+  }
+
+  void _remindersChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.reminders?.removeListener(_remindersChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +176,18 @@ class _AppShellState extends State<AppShell> {
     return AppBar(
       title: Text('courrier · $label'),
       centerTitle: false,
+      bottom: widget.reminders?.error == null
+          ? null
+          : PreferredSize(
+              preferredSize: const Size.fromHeight(48),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  widget.reminders!.error!,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
       actions: [
         if (MediaQuery.sizeOf(context).width >= 720)
           IconButton(

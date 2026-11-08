@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'core/bootstrap/sample_content_installer.dart';
 import 'core/db/database.dart';
 import 'core/lock/app_security.dart';
+import 'core/platform/platform_capabilities.dart';
 import 'core/theme/app_theme.dart';
 import 'dev/demo_app.dart';
 import 'dev/demo_services.dart';
+import 'modules/reminders/scheduler/local_notification_scheduler.dart';
+import 'modules/reminders/scheduler/reminder_coordinator.dart';
 import 'shell/app_shell.dart';
 
 // `--dart-define=COURRIER_DEMO_BOOT=true` routes startup into the M13/M14
@@ -32,9 +35,10 @@ Future<void> main() async {
 }
 
 class CourrierApp extends StatelessWidget {
-  const CourrierApp({required this.database, super.key});
+  const CourrierApp({required this.database, this.reminders, super.key});
 
   final CourrierDatabase database;
+  final ReminderCoordinator? reminders;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class CourrierApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: CourrierTheme.light(),
       darkTheme: CourrierTheme.dark(),
-      home: AppShell(database: database),
+      home: AppShell(database: database, reminders: reminders),
     );
   }
 }
@@ -58,6 +62,7 @@ class CourrierBootstrap extends StatefulWidget {
 
 class _CourrierBootstrapState extends State<CourrierBootstrap> {
   CourrierDatabase? _database;
+  ReminderCoordinator? _reminders;
   bool _ready = false;
   String? _error;
   @override
@@ -69,10 +74,19 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
   Future<void> _open() async {
     setState(() => _error = null);
     try {
+      _reminders?.dispose();
+      _reminders = null;
       await _database?.close();
       final db = _database = CourrierDatabase();
       await const SampleContentInstaller().installIfMissing(db);
-      if (mounted) setState(() => _ready = true);
+      if (!mounted) return;
+      if (PlatformCapabilities.scheduledReminders) {
+        _reminders = ReminderCoordinator(
+          db: db,
+          scheduler: LocalNotificationScheduler(),
+        );
+      }
+      setState(() => _ready = true);
     } catch (_) {
       if (mounted) {
         setState(
@@ -85,13 +99,14 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
 
   @override
   void dispose() {
+    _reminders?.dispose();
     _database?.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) => _ready
-      ? CourrierApp(database: _database!)
+      ? CourrierApp(database: _database!, reminders: _reminders)
       : MaterialApp(
           home: Scaffold(
             body: Center(

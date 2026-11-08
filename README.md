@@ -6,7 +6,7 @@ This source tree includes the October 2026 refinement. The existing v0.1.0 devel
 
 ## Platforms
 
-Android and iOS are the existing mobile targets. Linux, Windows and macOS desktop targets were added in November 2026: the Linux build runs and packages as a `.deb` (`scripts/package-deb.sh`), while the Windows and macOS builds are produced only by the desktop CI workflow and have not been run. On desktop, app lock is unavailable on Linux and reminder notifications are not delivered on Linux or Windows; the app shows this where it applies. Status, build commands, signing prerequisites and milestones for all five platforms are in the [platform roadmap](docs/platform-roadmap.md).
+Android and iOS are the existing mobile targets. Linux, Windows and macOS desktop targets were added in November 2026: the Linux build runs and packages as a `.deb` (`scripts/package-deb.sh`), macOS has a locally compiled and startup-checked ad-hoc preview, while Windows remains a CI build target without local acceptance. On desktop, app lock is unavailable on Linux and reminder notifications are not delivered on Linux or Windows; the app shows this where it applies. Status, build commands, signing prerequisites and milestones for all five platforms are in the [platform roadmap](docs/platform-roadmap.md).
 
 ## What is available
 
@@ -14,7 +14,7 @@ Android and iOS are the existing mobile targets. Linux, Windows and macOS deskto
 - **Calendar and contacts:** browse cached/local records and manually pull configured Nextcloud DAV collections. Source ICS/vCard fields and resource identities are preserved. Full editing/import screens remain outside the current production interface.
 - **Tasks:** browse tasks and mark them complete, including repeat-after-completion tasks. Completion updates local ICS and queues a conditional server write. Task creation/editing UI is deferred.
 - **Notes:** create and edit local or Nextcloud notes, including checklists, favorites and per-note device authentication. Drafts remain visible after save failure. A lock controls access in this app; it does not encrypt the SQLite database or the server copy.
-- **Reminders:** show upcoming saved event reminders and task deadlines; request notification permission and reload the schedule. Android uses inexact scheduling when exact-alarm permission is unavailable. Device alarm/background/DST operation still requires acceptance testing.
+- **Reminders:** show upcoming saved event reminders and task deadlines; request notification permission and reload the schedule. With existing permission, schedules refresh on app startup, resume and saved calendar/task changes. Android uses inexact scheduling when exact-alarm permission is unavailable. Device alarm/background/DST operation still requires acceptance testing.
 - **Feeds:** add or remove an HTTPS RSS/Atom feed and refresh local subscriptions, or refresh Nextcloud News from Accounts. Read cached articles as text. Read state is local; automatic polling and server read-state mirroring are deferred.
 - **Accounts and settings:** verify incoming access before enabling an account, retain credentials in platform secure storage, manually sync, disconnect while keeping cached data, use device-authenticated app lock, and import/export non-sensitive preferences.
 

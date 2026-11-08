@@ -11,11 +11,13 @@ class RemindersListView extends StatelessWidget {
     this.onRequestPermission,
     this.onReload,
     this.unavailableReason,
+    this.scheduleLimit,
     super.key,
   });
 
   final List<ScheduledNotification> reminders;
   final bool hasPermission;
+  final int? scheduleLimit;
   final VoidCallback? onRequestPermission;
   final VoidCallback? onReload;
 
@@ -49,6 +51,10 @@ class RemindersListView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: CourrierTokens.space2),
+        if (scheduleLimit != null && reminders.length > scheduleLimit!)
+          Text(
+            'Notifications cover the next $scheduleLimit reminders. Open courrier regularly to schedule later ones.',
+          ),
         if (reminders.isEmpty)
           Text('Nothing scheduled.', style: theme.textTheme.bodyMedium)
         else

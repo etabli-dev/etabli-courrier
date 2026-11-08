@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 class FakeScheduler implements NotificationScheduler {
   final Map<int, ScheduledNotification> active = {};
   bool initialized = false;
+  int? capacity;
+  int peakPending = 0;
   bool failSchedule = false;
   bool permissionGranted = true;
 
@@ -23,7 +25,13 @@ class FakeScheduler implements NotificationScheduler {
   @override
   Future<void> schedule(ScheduledNotification notification) async {
     if (failSchedule) throw StateError('alarm service unavailable');
+    if (capacity != null &&
+        !active.containsKey(notification.id) &&
+        active.length >= capacity!) {
+      throw StateError('notification capacity exceeded');
+    }
     active[notification.id] = notification;
+    if (active.length > peakPending) peakPending = active.length;
   }
 
   @override
@@ -110,6 +118,88 @@ Future<int> _seedTaskWithDue(
 
 void main() {
   group('ReminderRearmService', () {
+    test(
+      '60-slot queue replaces60 obsolete reminders without transient overflow',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final now = DateTime.utc(2026, 7, 1, 12);
+        final scheduler = FakeScheduler()..capacity = 60;
+        for (var i = 0; i < 60; i++) {
+          await _seedTaskWithDue(db, due: now.add(Duration(minutes: i + 1)));
+          scheduler.active[9000 + i] = ScheduledNotification(
+            id: 9000 + i,
+            title: 'Old',
+            body: '',
+            fireAt: now.add(const Duration(days: 2)),
+          );
+        }
+        final service = ReminderRearmService(
+          db: db,
+          scheduler: scheduler,
+          now: () => now,
+          maximumScheduled: 60,
+        );
+        expect(await service.rearmAll(), 60);
+        expect(scheduler.active, hasLength(60));
+        expect(scheduler.active.keys.every((id) => id >= 2000000), isTrue);
+        expect(scheduler.peakPending, 60);
+      },
+    );
+    test(
+      'limited platforms schedule nearest reminders and retain the full agenda',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        final now = DateTime.utc(2026, 7, 1, 12);
+        await _seedTaskWithDue(db, due: now.add(const Duration(hours: 3)));
+        await _seedTaskWithDue(db, due: now.add(const Duration(hours: 1)));
+        await _seedTaskWithDue(db, due: now.add(const Duration(hours: 2)));
+        final scheduler = FakeScheduler();
+        final service = ReminderRearmService(
+          db: db,
+          scheduler: scheduler,
+          now: () => now,
+          maximumScheduled: 2,
+        );
+        expect(await service.rearmAll(), 2);
+        expect(scheduler.active.values.map((n) => n.fireAt.toUtc()), [
+          now.add(const Duration(hours: 1)),
+          now.add(const Duration(hours: 2)),
+        ]);
+        expect(await service.upcoming(), hasLength(3));
+      },
+    );
+    test(
+      'refresh at delivery boundary retains due IDs without rescheduling',
+      () async {
+        final db = _db();
+        addTearDown(db.close);
+        var now = DateTime.utc(2026, 7, 1, 12);
+        await _seedTaskWithDue(db, due: now.add(const Duration(seconds: 30)));
+        final scheduler = FakeScheduler();
+        final service = ReminderRearmService(
+          db: db,
+          scheduler: scheduler,
+          now: () => now,
+        );
+        expect(await service.rearmAll(), 1);
+        final due = Map.of(scheduler.active);
+        now = now.add(const Duration(seconds: 30));
+        scheduler.failSchedule = true;
+        expect(await service.rearmAll(), 0);
+        expect(scheduler.active, due);
+        now = now.add(const Duration(hours: 2));
+        expect(await service.rearmAll(), 0);
+        expect(
+          scheduler.active,
+          due,
+        ); // Inexact delivery may legitimately be delayed.
+        scheduler.active.clear(); // Simulate delivery by the OS.
+        expect(await service.rearmAll(), 0);
+        expect(scheduler.active, isEmpty); // Delivered history is not replayed.
+      },
+    );
     test(
       'rearmAll schedules event reminders + task due notifications',
       () async {

@@ -9,11 +9,13 @@ class RemindersScreen extends StatefulWidget {
     required this.scheduler,
     required this.rearmService,
     this.unavailableReason,
+    this.refreshSchedule,
     super.key,
   });
 
   final NotificationScheduler scheduler;
   final ReminderRearmService rearmService;
+  final Future<void> Function()? refreshSchedule;
 
   /// Set where system notifications cannot be scheduled. The screen then
   /// lists what is due without touching the notification plugin.
@@ -61,7 +63,13 @@ class _RemindersScreenState extends State<RemindersScreen> {
   Future<void> _requestPermission() async {
     try {
       final granted = await widget.scheduler.requestPermission();
-      if (granted) await widget.rearmService.rearmAll();
+      if (granted) {
+        if (widget.refreshSchedule != null) {
+          await widget.refreshSchedule!();
+        } else {
+          await widget.rearmService.rearmAll();
+        }
+      }
       await _refresh();
     } catch (_) {
       if (mounted) {
@@ -80,7 +88,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (widget.unavailableReason == null) {
         await widget.scheduler.initialize();
         if (await widget.scheduler.hasPermission()) {
-          await widget.rearmService.rearmAll();
+          if (widget.refreshSchedule != null) {
+            await widget.refreshSchedule!();
+          } else {
+            await widget.rearmService.rearmAll();
+          }
         }
       }
       await _refresh();
@@ -105,6 +117,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         Expanded(
           child: RemindersListView(
             reminders: _upcoming,
+            scheduleLimit: widget.rearmService.maximumScheduled,
             hasPermission: _hasPermission,
             onRequestPermission: _requestPermission,
             onReload: _loading ? null : _reload,

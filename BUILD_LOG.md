@@ -1399,3 +1399,65 @@ F-NOV-02 CI audit: the existing iOS debug command implicitly targets devices, le
 F-NOV-01 final macOS preview rebuilt successfully with the Runner-only override. Deep strict signature verification and privacy resource presence passed again; the previous package-resource entitlement warnings are absent from the final incremental log.
 
 F-NOV-03 final serial regression passed all12 tests covering desktop shortcuts, Notes, phone/desktop navigation and all PBKDF2 PIN-lock cases (32s). Final screenshot confirms the Cmd text is readable. Earlier load-related timeout runs remain recorded; no crypto setting or test timeout changed. A test-only import ordering lint was corrected before the last analyzer pass.
+
+## Android Studio follow-up — 2026-11-09
+
+### F-NOV-05 — reminders after startup, resume and synchronized changes
+
+Hypothesis: the scheduler has no application lifecycle/database subscriber; opening Reminders only lists saved reminders, so new work remains unarmed until Enable or Reload is pressed.
+
+Strategy: add a shared coordinator that rearms with existing permission on cold start, app resume and committed reminder/event/task changes. Never prompt automatically. Serialize refreshes and repeat when a change arrives during scheduling. Keep platform-denied/unavailable behavior explicit; show failures in the shell and retain manual Reload.
+
+Verification plan: mocked scheduler tests for startup, resume, database sync, denied permission, failure recovery and changes during an active refresh; existing reminder/shell tests, analyzer, Android lint and debug/release builds. Device delivery remains a separate gate.
+
+Fallback: retain database records and prior OS alarms on failures; show a retry direction without disabling the workspace.
+
+F-NOV-05 boundary audit: frequent lifecycle refresh could cancel an alarm exactly when it becomes due. Retain IDs still present in the database for one minute after their fire time without rescheduling past alarms; deleted/completed records remain removable. Verification uses a fixed clock at the exact boundary and a scheduler that rejects any attempted reschedule. Startup/resume/sync tests wait for automatic effects rather than manually triggering refresh.
+
+### F-NOV-06 — Windows local-auth compiler failure
+
+Hypothesis: exact-commit desktop CI fails with MSVC STL1011 because local_auth_windows1.0.11 requests C++20 but also forces the deprecated /await coroutine extension, selecting experimental headers on Visual Studio18.
+
+Strategy: remove only /await from that plugin target after generated plugin setup; retain its C++20 compile feature and all diagnostic checks. Do not suppress the STL diagnostic or alter authentication code.
+
+Verification plan: inspect the dependency target flags and validate the CMake transformation locally; exact-commit Windows CI must compile and package the real application. macOS cannot prove Windows runtime behavior.
+
+Fallback: keep the failed CI log and report Windows unavailable until the remote build passes; do not replace authentication with an insecure fallback.
+
+F-NOV-05 shell test refinement: the first UI check left SharedPreferences unmocked, so the existing app-lock settings guard correctly kept the workspace offstage. Add the same empty preferences fixture used by production shell tests; retain the real app-lock wrapper, then verify reminder failure and recovery in the visible shell.
+
+F-NOV-05 platform cap: automatic refresh must not overflow Apple pending-notification capacity. Limit Apple coordinators to the nearest60 entries (including the short delivery grace), keep the complete agenda visible, and explain replenishment in Reminders. Android remains uncapped by this change. A nearest-first bounded-plan regression verifies that later items remain visible without displacing earlier notifications.
+
+F-NOV-05 final focused validation: all17 reminder/shell tests passed (10s), and analyzer reports no issues. The bounded-plan test normalizes SQLite-restored local timestamps toUTC before comparing instants. Production timing code was unchanged by that test correction. Windows CMake configuration check passed and retained unrelated compiler options. Android native audit remains running.
+
+F-NOV-05 inexact-alarm review supersedes the one-minute grace: Android may deliver inexact alarms much later. Preserve only existing pending IDs whose database records remain valid, regardless of elapsed delay; do not recreate delivered past reminders. Tests cover a two-hour delay and subsequent simulated delivery. This avoids both lost inexact alarms and reserving slots for already-delivered Apple reminders.
+
+F-NOV-06 second Windows CI reached standard coroutine compilation and exposed an upstream extension: `RequestVerificationForWindowAsync` uses `return consent_result` despite containing `co_await`. Strategy: vendor the verified1.0.11 published source, retain BSD license, remove legacy /await in its own CMake rules, and use standard co_return. Replace the application-level workaround with this traceable two-line source patch; keep the Dart authentication API/dependency versions unchanged. Verify archive checksum, source diff, license gate and the next real Windows CI build.
+
+### F-NOV-07 — obsolete Android splash qualifier
+
+Hypothesis: minSdk24 makes drawable-v21 unconditional, while the fallback drawable still hard-codes white. Lint correctly reports the redundant qualifier.
+
+Strategy: move the effective theme-background drawable into the default drawable directory and remove the redundant v21 copy. This preserves current supported-device rendering and removes obsolete template comments.
+
+Verification plan: repeat app packaging/lint on the final source and inspect the 16KiB ZIP/native alignment. Keep dependency-version/target-SDK notices visible; do not suppress diagnostics or upgrade the locked stack blindly.
+
+Fallback: restore the existing resource if resource linking or launch checks regress.
+
+Native audit receipt: BUILD SUCCESSFUL in15m11s,850 tasks (162executed/688up-to-date). Debug and Release lint had0errors/50warnings before F-NOV-07; cached notification suite has10tests and0failures. Full serial Dart run251passed/1opt-in skip/2unchangedPIN timeouts under build load; not counted as green. Vendor patch verified against the published archive: only Windows CMake and the coroutine return differ, with source/license retained. Dependency resolution and144-package license gate pass.
+
+F-NOV-07 incremental rerun hit an AAPT2 missing-resource reference after removing the old qualifier, despite the retained default drawable existing. Re-run only Debug/Release resource merging non-incrementally before packaging to distinguish stale merger state from a source error; preserve the failed build receipt rather than reverting the reviewed effective drawable blindly.
+
+### F-NOV-08 — MSIX tooling dependency compatibility
+
+Hypothesis: Windows compilation now succeeds, but the MSIX tool's image4.11.0 calls ZLibDecoder.decodeLazy while the old archive4.0.9 lock lacks that API. Upstream added decodeLazy in4.4.0;4.6.0 changes decoder contracts substantially.
+
+Strategy: pin the development-only archive constraint to4.5.2, which provides the API and incorporates pre4.6 fixes without adopting the new decoder defaults. Keep image/MSIX and application dependencies unchanged; review exact license bytes and update the dependency manifest.
+
+Verification plan: compile and run the actual `dart run msix:create --help` entry point on macOS, decode the packaged PNG logo through the resolved image library, enforce the updated lock/license gate, then verify actual MSIX creation in Windows CI.
+
+Fallback: retain the CI failure and do not claim an MSIX artifact until the Windows packaging job passes.
+
+Final Android receipt: BUILD SUCCESSFUL in3m43s,846 tasks (80executed/766up-to-date). Default drawable linked after forced resource merging. APK signature and16KiB ZIP alignment passed; ELF LOAD alignment is at least16KiB for all9APK and10AAB64-bit native libraries. Artifact hashes and sizes are retained in android-artifacts.json. No device-runtime acceptance is implied.
+
+F-NOV-05 capacity review: scheduling60 replacements before removing60 obsolete IDs can transiently exceed Apple's pending limit. For capped schedulers, free only the necessary obsolete slot immediately before each genuinely new ID; preserve retained/due IDs and same-ID updates. Uncapped schedulers keep schedule-before-cancel semantics. Verify a strict60-slot fake replacing60 old IDs with60 new IDs without overflow, together with all existing failure/boundary tests.

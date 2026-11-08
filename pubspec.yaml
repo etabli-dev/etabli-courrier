@@ -41,6 +41,8 @@ dependency_overrides:
     path: third_party/local_auth_windows
 
 dev_dependencies:
+  # MSIX image4.11 needs decodeLazy; retain pre4.6 decoder behavior.
+  archive: 4.5.2
   build_runner: ^2.4.11
   drift_dev: ^2.20.0
   flutter_lints: ^6.0.0

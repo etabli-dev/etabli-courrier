@@ -14,10 +14,10 @@
       "source": "https://pub.dev/packages/analyzer/versions/13.0.0"
     },
     "archive": {
-      "version": "4.0.9",
+      "version": "4.5.2",
       "sha256": "32f97d332eae7453ec4079858e6f1d74be85beeb6d3881068b47d02a379cccea",
       "license": "MIT",
-      "source": "https://pub.dev/packages/archive/versions/4.0.9"
+      "source": "https://pub.dev/packages/archive/versions/4.5.2"
     },
     "args": {
       "version": "2.7.0",
