@@ -20,6 +20,6 @@ The existing project allow-list is Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, 
 
 ## Before distributing a binary
 
-The current inventory covers 140 resolved packages, including SDK/development/desktop packages. This is broader than the Android shipped Dart set, but does not enumerate every Maven, CocoaPods or system component. Review the final platform dependency notices and archive the corresponding source versions, including local patches, with the chosen release.
+The current inventory covers 144 resolved packages, including SDK/development/desktop packages and the development-only Windows packaging tool `msix` (MIT) with its dependencies. This is broader than the Android shipped Dart set, but does not enumerate every Maven, CocoaPods or system component. In particular, `msix` copies the Microsoft Visual C++ runtime DLLs into the Windows MSIX, and the Windows ZIP needs that runtime installed; review its redistribution terms with the other platform notices. Review the final platform dependency notices and archive the corresponding source versions, including local patches, with the chosen release.
 
 Run the pinned CI/license checks, inspect the actual packaged license page and source links on an installed build, review native notices and platform/store requirements, and retain the source/build instructions for that version. Microsoft 365 remains disabled pending project-owned registration and device validation. No F-Droid or store acceptance is established by a permissive application license or a passing inventory check.

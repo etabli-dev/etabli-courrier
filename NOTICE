@@ -140,11 +140,16 @@ flutter_timezone — device IANA time-zone identifier
 License: Apache-2.0
 Source: https://github.com/tjarvstrand/flutter_timezone
 Pinned: 5.1.1
+--------------------------------------------------------------------------------
+msix — Windows MSIX packaging (development dependency; not part of the app)
+License: MIT
+Source: https://github.com/YehudaKremer/msix
+Pinned: 3.18.0 (November 2026; Windows desktop packaging in CI)
 
-Resolved MPL-2.0 components also include enough_convert (mail character conversion)
-and dbus (Linux integration; not part of the Android feature set). Full resolved
-license texts and source/version links are in THIRD_PARTY_LICENSES.md and
-tool/license_manifest.json. No package was modified in its upstream cache.
-flutter_local_notifications 22.3.3 is vendored with a small Android permission
-handling patch; its BSD-3-Clause license and upstream provenance remain in
-third_party/flutter_local_notifications.
+Resolved MPL-2.0 components also include enough_convert (mail character
+conversion) and dbus (Linux integration; compiled into Linux desktop builds, not
+part of the Android feature set). Full resolved license texts and source/version
+links are in THIRD_PARTY_LICENSES.md and tool/license_manifest.json. No package
+was modified in its upstream cache. flutter_local_notifications 22.3.3 is vendored
+with a small Android permission handling patch; its BSD-3-Clause license and
+upstream provenance remain in third_party/flutter_local_notifications.

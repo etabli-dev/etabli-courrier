@@ -1,0 +1,115 @@
+name: Desktop builds
+# Builds and packages the desktop targets as review artifacts. Nothing is
+# signed or published here; see docs/platform-roadmap.md for signing and
+# distribution prerequisites.
+on:
+  push:
+    branches: [main, 'refine/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Linux build and packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake ninja-build pkg-config libgtk-3-dev libsecret-1-dev \
+            dpkg-dev desktop-file-utils xvfb
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: '3.47.9'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build linux --release --no-pub
+      - name: Launch smoke test (headless, 15 s)
+        run: |
+          xvfb-run -a dbus-run-session -- bash -c '
+            build/linux/x64/release/bundle/courrier 2> smoke-stderr.log &
+            pid=$!
+            sleep 15
+            kill -0 "$pid" || { echo "courrier exited during the smoke test"; exit 1; }
+            kill "$pid"
+          '
+          cat smoke-stderr.log
+          if grep -iE 'exception|unhandled' smoke-stderr.log; then exit 1; fi
+      - run: desktop-file-validate linux/packaging/dev.etabli.courrier.desktop
+      - name: Build .deb
+        run: scripts/package-deb.sh
+      - name: Inspect .deb
+        run: |
+          dpkg-deb -I build/deb/*.deb
+          dpkg-deb -c build/deb/*.deb
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: courrier-linux-deb
+          path: build/deb/*.deb
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: '3.47.9'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build windows --release --no-pub
+      - id: meta
+        shell: bash
+        run: echo "version=$(sed -n 's/^version:[[:space:]]*\([0-9][0-9.]*\).*/\1/p' pubspec.yaml)" >> "$GITHUB_OUTPUT"
+      - name: Zip release folder with notices
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          $stage = 'build/windows/package/etabli-courrier'
+          New-Item -ItemType Directory -Force -Path $stage | Out-Null
+          Copy-Item -Recurse -Path 'build/windows/x64/runner/Release/*' -Destination $stage
+          Copy-Item LICENSE, NOTICE, THIRD_PARTY_LICENSES.md -Destination $stage
+          Compress-Archive -Path $stage -DestinationPath "build/windows/etabli-courrier_$($env:VERSION)_windows_x64.zip"
+      - name: Build unsigned MSIX
+        run: dart run msix:create
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: courrier-windows
+          path: |
+            build/windows/*.zip
+            build/windows/msix/*.msix
+  macos:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: '3.47.9'
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build macos --release --no-pub
+      - name: Zip and DMG (ad-hoc signed, not notarized)
+        run: |
+          version=$(sed -n 's/^version:[[:space:]]*\([0-9][0-9.]*\).*/\1/p' pubspec.yaml)
+          app=build/macos/Build/Products/Release/courrier.app
+          codesign --verify --deep --verbose=2 "$app"
+          ditto -c -k --sequesterRsrc --keepParent "$app" "build/macos/etabli-courrier_${version}_macos.zip"
+          mkdir -p build/macos/dmg
+          cp -R "$app" build/macos/dmg/
+          cp LICENSE NOTICE THIRD_PARTY_LICENSES.md build/macos/dmg/
+          ln -s /Applications build/macos/dmg/Applications
+          hdiutil create -volname 'Etabli Courrier' -srcfolder build/macos/dmg -ov -format UDZO \
+            "build/macos/etabli-courrier_${version}_macos.dmg"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: courrier-macos
+          path: |
+            build/macos/*.zip
+            build/macos/*.dmg

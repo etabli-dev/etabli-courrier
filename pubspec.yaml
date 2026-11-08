@@ -41,8 +41,28 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+  # Windows MSIX packaging in CI (`dart run msix:create`); never shipped in the app.
+  msix: 3.18.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/sample/holidays_2026.ics
+
+# Windows MSIX package built by .github/workflows/desktop.yml after
+# `flutter build windows`. Unsigned until a code-signing certificate exists;
+# `publisher` must then match the certificate subject (docs/platform-roadmap.md).
+msix_config:
+  display_name: Établi Courrier
+  publisher_display_name: R. Heller
+  identity_name: dev.etabli.courrier
+  logo_path: linux/packaging/dev.etabli.courrier.png
+  capabilities: internetClient
+  languages: en-us
+  architecture: x64
+  build_windows: false
+  sign_msix: false
+  install_certificate: false
+  store: false
+  output_path: build/windows/msix
+  output_name: etabli-courrier
