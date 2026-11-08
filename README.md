@@ -1,8 +1,12 @@
 # Établi Courrier
 
-An offline communication workspace for mail, calendar, contacts, tasks, reminders, notes and feeds. Flutter source for Android and iOS; Apache-2.0, with separately licensed dependencies.
+An offline communication workspace for mail, calendar, contacts, tasks, reminders, notes and feeds. Flutter source for Android, iOS, Linux, Windows and macOS; Apache-2.0, with separately licensed dependencies.
 
 This source tree includes the October 2026 refinement. The existing v0.1.0 development release does **not** contain these changes. Store/F-Droid acceptance, physical-device operation and live-account interoperability are not yet verified for this revision.
+
+## Platforms
+
+Android and iOS are the existing mobile targets. Linux, Windows and macOS desktop targets were added in November 2026: the Linux build runs and packages as a `.deb` (`scripts/package-deb.sh`), while the Windows and macOS builds are produced only by the desktop CI workflow and have not been run. On desktop, app lock is unavailable on Linux and reminder notifications are not delivered on Linux or Windows; the app shows this where it applies. Status, build commands, signing prerequisites and milestones for all five platforms are in the [platform roadmap](docs/platform-roadmap.md).
 
 ## What is available
 
@@ -47,7 +51,7 @@ The schema-2 upgrade adds DAV resource hrefs while retaining existing records. I
 
 See [the refinement record](docs/refinement-2026-10.md) for exact observed checks, findings and remaining requirements, and [BUILD_LOG](BUILD_LOG.md) for the reason-first repair history.
 
-CI is pinned to the tested Flutter version and uses frozen dependency resolution, analysis, tests, license verification, Android builds and lint, plus an unsigned iOS build. These new workflows have not run remotely. The live Nextcloud integration test is intentionally conditional on test-account configuration; a skipped test is not live-service evidence.
+CI is pinned to the tested Flutter version and uses frozen dependency resolution, analysis, tests, license verification, Android builds and lint, plus an unsigned iOS build; that application workflow passed remotely for `7ca7cef` on 2026-10-31 (see the refinement record). The desktop workflow builds Linux (`.deb`), Windows (ZIP and unsigned MSIX) and macOS (ZIP and DMG, not notarized) review artifacts; it has not run remotely yet. The live Nextcloud integration test is intentionally conditional on test-account configuration; a skipped test is not live-service evidence.
 
 ```sh
 # Produces an unsigned bundle when no private keystore is configured:
