@@ -1461,3 +1461,7 @@ Fallback: retain the CI failure and do not claim an MSIX artifact until the Wind
 Final Android receipt: BUILD SUCCESSFUL in3m43s,846 tasks (80executed/766up-to-date). Default drawable linked after forced resource merging. APK signature and16KiB ZIP alignment passed; ELF LOAD alignment is at least16KiB for all9APK and10AAB64-bit native libraries. Artifact hashes and sizes are retained in android-artifacts.json. No device-runtime acceptance is implied.
 
 F-NOV-05 capacity review: scheduling60 replacements before removing60 obsolete IDs can transiently exceed Apple's pending limit. For capped schedulers, free only the necessary obsolete slot immediately before each genuinely new ID; preserve retained/due IDs and same-ID updates. Uncapped schedulers keep schedule-before-cancel semantics. Verify a strict60-slot fake replacing60 old IDs with60 new IDs without overflow, together with all existing failure/boundary tests.
+
+### F-NOV-09 — unsigned MSIX publisher metadata
+
+Windows packaging now compiles the MSIX tool but its configuration validator requires a publisher even when signing is disabled. Set the unsigned preview publisher to `CN=R. Heller`, matching the existing display name. This does not assert a signing certificate or Store registration. A future signed or Store release must reconcile publisher, certificate subject and assigned Store identity. Validate every configuration field through the actual installed MSIX Configuration validator locally; Windows build output and packaging remain CI checks.

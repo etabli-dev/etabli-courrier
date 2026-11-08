@@ -166,3 +166,5 @@ Per-plugin support and desktop gaps:
 - M6 keyboard navigation is implemented: Ctrl/⌘+1–7, Ctrl/⌘+, for Settings, Ctrl/⌘+Shift+A for Accounts, Ctrl/⌘+N in Notes and F1 help. The macOS window minimum is 640 × 480. The wider two-pane redesign and global refresh/search shortcuts remain open.
 
 Observed validation results and remaining device/service gates are recorded in `docs/apple-refinement-2026-11-08.md`; these entries do not close the whole M4/M6 or release milestones.
+
+Unsigned Windows previews use `publisher: CN=R. Heller` as required MSIX package metadata. This is not a signing certificate or Microsoft Store identity claim. Before a signed or Store release, match the publisher to the certificate subject and the publisher/identity assigned in Partner Center.

@@ -58,10 +58,12 @@ flutter:
 
 # Windows MSIX package built by .github/workflows/desktop.yml after
 # `flutter build windows`. Unsigned until a code-signing certificate exists;
-# `publisher` must then match the certificate subject (docs/platform-roadmap.md).
+# Preview publisher is metadata only; a signed/store release must use the
+# matching certificate subject and assigned store identity (docs/platform-roadmap.md).
 msix_config:
   display_name: Établi Courrier
   publisher_display_name: R. Heller
+  publisher: CN=R. Heller
   identity_name: dev.etabli.courrier
   logo_path: linux/packaging/dev.etabli.courrier.png
   capabilities: internetClient
