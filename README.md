@@ -1,6 +1,6 @@
 # Établi Courrier
 
-An offline communication workspace for mail, calendar, contacts, tasks, reminders, notes and feeds. Flutter source for Android, iOS, Linux, Windows and macOS; proprietary (all rights reserved), with separately licensed dependencies.
+An offline communication workspace for mail, calendar, contacts, tasks, reminders, notes and feeds. Flutter source for Android, iOS, Linux, Windows and macOS; AGPL-3.0-only (commercial licences available), with separately licensed dependencies.
 
 This source tree includes the October 2026 refinement. The existing v0.1.0 development release does **not** contain these changes. Store/F-Droid acceptance, physical-device operation and live-account interoperability are not yet verified for this revision.
 
@@ -65,6 +65,6 @@ For signing, create the ignored `android/keystore.properties` with `storeFile`, 
 
 ## License
 
-Proprietary, all rights reserved — see [LICENSE](LICENSE). Versions published before 22 November 2026 remain available under Apache-2.0. [NOTICE](NOTICE), [resolved license texts](THIRD_PARTY_LICENSES.md), [licensing process](LICENSING.md), and [source provenance](THIRD_PARTY_REFERENCES.md). `enough_mail`, `enough_convert` and desktop-only `dbus` are resolved MPL-2.0 dependencies; native plugin SDKs retain their own notices.
+[AGPL-3.0-only](LICENSE), or a commercial licence from the copyright holder (etabli.dev@outlook.com). Versions published before 22 November 2026 remain available under Apache-2.0. [NOTICE](NOTICE), [resolved license texts](THIRD_PARTY_LICENSES.md), [licensing process](LICENSING.md), and [source provenance](THIRD_PARTY_REFERENCES.md). `enough_mail`, `enough_convert` and desktop-only `dbus` are resolved MPL-2.0 dependencies; native plugin SDKs retain their own notices.
 
 Copyright 2026 R. Heller.

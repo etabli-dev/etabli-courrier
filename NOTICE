@@ -4,7 +4,9 @@ Copyright 2026 Raban Heller and the Établi Suite contributors
 This product includes software developed as part of the Établi Suite
 (https://github.com/etabli-dev).
 
-All rights reserved. See LICENSE.
+Licensed under the GNU Affero General Public License, version 3 only
+(AGPL-3.0-only); see LICENSE. Commercial licences are available from the
+copyright holder: etabli.dev@outlook.com.
 
 ================================================================================
 Third-Party Licenses
@@ -13,7 +15,7 @@ Third-Party Licenses
 This application bundles or depends on the following third-party components.
 Each remains under its own license. Components under the Mozilla Public License
 2.0 are file-level copyleft: their source files remain MPL-2.0 within this
-combined work, while courrier's own source remains proprietary (all rights reserved).
+combined work, while courrier's own source remains under AGPL-3.0-only.
 
 --------------------------------------------------------------------------------
 enough_mail — IMAP/POP3/SMTP and MIME for Dart (incl. XOAUTH2)
