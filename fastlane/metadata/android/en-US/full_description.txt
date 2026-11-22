@@ -29,7 +29,7 @@ Features
 Privacy posture
 * No analytics, no trackers, no third-party SDKs that collect data.
 * All content stays on device + the user's chosen accounts.
-* Apache-2.0 source available at https://github.com/etabli-dev/etabli-courrier
+* Source visible at https://github.com/etabli-dev/etabli-courrier (all rights reserved)
 * Settings export only carries non-sensitive preferences; OAuth tokens +
   passwords stay in the platform keystore.
 

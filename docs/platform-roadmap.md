@@ -1,5 +1,8 @@
 # Platform roadmap
 
+> **Note (22 November 2026):** this project is now proprietary (all rights reserved). F-Droid only
+> publishes free software, so every F-Droid step below is void.
+
 Status as of 2026-11-08. This page covers Ubuntu/Debian, Windows, macOS, iOS and Android. It separates what has been observed from what is only prepared; "not verified locally (CI only)" means a workflow exists but no local run was possible, and the new desktop workflow has not run remotely yet.
 
 ## 1. Platform role

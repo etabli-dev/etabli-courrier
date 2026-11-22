@@ -3,15 +3,15 @@
 Thanks for helping build `courrier`, a member of the Établi Suite.
 
 ## Licensing of contributions (please read)
-- **Inbound = outbound.** All contributions are accepted under the project's license, the
-  **Apache License 2.0**. By submitting a contribution you agree it is licensed under
-  Apache-2.0.
-- **Developer Certificate of Origin (DCO).** Every commit must be signed off:
+- **Proprietary project.** `courrier` is proprietary (all rights reserved). Please open an
+  issue before proposing changes; contributions can only be accepted under a separate
+  written agreement with the copyright holder.
+- **Developer Certificate of Origin (DCO).** Every commit must also be signed off:
   ```
   git commit -s -m "Your message"
   ```
   The `Signed-off-by:` line certifies you wrote the change or otherwise have the right to
-  submit it under Apache-2.0 (https://developercertificate.org).
+  submit it under that agreement (https://developercertificate.org).
 - **No copyleft code.** Do not paste or adapt code from GPL/AGPL/LGPL projects (e.g. Fossify,
   Etar, Tasks.org, DavMail). You may reimplement *behavior* independently, but never copy
   source. Code from MPL-2.0 or Apache-2.0 projects requires prior discussion and proper
