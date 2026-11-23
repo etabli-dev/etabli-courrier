@@ -4,7 +4,7 @@ Thanks for helping build `courrier`, a member of the Établi Suite.
 
 ## Licensing of contributions (please read)
 - **Dual-licensed project.** `courrier` is licensed AGPL-3.0-only, or commercially by the
-  copyright holder. Please open an issue before proposing changes; contributions can only
+  copyright holder (etabli.dev@outlook.com). Please open an issue before proposing changes; contributions can only
   be accepted under a written contributor agreement that allows both licences.
 - **Developer Certificate of Origin (DCO).** Every commit must also be signed off:
   ```
