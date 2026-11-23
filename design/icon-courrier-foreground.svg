@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="432" height="432" viewBox="0 0 1024 1024">
+  <!-- Établi Courrier: Android adaptive-icon foreground (glyph scaled into the safe zone; background #28A745). -->
+  <g transform="translate(512,512) scale(0.73956) translate(-512.00,-512.00)">
+  <g stroke-width="38.077" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 220 372 L 512 560 L 804 372 V 668 A 36 36 0 0 1 768 704 H 256 A 36 36 0 0 1 220 668 V 356 A 36 36 0 0 1 256 320 H 768 A 36 36 0 0 1 804 356 V 372" fill="none" stroke="#FFFFFF"/>
+  </g>
+  </g>
+</svg>
