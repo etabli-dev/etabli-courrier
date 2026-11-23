@@ -1,5 +1,5 @@
 // THE ONLY FILE IN THE TREE THAT MAY CONTAIN HEX COLOR LITERALS.
-// Enforced by AUDIT_LOOP.md dimension 8 (grep gate). See CLAUDE.md aesthetic section.
+// Do not add hex color literals anywhere else; use these tokens.
 
 import 'package:flutter/material.dart';
 
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class CourrierTokens {
   const CourrierTokens._();
 
-  // The single accent. Sourced from CLAUDE.md aesthetic. Do not introduce a second accent.
+  // The single accent (Établi green). Do not introduce a second accent.
   static const Color accent = Color(0xFF28A745);
 
   // Light palette — minimal, whitespace-heavy, borders over shadows.

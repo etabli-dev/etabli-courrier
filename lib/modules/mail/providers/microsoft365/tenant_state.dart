@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import '../../../../core/auth/oauth_provider.dart';
 import '../../../../core/net/net_error.dart';
 
-// Tenant-friction is first-class UX (BUILD_PROMPT M8): every recoverable
+// Tenant-friction is first-class UX: every recoverable
 // failure shows the user an actionable card instead of crashing silently.
 // `TenantStateClassifier` maps an OAuth/IMAP/SMTP error into one of these
 // states; the UI in `ui/tenant_error_card.dart` renders a tailored message
@@ -60,7 +60,7 @@ class TenantStateClassifier {
 
   /// IMAP / SMTP responses surface as NetError plus a short server line. We
   /// look for the signal words Microsoft documents in their tenant-policy
-  /// pages (and Exchange Online surface) — see BUILD_PROMPT M8 watch list.
+  /// pages (and Exchange Online surface).
   TenantState classifyMailError(NetError error, {String? serverLine}) {
     final hint = (serverLine ?? '').toLowerCase();
     if (hint.contains('imap is disabled') ||

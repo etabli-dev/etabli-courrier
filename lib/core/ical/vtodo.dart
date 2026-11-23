@@ -1,7 +1,7 @@
 import 'ical_component.dart';
 
 // Typed lens over a VTODO. Subtasks are surfaced via RELATED-TO;RELTYPE=PARENT
-// per BUILD_PROMPT M5 — the parentUid getter resolves that conventionally.
+// (RFC 5545) — the parentUid getter resolves that conventionally.
 
 class VTodo {
   VTodo.from(this.component)

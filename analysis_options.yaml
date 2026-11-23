@@ -1,4 +1,4 @@
-# Strict analyzer config — supports CLAUDE.md operating principle 2 (zero-warning hard-fail).
+# Strict analyzer config — the zero-warning rule is a hard failure.
 # `flutter analyze` must report 0 errors, 0 warnings, AND 0 infos. Suppressions are forbidden.
 
 include: package:flutter_lints/flutter.yaml
@@ -10,8 +10,8 @@ analyzer:
     strict-raw-types: true
   errors:
     # Promote everything that would normally be a warning or info to a hard error.
-    # The audit dimension 1 gate fails on any non-zero analyzer output, but this
-    # keeps developers honest in the editor too.
+    # CI fails on any non-zero analyzer output; promoting the levels here
+    # keeps the editor just as strict.
     todo: error
     deprecated_member_use: error
     deprecated_member_use_from_same_package: error

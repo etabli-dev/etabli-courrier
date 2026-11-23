@@ -4,7 +4,7 @@
   Apple privacy manifest for courrier (Privacy Manifests requirement).
   https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
 
-  Posture (BUILD_PROMPT M0):
+  Privacy posture:
     * no analytics, no trackers, no third-party SDKs that collect data;
     * mail / calendar / contacts / tasks / notes / feeds content stays on
       device + the user's chosen accounts (Nextcloud / IMAP / M365);

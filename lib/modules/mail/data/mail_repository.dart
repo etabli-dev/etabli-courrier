@@ -10,7 +10,7 @@ import '../backend/mail_credentials.dart';
 //   * Folders are mirrored from the backend into `MailFolders` rows.
 //   * Envelopes land as MailMessages with `bodyDownloaded=false`. The body
 //     is fetched lazily by `loadBody`.
-//   * `remoteContentAllowed` defaults to false (audit dim 4); the user flips
+//   * `remoteContentAllowed` defaults to false (privacy); the user flips
 //     it per-message via the renderer's "Show images" toggle.
 //   * Soft-delete moves messages to the Trash folder (server-side via the
 //     backend, locally via tombstone). Restore unsets the tombstone and moves

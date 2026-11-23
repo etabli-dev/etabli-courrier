@@ -5,7 +5,7 @@ import '../../../core/sync/change_queue.dart';
 import 'note_draft.dart';
 
 // Offline-first notes repository. Reads/writes hit CourrierDatabase first
-// (AUDIT_LOOP dim 6). Sync runs via NotesSyncBackend against Nextcloud
+// (offline-first). Sync runs via NotesSyncBackend against Nextcloud
 // Notes REST; this class is the canonical local source of truth.
 //
 // Per-note lock rides core/lock (M11 polish wires the biometric prompt);
