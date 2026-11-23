@@ -93,9 +93,7 @@ when the device runner can't.
 
 - Capturing the actual PNGs requires a connected device + Maestro
   installed (neither is in CI yet). The YAML harness is the artefact M13
-  ships; M15 release-gate ticks the *"gallery generated"* row off
-  `docs/audits/M15_jank_checklist.md`-style checklist by running the
-  script against real iOS + Android devices.
+  ships; the M15 release gate ticks its *"gallery generated"* row by
+  running the script against real iOS + Android devices.
 - A GitHub Actions workflow that boots an emulator + runs the harness
-  per PR is M11 polish from `docs/audits/M15_jank_checklist.md` — out of
-  scope for M13.
+  per PR is later polish — out of scope for M13.

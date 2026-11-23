@@ -1,8 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Per-account secret material — passwords, app-passwords, OAuth refresh tokens.
-// AUDIT_LOOP dim 4 (security & privacy) requires every secret/token to live in
-// platform secure storage and never appear in logs or shared_prefs.
+// Security rule: every secret/token lives in platform secure storage and
+// never appears in logs or shared_prefs.
 class SecretsStore {
   SecretsStore({FlutterSecureStorage? backend})
     : _backend =

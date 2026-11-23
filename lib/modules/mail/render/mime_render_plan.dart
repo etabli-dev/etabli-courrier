@@ -6,7 +6,7 @@ import '../backend/mail_backend.dart';
 
 // Produces a sanitised render plan from a MailBodyPayload.
 //
-// AUDIT_LOOP dim 4 invariant: **no remote content is ever fetched at render
+// Privacy invariant: **no remote content is ever fetched at render
 // time.** When the user explicitly reveals remote images, the renderer
 // surfaces them — until then, every off-site `<img src="…">` and `<link>` is
 // rewritten to a placeholder. Scripts and event handlers are always stripped.

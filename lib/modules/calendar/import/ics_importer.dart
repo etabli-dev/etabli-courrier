@@ -14,7 +14,7 @@ import '../../../core/recurrence/ical_date.dart';
 //
 // The canonical raw ICS stored per row is a one-VEVENT VCALENDAR carrying
 // the original calendar-level properties (PRODID, VERSION, X-WR-CALNAME …) so
-// unknown props survive (audit dim 7).
+// unknown props survive.
 
 class IcsImporter {
   IcsImporter({required this.db});

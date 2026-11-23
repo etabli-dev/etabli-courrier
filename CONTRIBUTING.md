@@ -31,7 +31,7 @@ Thanks for helping build `courrier`, a member of the Établi Suite.
   handled as visible, actionable UI states — never a silent failure or crash.
 
 ## Quality bar (enforced)
-PRs must pass the standards in `CLAUDE.md` and `AUDIT_LOOP.md`:
+PRs must meet this quality bar:
 - `flutter analyze` — **zero** issues (errors, warnings, and infos).
 - `dart format` — clean.
 - `flutter test` — all green, none skipped.
@@ -41,8 +41,8 @@ PRs must pass the standards in `CLAUDE.md` and `AUDIT_LOOP.md`:
 
 ## Workflow
 1. Open an issue to discuss non-trivial changes first.
-2. Branch, implement against the relevant milestone scope (`BUILD_PROMPT.md`).
-3. Run the audit-loop checks locally until clean.
+2. Branch and keep the change to the scope agreed in the issue.
+3. Run the quality-bar checks above locally until they are clean.
 4. Submit a signed-off PR describing what changed and how you verified it.
 
 **Running locally:** copy `secrets.example.json` → `secrets.json` (gitignored), fill in your

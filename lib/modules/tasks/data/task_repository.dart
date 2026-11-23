@@ -10,7 +10,7 @@ import 'task_serializer.dart';
 
 // Offline-first VTODO repository.
 //
-// Two recurrence modes (BUILD_PROMPT M5):
+// Two recurrence modes:
 //   * fixed schedule — RRULE on the task; complete() flips to 100% and stops
 //   * repeat-after-completion — on complete(), the next due-date is computed
 //     from completion time + the interval encoded in RRULE; the row is reset

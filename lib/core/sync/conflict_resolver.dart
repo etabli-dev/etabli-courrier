@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-// The conflict UI contract (BUILD_PROMPT M1):
+// The conflict UI contract:
 //   * server-wins on pull (silently — no UI)
 //   * last-write-wins on push (the local write replaces the server copy)
 //   * a surfaced conflict only happens when the server moved between our
@@ -8,8 +8,8 @@ import 'package:meta/meta.dart';
 //     a ConflictResolver.
 //
 // M1 ships the contract + a "defer" (keep both, user resolves later) default.
-// M11 wires the actual dialog UI; the AUDIT_LOOP dim 6 invariant "conflicts
-// surface in UI, not just logs" is what the dialog satisfies.
+// M11 wires the actual dialog UI; it satisfies the offline-first rule that
+// conflicts surface in the UI, not just in logs.
 
 enum ConflictResolution { keepLocal, keepServer, keepBoth, defer }
 

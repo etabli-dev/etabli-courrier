@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
-// F-Droid modularity invariant (BUILD_PROMPT M8 + LICENSING.md). Every
+// F-Droid modularity invariant (see LICENSING.md). Every
 // Microsoft-specific identifier MUST live under
 // `lib/modules/mail/providers/microsoft365/`. This is what lets the core
 // stay F-Droid-clean — the M365 module triggers the `NonFreeNet` anti-feature
@@ -43,7 +43,7 @@ void main() {
         isEmpty,
         reason:
             'M365 identifiers leaked outside the provider module — fix '
-            'before audit dim 8 / F-Droid check fail.',
+            'before the F-Droid check fails.',
       );
     },
   );

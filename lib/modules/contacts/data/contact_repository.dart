@@ -9,7 +9,7 @@ import 'contact_draft.dart';
 import 'contact_serializer.dart';
 
 // Offline-first contact repository. Reads/writes hit CourrierDatabase first
-// (AUDIT_LOOP dim 6). Sync happens via ContactsSyncBackend against the M2 DAV
+// (offline-first). Sync happens via ContactsSyncBackend against the M2 DAV
 // layer; this class is the canonical local source of truth.
 
 class ContactRepository {

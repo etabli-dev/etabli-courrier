@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 import 'accounts.dart';
 
 // VEVENT row. Stores opaque ICS so round-trip preserves unknown properties
-// (AUDIT_LOOP dim 7 data-model fidelity). Indexed fields are populated from a
+// (data-model fidelity). Indexed fields are populated from a
 // pure parse of the ICS during insertion, but the source of truth remains the
 // raw bytes.
 class CalendarEvents extends Table {
@@ -44,8 +44,8 @@ class CalendarEvents extends Table {
   ];
 }
 
-// N reminders per event — explicit one-to-many table (BUILD_PROMPT M1 +
-// addendum from Fossify learning).
+// N reminders per event — explicit one-to-many table (behaviour informed by
+// Fossify; no code copied).
 class EventReminders extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get eventId =>

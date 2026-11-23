@@ -2,7 +2,7 @@ import 'package:meta/meta.dart';
 
 // One iCalendar / vCard "content line" (RFC 5545 §3.1 / RFC 6350 §3.3) — a
 // name, optional parameters, and a raw text value. Unknown properties are
-// kept verbatim so the round-trip stays lossless (AUDIT_LOOP dim 7).
+// kept verbatim so the round-trip stays lossless.
 //
 // We deliberately store the value as raw RFC-encoded text. Decoding into typed
 // values happens in the typed accessors (VEvent/VTodo/VCard), where we know the

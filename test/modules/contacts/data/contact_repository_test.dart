@@ -112,7 +112,7 @@ void main() {
           db.contactCards,
         )..where((t) => t.id.equals(id))).getSingle();
         expect(stored.formattedName, 'Ada Lovelace, FRS');
-        // Round-trip preserves vendor X-* properties (audit dim 7).
+        // Round-trip preserves vendor X-* properties.
         expect(stored.rawVcard.contains('X-IM-SLACK:'), isTrue);
         expect(stored.rawVcard.contains('X-CUSTOM-VENDOR-NOTE:'), isTrue);
         // FN was patched in place.

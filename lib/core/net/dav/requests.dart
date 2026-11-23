@@ -1,4 +1,4 @@
-// Canned XML bodies for the PROPFIND / REPORT requests audit dim 7 expects.
+// Canned XML bodies for the PROPFIND / REPORT requests the DAV sync sends.
 // Kept as plain strings (no string interpolation of caller-supplied data, to
 // keep the surface trivially auditable).
 

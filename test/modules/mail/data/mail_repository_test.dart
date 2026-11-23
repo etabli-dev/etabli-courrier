@@ -213,7 +213,7 @@ void main() {
           expect(
             row.remoteContentAllowed,
             isFalse,
-            reason: 'audit dim 4 — default-off remote content',
+            reason: 'remote content must be off by default',
           );
         }
 

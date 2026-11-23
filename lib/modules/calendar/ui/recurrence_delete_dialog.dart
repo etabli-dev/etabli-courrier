@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/tokens.dart';
 
-// "Delete recurring event" UX (audit dim 8 / BUILD_PROMPT M3): the user picks
+// "Delete recurring event" UX: the user picks
 // THIS occurrence, THIS AND FOLLOWING, or ALL occurrences. The repository
 // turns the choice into either an EXDATE row, an UNTIL truncation, or a full
 // delete — see CalendarRepository.

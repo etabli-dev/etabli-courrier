@@ -5,7 +5,7 @@ import '../../../core/theme/tokens.dart';
 import '../data/event_draft.dart';
 import '../data/event_reminder_spec.dart';
 
-// Compact event editor — only the fields M3 spec calls out (BUILD_PROMPT M3).
+// Compact event editor — only the fields the M3 scope calls for.
 // Wider fields (TZID-aware time picker, attachment picker) land at M11 polish.
 
 class EventEditor extends StatefulWidget {

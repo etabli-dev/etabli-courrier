@@ -9,7 +9,7 @@ import 'event_draft.dart';
 import 'event_serializer.dart';
 
 // Offline-first calendar repository. Every read/write goes through CourrierDatabase
-// first (AUDIT_LOOP dim 6). Sync happens via the M2 DAV layer through
+// first (offline-first). Sync happens via the M2 DAV layer through
 // CalendarSyncBackend; this repo is the canonical local source of truth.
 
 class CalendarRepository {
@@ -255,7 +255,7 @@ class CalendarRepository {
   }
 
   /// After recurrence edits, surgically patch the cached raw ICS — preserves
-  /// unknown vendor properties (audit dim 7) because we round-trip through
+  /// unknown vendor properties because we round-trip through
   /// the M2 reader/writer rather than re-render from scratch.
   Future<void> _rerenderIcsForEvent(int eventId) async {
     final existing = await (db.select(

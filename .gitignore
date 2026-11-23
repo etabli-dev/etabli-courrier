@@ -66,3 +66,8 @@ AGENTS.md
 BUILD_PROMPT.md
 .claude/
 .mcp.json
+
+# Local audit notes and ledgers (kept out of git)
+AUDIT_LOOP.md
+AUDIT_LEDGER.md
+docs/audits/
