@@ -59,3 +59,10 @@ docs/.quarto/
 /android/keystore.properties
 *.jks
 *.keystore
+
+# Local working notes for coding agents (kept out of git)
+CLAUDE.md
+AGENTS.md
+BUILD_PROMPT.md
+.claude/
+.mcp.json
