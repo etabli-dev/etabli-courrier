@@ -22,7 +22,7 @@ implementation. This record documents good-faith clean-room practice.
 
 Notes:
 - GPL references are **read-only inspiration / external companions**; their code is never
-  copied or linked into `courrier` (Apache-2.0). See LICENSING.md.
+  copied or linked into `courrier` (AGPL-3.0-only, or commercially licensed). See LICENSING.md.
 - MPL references inform design only; the only MPL component **shipped** is the `enough_mail`
   dependency, recorded in NOTICE.
 - K-9 / Thunderbird-Android is Apache-2.0 (compatible); clean-room reimplementation was

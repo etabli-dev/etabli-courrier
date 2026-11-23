@@ -93,7 +93,7 @@ BEGIN
             VALUE "FileDescription", "Établi Courrier" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "courrier" "\0"
-            VALUE "LegalCopyright", "Copyright 2026 R. Heller. Apache-2.0." "\0"
+            VALUE "LegalCopyright", "Copyright 2026 R. Heller. AGPL-3.0-only." "\0"
             VALUE "OriginalFilename", "courrier.exe" "\0"
             VALUE "ProductName", "Établi Courrier" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

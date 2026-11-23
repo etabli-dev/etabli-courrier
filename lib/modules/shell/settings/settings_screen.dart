@@ -103,12 +103,12 @@ class SettingsScreen extends StatelessWidget {
             applicationName: 'Établi Courrier',
             applicationVersion: about.versionLabel,
             applicationLegalese:
-                'Copyright 2026 R. Heller. Apache-2.0.\nSource and distribution notices: https://github.com/etabli-dev/etabli-courrier',
+                'Copyright 2026 R. Heller. AGPL-3.0-only.\nSource and distribution notices: https://github.com/etabli-dev/etabli-courrier',
           ),
         ),
         const SizedBox(height: CourrierTokens.space5),
         Text(
-          'courrier is part of the Établi Suite. Apache-2.0.',
+          'courrier is part of the Établi Suite. AGPL-3.0-only.',
           style: theme.textTheme.bodySmall,
         ),
       ],

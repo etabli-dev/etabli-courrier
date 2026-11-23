@@ -50,7 +50,7 @@ install -m 0644 "$root/docs/_icons/icon-courrier.svg" "$stage/usr/share/icons/hi
 
 doc="$stage/usr/share/doc/$pkg"
 {
-  printf 'Établi Courrier\nCopyright 2026 R. Heller\nLicense: Apache-2.0\n'
+  printf 'Établi Courrier\nCopyright 2026 R. Heller\nLicense: AGPL-3.0-only\n'
   printf 'Source: https://github.com/etabli-dev/etabli-courrier\n\n'
   printf 'Dependencies keep their own licenses; see NOTICE and THIRD_PARTY_LICENSES.md.gz\n'
   printf 'in this directory. MPL-2.0 source is available from the package links listed there.\n\n'
