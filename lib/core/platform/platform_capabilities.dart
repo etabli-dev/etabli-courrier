@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../l10n/l10n.dart';
+
 /// Features whose plugin or operating-system support differs per platform.
 ///
 /// Every desktop gap is listed in docs/platform-roadmap.md. Uses
@@ -26,11 +28,19 @@ abstract final class PlatformCapabilities {
     _ => false,
   };
 
-  /// Explains a missing capability in the UI, e.g. "the Linux build".
+  /// Explains a missing capability in the UI, e.g. "the Linux build", in the app's language.
   static String get buildName => switch (defaultTargetPlatform) {
-    TargetPlatform.linux => 'the Linux build',
-    TargetPlatform.windows => 'the Windows build',
-    TargetPlatform.macOS => 'the macOS build',
-    _ => 'this build',
+    TargetPlatform.linux => L10n.current.platformBuildLinux,
+    TargetPlatform.windows => L10n.current.platformBuildWindows,
+    TargetPlatform.macOS => L10n.current.platformBuildMacos,
+    _ => L10n.current.platformBuildThis,
+  };
+
+  /// The same as a prepositional phrase ("in the Linux build", "im Linux-Build").
+  static String get inBuildName => switch (defaultTargetPlatform) {
+    TargetPlatform.linux => L10n.current.platformInLinux,
+    TargetPlatform.windows => L10n.current.platformInWindows,
+    TargetPlatform.macOS => L10n.current.platformInMacos,
+    _ => L10n.current.platformInThis,
   };
 }

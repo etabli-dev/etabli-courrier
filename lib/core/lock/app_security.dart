@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n.dart';
 import '../config/preferences_store.dart';
 import '../platform/platform_capabilities.dart';
 import 'biometric_app_lock_guard.dart';
@@ -20,6 +21,9 @@ class AppSecurity {
   }
 }
 
+/// Why the lock screen shows an error instead of its title; localized when shown.
+enum _LockError { settingsUnreadable, authenticationFailed }
+
 class AppLockHost extends StatefulWidget {
   const AppLockHost({required this.child, super.key});
   final Widget child;
@@ -29,7 +33,7 @@ class AppLockHost extends StatefulWidget {
 
 class _AppLockHostState extends State<AppLockHost> with WidgetsBindingObserver {
   bool _enabled = false, _locked = true, _ready = false, _busy = false;
-  String? _error;
+  _LockError? _error;
   @override
   void initState() {
     super.initState();
@@ -64,7 +68,7 @@ class _AppLockHostState extends State<AppLockHost> with WidgetsBindingObserver {
       if (mounted) {
         setState(() {
           _locked = true;
-          _error = 'Could not read app-lock settings. Retry to continue.';
+          _error = _LockError.settingsUnreadable;
         });
       }
     }
@@ -87,51 +91,58 @@ class _AppLockHostState extends State<AppLockHost> with WidgetsBindingObserver {
       setState(() {
         _busy = false;
         _locked = !unlocked;
-        _error = unlocked
-            ? null
-            : 'Authentication was cancelled or unavailable. Please retry.';
+        _error = unlocked ? null : _LockError.authenticationFailed;
       });
     }
   }
 
   @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Offstage(offstage: _locked || !_ready, child: widget.child),
-      if (_locked || !_ready)
-        Positioned.fill(
-          child: Material(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.lock_outline, size: 40),
-                    const SizedBox(height: 16),
-                    Text(
-                      _error ??
-                          (_ready
-                              ? 'Unlock courrier'
-                              : 'Loading security settings…'),
-                    ),
-                    const SizedBox(height: 16),
-                    if (!_ready && _error != null)
-                      FilledButton(
-                        onPressed: _refresh,
-                        child: const Text('Retry'),
-                      ),
-                    if (_ready)
-                      FilledButton(
-                        onPressed: _busy ? null : _unlock,
-                        child: Text(_busy ? 'Authenticating…' : 'Unlock'),
-                      ),
-                  ],
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Stack(
+      children: [
+        Offstage(offstage: _locked || !_ready, child: widget.child),
+        if (_locked || !_ready)
+          Positioned.fill(
+            child: Material(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.lock_outline, size: 40),
+                      const SizedBox(height: 16),
+                      Text(switch (_error) {
+                        _LockError.settingsUnreadable =>
+                          l10n.appLockSettingsFailed,
+                        _LockError.authenticationFailed =>
+                          l10n.appLockAuthFailed,
+                        null =>
+                          _ready ? l10n.appLockTitle : l10n.appLockLoading,
+                      }),
+                      const SizedBox(height: 16),
+                      if (!_ready && _error != null)
+                        FilledButton(
+                          onPressed: _refresh,
+                          child: Text(l10n.commonRetry),
+                        ),
+                      if (_ready)
+                        FilledButton(
+                          onPressed: _busy ? null : _unlock,
+                          child: Text(
+                            _busy
+                                ? l10n.appLockAuthenticating
+                                : l10n.appLockUnlock,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-    ],
-  );
+      ],
+    );
+  }
 }

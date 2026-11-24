@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../core/db/database.dart';
+import '../../../l10n/l10n.dart';
 import '../backend/mail_backend.dart';
 import '../backend/mail_credentials.dart';
 
@@ -96,8 +97,9 @@ class MailRepository {
               .insert(
                 AccountsCompanion.insert(
                   kind: 'local',
-                  displayName:
-                      'Archived mail · ${DateTime.now().toIso8601String()}',
+                  displayName: L10n.current.mailArchivedAccountName(
+                    DateTime.now().toIso8601String(),
+                  ),
                 ),
               );
           await (db.update(db.mailFolders)

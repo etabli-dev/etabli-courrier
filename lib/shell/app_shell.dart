@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../core/config/secrets_store.dart';
 import '../core/db/database.dart';
 import '../core/sync/account_services.dart';
+import '../l10n/l10n.dart';
 import '../modules/accounts/accounts_screen.dart';
 import '../modules/notes/notes_screen.dart';
 import '../modules/reminders/scheduler/reminder_coordinator.dart';
@@ -91,6 +92,7 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildShell(BuildContext context) {
     final destination = _destinations[_index];
+    final l10n = context.l10n;
     final media = MediaQuery.of(context);
     final useRail = media.size.width >= 720;
 
@@ -98,7 +100,7 @@ class _AppShellState extends State<AppShell> {
 
     if (useRail) {
       return Scaffold(
-        appBar: _shellAppBar(destination.label),
+        appBar: _shellAppBar(destination.label(l10n)),
         body: Row(
           children: [
             NavigationRail(
@@ -109,7 +111,7 @@ class _AppShellState extends State<AppShell> {
                 for (final d in _destinations)
                   NavigationRailDestination(
                     icon: Icon(d.icon),
-                    label: Text(d.label),
+                    label: Text(d.label(l10n), maxLines: 1, softWrap: false),
                   ),
               ],
             ),
@@ -124,17 +126,17 @@ class _AppShellState extends State<AppShell> {
     final selectedPrimary = primary.indexOf(_index);
     return Scaffold(
       key: _phoneScaffold,
-      appBar: _shellAppBar(destination.label),
+      appBar: _shellAppBar(destination.label(l10n)),
       body: body,
       drawer: Drawer(
         child: SafeArea(
           child: ListView(
             children: [
-              const ListTile(title: Text('Modules')),
+              ListTile(title: Text(l10n.shellModules)),
               for (var i = 0; i < _destinations.length; i++)
                 ListTile(
                   leading: Icon(_destinations[i].icon),
-                  title: Text(_destinations[i].label),
+                  title: Text(_destinations[i].label(l10n)),
                   selected: i == _index,
                   onTap: () {
                     Navigator.of(context).pop();
@@ -158,12 +160,12 @@ class _AppShellState extends State<AppShell> {
           for (final i in primary)
             NavigationDestination(
               icon: Icon(_destinations[i].icon),
-              label: _destinations[i].label,
+              label: _destinations[i].label(l10n),
             ),
-          const NavigationDestination(
-            icon: Icon(Icons.more_horiz),
-            label: 'more',
-            tooltip: 'More modules',
+          NavigationDestination(
+            icon: const Icon(Icons.more_horiz),
+            label: l10n.navMore,
+            tooltip: l10n.navMoreTooltip,
           ),
         ],
       ),
@@ -174,7 +176,7 @@ class _AppShellState extends State<AppShell> {
 
   PreferredSizeWidget _shellAppBar(String label) {
     return AppBar(
-      title: Text('courrier · $label'),
+      title: Text(context.l10n.shellTitle(label)),
       centerTitle: false,
       bottom: widget.reminders?.error == null
           ? null
@@ -191,17 +193,17 @@ class _AppShellState extends State<AppShell> {
       actions: [
         if (MediaQuery.sizeOf(context).width >= 720)
           IconButton(
-            tooltip: 'Keyboard shortcuts',
+            tooltip: context.l10n.shellShortcuts,
             icon: const Icon(Icons.keyboard_outlined),
             onPressed: _showShortcuts,
           ),
         IconButton(
-          tooltip: 'Settings',
+          tooltip: context.l10n.shellSettings,
           icon: const Icon(Icons.settings_outlined),
           onPressed: _openSettings,
         ),
         IconButton(
-          tooltip: 'Accounts',
+          tooltip: context.l10n.shellAccounts,
           icon: const Icon(Icons.manage_accounts_outlined),
           onPressed: _openAccounts,
         ),
@@ -232,18 +234,12 @@ class _AppShellState extends State<AppShell> {
   void _showShortcuts() => showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Keyboard shortcuts'),
-      content: const Text(
-        'Ctrl / Cmd + 1–7: switch module\n'
-        'Ctrl / Cmd + comma: settings\n'
-        'Ctrl / Cmd + Shift + A: accounts\n'
-        'Ctrl / Cmd + N: new note (in Notes)\n'
-        'F1: show this help',
-      ),
+      title: Text(context.l10n.shellShortcuts),
+      content: Text(context.l10n.shellShortcutsBody),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
+          child: Text(context.l10n.commonClose),
         ),
       ],
     ),

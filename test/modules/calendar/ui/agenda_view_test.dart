@@ -33,7 +33,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CourrierTheme.light(),
-        home: Scaffold(body: AgendaView(events: const [])),
+        home: const Scaffold(body: AgendaView(events: [])),
       ),
     );
     expect(find.textContaining('No events'), findsOneWidget);

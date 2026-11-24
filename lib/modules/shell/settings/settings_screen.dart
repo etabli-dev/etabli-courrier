@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/settings/about_info.dart';
+import '../../../core/settings/appearance_controller.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
+import 'appearance_section.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({
@@ -26,64 +29,70 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final appearance = AppearanceScope.maybeOf(context);
     return ListView(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       children: [
-        Text('Settings', style: theme.textTheme.titleLarge),
+        Text(l10n.settingsTitle, style: theme.textTheme.titleLarge),
         const SizedBox(height: CourrierTokens.space5),
-        const _SectionTitle(label: 'Security'),
+        if (appearance != null) ...[
+          _SectionTitle(label: l10n.settingsAppearance),
+          AppearanceSection(controller: appearance),
+          const SizedBox(height: CourrierTokens.space5),
+        ],
+        _SectionTitle(label: l10n.settingsSecurity),
         Semantics(
-          label: 'Toggle app lock',
+          label: l10n.settingsLockToggle,
           child: SwitchListTile(
             contentPadding: EdgeInsets.zero,
             value: lockEnabled,
             onChanged: lockUnavailableReason == null ? onToggleLock : null,
             title: Text(
-              'App lock (device authentication)',
+              l10n.settingsLockTitle,
               style: theme.textTheme.bodyLarge,
             ),
             subtitle: Text(
-              lockUnavailableReason ??
-                  'Require unlocking when courrier resumes from background.',
+              lockUnavailableReason ?? l10n.settingsLockSubtitle,
               style: theme.textTheme.bodySmall,
             ),
           ),
         ),
         const SizedBox(height: CourrierTokens.space5),
-        const _SectionTitle(label: 'Settings export / import'),
+        _SectionTitle(label: l10n.settingsExportImport),
         Row(
           children: [
             Semantics(
               button: true,
-              label: 'Export settings as JSON',
+              label: l10n.settingsExportLabel,
               child: FilledButton.tonalIcon(
                 onPressed: onExport,
                 icon: const Icon(Icons.download_outlined),
-                label: const Text('Export'),
+                label: Text(l10n.settingsExport, maxLines: 1, softWrap: false),
               ),
             ),
             const SizedBox(width: CourrierTokens.space3),
             Semantics(
               button: true,
-              label: 'Import settings from JSON',
+              label: l10n.settingsImportLabel,
               child: FilledButton.tonalIcon(
                 onPressed: onImport,
                 icon: const Icon(Icons.upload_outlined),
-                label: const Text('Import'),
+                label: Text(l10n.settingsImport, maxLines: 1, softWrap: false),
               ),
             ),
           ],
         ),
         const SizedBox(height: CourrierTokens.space5),
-        const _SectionTitle(label: 'About'),
+        _SectionTitle(label: l10n.settingsAbout),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text('Version', style: theme.textTheme.bodyLarge),
+          title: Text(l10n.settingsVersion, style: theme.textTheme.bodyLarge),
           subtitle: Text(about.versionLabel, style: theme.textTheme.bodySmall),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text('Support development', style: theme.textTheme.bodyLarge),
+          title: Text(l10n.settingsSupport, style: theme.textTheme.bodyLarge),
           subtitle: SelectableText(
             '${about.fundingLabel} · ${about.fundingUrl}',
             style: theme.textTheme.bodySmall,
@@ -91,13 +100,13 @@ class SettingsScreen extends StatelessWidget {
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          title: Text('Documentation', style: theme.textTheme.bodyLarge),
+          title: Text(l10n.settingsDocs, style: theme.textTheme.bodyLarge),
           subtitle: Text(about.docsUrl, style: theme.textTheme.bodySmall),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.description_outlined),
-          title: const Text('Open-source licenses'),
+          title: Text(l10n.settingsLicenses),
           onTap: () => showLicensePage(
             context: context,
             applicationName: 'Établi Courrier',
@@ -107,10 +116,7 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: CourrierTokens.space5),
-        Text(
-          'courrier is part of the Établi Suite. AGPL-3.0-only.',
-          style: theme.textTheme.bodySmall,
-        ),
+        Text(l10n.settingsFooter, style: theme.textTheme.bodySmall),
       ],
     );
   }

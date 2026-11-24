@@ -1,6 +1,7 @@
 import '../../../../core/auth/oauth_provider.dart';
 import '../../../../core/auth/oauth_token_store.dart';
 import '../../../../core/net/net_error.dart';
+import '../../../../l10n/l10n.dart';
 import '../../backend/imap_mail_backend.dart';
 import '../../backend/mail_backend.dart';
 import '../../backend/mail_credentials.dart';
@@ -70,8 +71,8 @@ class M365Backend implements MailBackend {
   Future<TenantState> silentReconnect() async {
     final refreshToken = await tokenStore.readRefreshToken(accountId);
     if (refreshToken == null) {
-      _tenantState = const TenantAuthFailedGeneric(
-        detail: 'No refresh token stored — sign in again.',
+      _tenantState = TenantAuthFailedGeneric(
+        detail: L10n.current.m365NoRefreshToken,
       );
       return _tenantState;
     }

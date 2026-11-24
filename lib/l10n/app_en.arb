@@ -1,0 +1,784 @@
+{
+  "@@locale": "en",
+  "navMail": "mail",
+  "navCalendar": "calendar",
+  "navContacts": "contacts",
+  "navTasks": "tasks",
+  "navReminders": "reminders",
+  "navNotes": "notes",
+  "navFeeds": "feeds",
+  "navMore": "more",
+  "navMoreTooltip": "More modules",
+  "shellTitle": "courrier · {module}",
+  "@shellTitle": {
+    "placeholders": {
+      "module": {
+        "type": "String"
+      }
+    }
+  },
+  "shellModules": "Modules",
+  "shellShortcuts": "Keyboard shortcuts",
+  "shellShortcutsBody": "Ctrl / Cmd + 1–7: switch module\nCtrl / Cmd + comma: settings\nCtrl / Cmd + Shift + A: accounts\nCtrl / Cmd + N: new note (in Notes)\nF1: show this help",
+  "shellSettings": "Settings",
+  "shellAccounts": "Accounts",
+  "commonClose": "Close",
+  "commonCancel": "Cancel",
+  "commonRetry": "Retry",
+  "commonOk": "OK",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "bootDatabaseFailed": "Could not open the local database. Free storage if necessary, then retry. Existing files have been retained.",
+  "settingsTitle": "Settings",
+  "settingsSecurity": "Security",
+  "settingsLockToggle": "Toggle app lock",
+  "settingsLockTitle": "App lock (device authentication)",
+  "settingsLockSubtitle": "Require unlocking when courrier resumes from background.",
+  "settingsLockUnavailable": "Not available {inBuild}: it has no device-authentication service.",
+  "@settingsLockUnavailable": {
+    "placeholders": {
+      "inBuild": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsExportImport": "Settings export / import",
+  "settingsExportLabel": "Export settings as JSON",
+  "settingsExport": "Export",
+  "settingsImportLabel": "Import settings from JSON",
+  "settingsImport": "Import",
+  "settingsAbout": "About",
+  "settingsVersion": "Version",
+  "settingsSupport": "Support development",
+  "settingsDocs": "Documentation",
+  "settingsLicenses": "Open-source licenses",
+  "settingsFooter": "courrier is part of the Établi Suite. AGPL-3.0-only.",
+  "settingsLockAuthRequired": "Device authentication is required to change app lock.",
+  "settingsLockSaveFailed": "Could not save app-lock settings.",
+  "settingsExportTitle": "Non-sensitive settings",
+  "settingsCopyJson": "Copy JSON",
+  "settingsExportFailed": "Could not export settings.",
+  "settingsImported": "{count, plural, =1{Imported 1 preference.} other{Imported {count} preferences.}}",
+  "@settingsImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsImportFailed": "Import failed. Use a supported settings export with valid preference values.",
+  "settingsLoadFailed": "Could not load settings. Reopen this screen to retry.",
+  "settingsImportTitle": "Import settings JSON",
+  "settingsImportHint": "Paste a settings export. App lock and credentials are excluded.",
+  "settingsAppearance": "Appearance",
+  "settingsLanguage": "App language",
+  "settingsMode": "Mode",
+  "modeSystem": "System",
+  "modeLight": "Light",
+  "modeDark": "Dark",
+  "languageSystem": "System",
+  "settingsAccent": "Accent colour",
+  "accentCoderBlue": "Coder blue",
+  "accentGreen": "Green",
+  "accentYellow": "Yellow",
+  "accentOrange": "Orange",
+  "accentRed": "Red",
+  "accentPurple": "Purple",
+  "accentGraphite": "Graphite",
+  "settingsAppearanceNote": "Language, mode and accent colour apply at once. Default: Hugo Coder palette.",
+  "platformBuildLinux": "the Linux build",
+  "platformBuildWindows": "the Windows build",
+  "platformBuildMacos": "the macOS build",
+  "platformBuildThis": "this build",
+  "platformInLinux": "in the Linux build",
+  "platformInWindows": "in the Windows build",
+  "platformInMacos": "in the macOS build",
+  "platformInThis": "in this build",
+  "shellRemindersUnavailable": "Reminder notifications are not delivered {inBuild} yet. The list below shows what is due; check it while courrier is open.",
+  "@shellRemindersUnavailable": {
+    "placeholders": {
+      "inBuild": {
+        "type": "String"
+      }
+    }
+  },
+  "mailBodyNotDownloaded": "This message body has not been downloaded. Connect the account and sync this folder to read it offline.",
+  "mailMessageFallbackTitle": "Message",
+  "mailOpenFailed": "Could not open this message. Please try again.",
+  "mailFoldersLoadFailed": "Could not load mail folders.",
+  "mailNoCachedMail": "No cached mail yet. Add an email account in Accounts, then sync its folders.",
+  "mailFolderAccount": "Account {accountId}",
+  "@mailFolderAccount": {
+    "placeholders": {
+      "accountId": {
+        "type": "String"
+      }
+    }
+  },
+  "mailAllFolders": "All folders",
+  "mailMessagesLoadFailed": "Could not load messages.",
+  "mailUnknownSender": "(unknown sender)",
+  "mailNoSubject": "(no subject)",
+  "mailNoMessages": "No messages.",
+  "mailEmptyBody": "(empty body)",
+  "mailAttachments": "Attachments",
+  "mailArchive": "Archive",
+  "mailMoveToTrash": "Move to trash",
+  "mailMoveToTrashTooltip": "Move to trash",
+  "mailRemoteContentBlocked": "Remote content blocked. Showing local content only.",
+  "mailShowImages": "Show images",
+  "mailImageBlocked": "[image blocked]",
+  "mailComposeTo": "To",
+  "mailComposeToHint": "comma-separated",
+  "mailComposeSubject": "Subject",
+  "mailComposeBody": "Body",
+  "mailSaveDraft": "Save draft",
+  "mailSaveDraftTooltip": "Save draft",
+  "mailSend": "Send",
+  "mailSending": "Sending…",
+  "mailComposePlainTextNote": "Plain text only. Attachments + HTML composition land at M11 polish.",
+  "mailQuoteDatePattern": "EEE, MMM d yyyy, HH:mm",
+  "@mailQuoteDatePattern": {
+    "description": "intl DateFormat pattern for the date in reply quotes and forwarded-message headers."
+  },
+  "mailReplyIntro": "On {date}, {sender} wrote:",
+  "@mailReplyIntro": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "sender": {
+        "type": "String"
+      }
+    }
+  },
+  "mailReplySomeone": "someone",
+  "mailForwardHeader": "---------- Forwarded message ----------",
+  "mailForwardFrom": "From: {value}",
+  "@mailForwardFrom": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mailForwardDate": "Date: {value}",
+  "@mailForwardDate": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mailForwardSubject": "Subject: {value}",
+  "@mailForwardSubject": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mailForwardTo": "To: {value}",
+  "@mailForwardTo": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mailArchivedAccountName": "Archived mail · {timestamp}",
+  "@mailArchivedAccountName": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  },
+  "m365ConnectTitle": "Connect Microsoft 365",
+  "m365ConnectIntro": "courrier signs in via your tenant's standard OAuth flow. Your password is never sent through the app.",
+  "m365SigningIn": "Signing in…",
+  "m365SignIn": "Sign in with Microsoft",
+  "m365TryAgain": "Try again",
+  "m365OpenAdminDocs": "Open admin docs",
+  "m365OpenAdminDocsTooltip": "Open admin docs",
+  "m365ConsentTitle": "Admin consent required",
+  "m365ConsentBody": "Your IT administrator needs to grant courrier access for your tenant. Share the documentation link with them, then try again.",
+  "m365BlockedTitle": "App blocked by tenant policy",
+  "m365BlockedBody": "Your tenant blocks third-party mail apps. Ask your admin to allow courrier, then try again.",
+  "m365ImapDisabledTitle": "IMAP disabled by your admin",
+  "m365ImapDisabledBody": "IMAP is turned off on this tenant. Your admin needs to enable IMAP access for your mailbox before courrier can sync mail.",
+  "m365SmtpDisabledTitle": "SMTP AUTH disabled for this mailbox",
+  "m365SmtpDisabledBody": "Modern tenants disable SMTP AUTH per-mailbox by default. Your admin needs to enable SMTP AUTH on your mailbox to send mail.",
+  "m365FailedTitle": "Connection failed",
+  "m365FailedBody": "courrier could not sign in to Microsoft 365.",
+  "m365NoRefreshToken": "No refresh token stored — sign in again.",
+  "oauthSignInCancelled": "User cancelled the sign-in flow.",
+  "oauthPlatformError": "AppAuth platform error",
+  "oauthRefreshError": "AppAuth refresh error",
+  "oauthNoAccessToken": "AppAuth returned no access token.",
+  "oauthRefreshNoAccessToken": "AppAuth refresh returned no access token.",
+  "accountsSyncFailed": "Could not sync. Check the network and reconnect with current credentials. Cached data is retained.",
+  "accountsDisconnected": "Disconnected. Cached data remains on this device. Add the same server and username to reconnect.",
+  "accountsDisconnectFailed": "Could not finish disconnecting. Please retry.",
+  "accountsConnectNextcloud": "Connect Nextcloud",
+  "accountsConnectImap": "Connect IMAP",
+  "accountsSyncInfo": "Sync runs when you tap Refresh. Mail downloads the latest 100 envelopes per folder; open a message to cache its body. Nextcloud Notes and News require their server apps. News read state is local. Microsoft 365 OAuth is not enabled in this build; its tenant registration and device sign-in still require validation.",
+  "accountsLoadFailed": "Could not load accounts.",
+  "accountsKindLocal": "local",
+  "accountsKindDisconnected": "{kind} · disconnected",
+  "@accountsKindDisconnected": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsPreservedConflicts": "Preserved sync conflicts",
+  "accountsOfflineCopyName": "Offline copy · {name}",
+  "@accountsOfflineCopyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsRefresh": "Refresh",
+  "accountsPendingEdits": "Pending edits / recovery",
+  "accountsPendingEditsTooltip": "Pending edits / recovery",
+  "accountsDisconnect": "Disconnect; keep cache",
+  "accountsConnectionIncomplete": "Connection did not finish.",
+  "accountsConnectFailed": "Could not connect. Check the settings and try again.",
+  "accountsManualSettings": "Enter server settings manually",
+  "accountsServerUrl": "HTTPS server URL",
+  "accountsServerUrlHelper": "Include the installation subfolder, if any.",
+  "accountsImapHost": "IMAP hostname",
+  "accountsUsername": "Username",
+  "accountsEmailLogin": "Email / login username",
+  "accountsAppPassword": "App password",
+  "accountsImapPort": "IMAP port",
+  "accountsImapStartTls": "IMAP STARTTLS (usually port 143)",
+  "accountsSmtpHost": "SMTP hostname (saved for future sending)",
+  "accountsSmtpPort": "SMTP port",
+  "accountsCredentialsNote": "Credentials are kept in platform secure storage. This screen verifies incoming access. Sending and background synchronization are not available in the current production UI.",
+  "accountsConnecting": "Connecting…",
+  "accountsConnect": "Connect",
+  "accountsPendingTitle": "Pending edits",
+  "accountsPreserveTitle": "Preserve this edit offline?",
+  "accountsPreserveBody": "The current local record will move to an offline collection, including a locally deleted record. Its upload will stop. The server is unchanged. Return to Accounts and Refresh to load the server version separately. A server write whose response was lost may already exist there.",
+  "accountsKeepOfflineCopy": "Keep offline copy",
+  "accountsPreserveFailed": "Could not preserve this version. Nothing was discarded; refresh the list and retry.",
+  "accountsPendingReadFailed": "Could not read pending edits.",
+  "accountsNoPendingEdits": "No pending edits. Return to Accounts to refresh.",
+  "accountsPendingIntro": "Refresh normally retries pending work with its original server precondition. If it cannot be reconciled, preserve the local record offline before reloading the server.",
+  "accountsRecordNote": "Note",
+  "accountsRecordTask": "Task",
+  "accountsRecordEvent": "Event",
+  "accountsRecordContact": "Contact",
+  "accountsRecordOther": "Record",
+  "accountsSavedEditTitle": "Saved local edit",
+  "accountsDeletionIntent": "Deletion intent; the original record is retained.",
+  "accountsReviewEdit": "Review saved local edit",
+  "accountsKeepOfflineReload": "Keep offline copy; reload server",
+  "accountsModuleCalendar": "Calendar",
+  "accountsModuleContacts": "Contacts",
+  "accountsModuleTasks": "Tasks",
+  "accountsModuleNotes": "Notes",
+  "accountsModuleNews": "News",
+  "accountsAddressBook": "Address book",
+  "accountsSyncLocal": "Local data stays on this device.",
+  "accountsSyncMailReport": "Checked {folders, plural, =1{1 folder} other{{folders} folders}}; {messages, plural, =1{1 new envelope} other{{messages} new envelopes}}. Open a message to download its body.",
+  "@accountsSyncMailReport": {
+    "placeholders": {
+      "folders": {
+        "type": "int"
+      },
+      "messages": {
+        "type": "int"
+      }
+    }
+  },
+  "accountsSyncConflict": "{label}: conflict; local changes retained",
+  "@accountsSyncConflict": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsSyncUploadFailed": "{label}: could not upload; changes retained",
+  "@accountsSyncUploadFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsSyncPulled": "{label}: {pulled, plural, =1{1 record read} other{{pulled} records read}}, {pushed, plural, =1{1 change sent} other{{pushed} changes sent}}",
+  "@accountsSyncPulled": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "pulled": {
+        "type": "int"
+      },
+      "pushed": {
+        "type": "int"
+      }
+    }
+  },
+  "accountsSyncPullFailed": "{label}: {detail}; cached data retained",
+  "@accountsSyncPullFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "accountsSyncCouldNotRefresh": "could not refresh",
+  "accountsSyncBackendFailed": "{label}: could not refresh; cached data retained. Check connection and server app permissions.",
+  "@accountsSyncBackendFailed": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingCredentialsRequired": "Username and app password are required.",
+  "onboardingNoPrincipal": "No authenticated DAV principal was found.",
+  "onboardingNextcloudFailed": "Nextcloud connection failed ({kind}).",
+  "@onboardingNextcloudFailed": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingBadUrl": "Bad URL — please paste your Nextcloud base URL.",
+  "onboardingSaveFailed": "Could not save the account. Check secure storage and retry.",
+  "onboardingNoAutoconfig": "No autoconfig found for {domain}.",
+  "@onboardingNoAutoconfig": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingAddManually": "Add the server manually from Settings → Accounts.",
+  "onboardingEmailPasswordRequired": "Email and password are required.",
+  "onboardingUnencrypted": "Unencrypted mail connections are not supported.",
+  "onboardingInvalidServer": "Invalid mail server or port.",
+  "onboardingSeparateSmtpUser": "Separate SMTP usernames are not supported yet.",
+  "onboardingMailFailed": "Mail connection failed. Check the server settings and app password.",
+  "onboardingM365Failed": "Microsoft 365 sign-in failed. Cached accounts are unchanged.",
+  "netHttpsRequired": "Use an HTTPS URL without embedded credentials or a fragment.",
+  "netBaseUrlQuery": "The server base URL cannot contain a query.",
+  "netDifferentOrigin": "The server returned a different origin.",
+  "netDtdUnsupported": "DTD and entity declarations are not supported.",
+  "netErrorOffline": "offline",
+  "netErrorUnauthorized": "unauthorized",
+  "netErrorForbidden": "forbidden",
+  "netErrorNotFound": "not found",
+  "netErrorPrecondition": "etag mismatch",
+  "netErrorConflict": "conflict",
+  "netErrorThrottled": "throttled",
+  "netErrorServer": "server error",
+  "netErrorParse": "parse failure: {detail}",
+  "@netErrorParse": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "netErrorUnknown": "unknown network error",
+  "notesNew": "New note",
+  "notesEdit": "Edit note",
+  "notesUnlockRequired": "Unlock is required to open this note.",
+  "notesNoCollection": "Create a notes collection in Accounts first.",
+  "notesChooseNotebook": "Choose a notebook",
+  "notesOpenFailed": "Could not open the note. Please try again.",
+  "notesLoadFailed": "Could not load notes.",
+  "notesEmpty": "No notes yet.",
+  "notesLockedPreview": "(locked)",
+  "@notesLockedPreview": {
+    "description": "Shown instead of the first line of a locked note in the note list."
+  },
+  "notesChecklistBadge": "checklist",
+  "@notesChecklistBadge": {
+    "description": "Small marker next to the title of a checklist note."
+  },
+  "notesDiscardTitle": "Discard unsaved changes?",
+  "notesDiscardBody": "Your saved note will stay unchanged.",
+  "notesKeepEditing": "Keep editing",
+  "notesDiscard": "Discard",
+  "notesUndo": "Undo",
+  "notesRedo": "Redo",
+  "notesFavorite": "Favorite",
+  "notesLock": "Lock",
+  "notesLockUnavailable": "Configure an app lock first",
+  "notesKindText": "Text",
+  "notesKindChecklist": "Checklist",
+  "notesTitleLabel": "Title",
+  "notesContentLabel": "Content",
+  "notesContentHint": "Type — checklist mode uses markdown task lists.",
+  "notesSaveFailed": "Could not save this note. Your draft is still here; try again.",
+  "notesSaving": "Saving…",
+  "notesHistoryCount": "{count, plural, =1{1 edit in history} other{{count} edits in history}}",
+  "@notesHistoryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedsAdd": "Add HTTPS feed",
+  "@feedsAdd": {
+    "description": "Button next to the refresh button; keep it short (full wording: feedsAddTooltip)."
+  },
+  "feedsAddTooltip": "Add HTTPS feed",
+  "feedsRefresh": "Refresh local feeds",
+  "@feedsRefresh": {
+    "description": "Button next to the add button; keep it short (full wording: feedsRefreshTooltip)."
+  },
+  "feedsRefreshTooltip": "Refresh local feeds",
+  "feedsRefreshing": "Refreshing…",
+  "feedsAddFailed": "Could not add feed. Use an HTTPS RSS or Atom URL.",
+  "feedsRefreshPartial": "Some feeds could not refresh. Cached articles are retained.",
+  "feedsRefreshDone": "{count, plural, =1{Checked 1 article. Nextcloud News refreshes from Accounts.} other{Checked {count} articles. Nextcloud News refreshes from Accounts.}}",
+  "@feedsRefreshDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "feedsRefreshFailed": "Could not refresh feeds. Cached articles are retained.",
+  "feedsSubscriptionsLoadFailed": "Could not load subscriptions.",
+  "feedsSubscriptionsEmpty": "No subscriptions yet.",
+  "feedsNoArticleContent": "No saved article content.",
+  "feedsArticleOpenFailed": "Could not open this article. Please try again.",
+  "feedsRemoveTitle": "Remove this local feed?",
+  "feedsRemoveBody": "The subscription and its cached articles will be removed from this device. The feed website is unchanged.",
+  "feedsRemove": "Remove",
+  "feedsRemoveFailed": "Could not remove the feed. Please retry.",
+  "feedsRemoveTooltip": "Remove local feed",
+  "feedsArticlesLoadFailed": "Could not load saved articles.",
+  "feedsItemsEmpty": "No items in this feed.",
+  "feedsAddTitle": "Add feed",
+  "feedsUrlLabel": "HTTPS RSS or Atom URL",
+  "feedsAddConfirm": "Add",
+  "syncConflictTitle": "Sync conflict — {table}",
+  "@syncConflictTitle": {
+    "description": "table is the internal name of the affected data table.",
+    "placeholders": {
+      "table": {
+        "type": "String"
+      }
+    }
+  },
+  "syncConflictBody": "The server has a newer version than the local copy.",
+  "syncConflictLocal": "Local",
+  "syncConflictServer": "Server",
+  "syncConflictKeepServer": "Keep server",
+  "syncConflictKeepBoth": "Keep both",
+  "syncConflictKeepLocal": "Keep local",
+  "whatsNewTitle": "What's new in {version}",
+  "@whatsNewTitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "whatsNewGotIt": "Got it",
+  "modulePlaceholderNote": "Empty by design at M0. Module wired in during its milestone.",
+  "appLockTitle": "Unlock courrier",
+  "appLockReason": "Unlock courrier",
+  "@appLockReason": {
+    "description": "Reason shown in the system's device-authentication prompt."
+  },
+  "appLockLoading": "Loading security settings…",
+  "appLockSettingsFailed": "Could not read app-lock settings. Retry to continue.",
+  "appLockAuthFailed": "Authentication was cancelled or unavailable. Please retry.",
+  "appLockAuthenticating": "Authenticating…",
+  "appLockUnlock": "Unlock",
+  "calendarAgenda": "Agenda",
+  "calendarMonth": "Month",
+  "calendarNoTitle": "(no title)",
+  "calendarNoEvents": "No events in this range.",
+  "calendarDeleteRecurringTitle": "Delete recurring event",
+  "calendarDeleteThisOccurrence": "This occurrence only",
+  "calendarDeleteThisAndFollowing": "This and following occurrences",
+  "calendarDeleteAllOccurrences": "All occurrences",
+  "calendarEventTitle": "Title",
+  "calendarEventStarts": "Starts",
+  "calendarEventEnds": "Ends",
+  "calendarEventAllDay": "All-day",
+  "calendarEventLocation": "Location",
+  "calendarEventDescription": "Description",
+  "calendarEventRecurrence": "Recurrence (RRULE)",
+  "calendarEventOrganizer": "Organizer",
+  "calendarEventAttendees": "Attendees (one per line)",
+  "calendarEventReminders": "Reminders",
+  "calendarAddReminder": "Add reminder",
+  "@calendarAddReminder": {
+    "description": "Short button label next to the Reminders heading; the full wording is calendarAddReminderTooltip."
+  },
+  "calendarAddReminderTooltip": "Add reminder",
+  "calendarReminderMinutesBefore": "{minutes} min before",
+  "@calendarReminderMinutesBefore": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "calendarReminderAtTime": "At a specific time",
+  "calendarRemoveReminder": "Remove reminder",
+  "contactsBackToList": "Back to contacts list",
+  "contactsNoName": "(no name)",
+  "contactsEmail": "Email",
+  "contactsPhone": "Phone",
+  "contactsAddress": "Address",
+  "contactsDisplayName": "Display name",
+  "contactsGivenName": "Given name",
+  "contactsFamilyName": "Family name",
+  "contactsOrganisation": "Organisation",
+  "contactsEmails": "Emails (one per line)",
+  "contactsPhones": "Phones (one per line)",
+  "contactsNote": "Note",
+  "contactsGroups": "Groups",
+  "contactsEmpty": "No contacts yet.",
+  "tasksLoadFailedRetry": "Could not load tasks. Retry",
+  "tasksCompleteFailed": "Could not complete the task. Your saved task is retained.",
+  "tasksNoSummary": "(no summary)",
+  "tasksEmpty": "No tasks yet.",
+  "remindersUpcoming": "Upcoming reminders",
+  "remindersReload": "Reload",
+  "remindersScheduleLimit": "{count, plural, =1{Notifications cover the next reminder. Open courrier regularly to schedule later ones.} other{Notifications cover the next {count} reminders. Open courrier regularly to schedule later ones.}}",
+  "@remindersScheduleLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "remindersNothingScheduled": "Nothing scheduled.",
+  "remindersPermissionTitle": "Notification permission required",
+  "remindersPermissionBody": "courrier needs permission to send reminders for calendar events and tasks.",
+  "remindersAllowNotifications": "Allow notifications",
+  "remindersUnavailableTitle": "Reminder notifications unavailable",
+  "remindersWeekly": "weekly",
+  "remindersLoadFailed": "Could not load reminders. Please try Reload.",
+  "remindersEnableFailed": "Could not enable reminders. Check notification permissions.",
+  "remindersReloadFailed": "Reload failed. Existing reminders have been retained where possible.",
+  "remindersRefreshFailed": "Reminders could not refresh. Open Reminders and choose Reload.",
+  "remindersNotificationFallback": "Reminder",
+  "@remindersNotificationFallback": {
+    "description": "Notification title or body when the event has no title, location or label."
+  },
+  "remindersTaskDueTitle": "Task due",
+  "@remindersTaskDueTitle": {
+    "description": "Notification title for a task without a title."
+  },
+  "remindersTaskDueBody": "Task is due now.",
+  "@remindersTaskDueBody": {
+    "description": "Notification body for a task without a description."
+  },
+  "remindersChannelName": "Reminders",
+  "@remindersChannelName": {
+    "description": "Android notification channel name, shown in the system notification settings."
+  },
+  "remindersChannelDescription": "Event reminders and task due-dates from courrier.",
+  "intervalMinutes": "min",
+  "intervalHours": "hr",
+  "intervalDays": "day",
+  "intervalMinutesTooltip": "Minutes",
+  "intervalHoursTooltip": "Hours",
+  "intervalDaysTooltip": "Days",
+  "searchNoSubject": "(no subject)",
+  "searchLocked": "(locked)",
+  "rruleCustom": "Custom recurrence",
+  "rruleDaily": "{count, plural, =1{Daily} other{Every {count} days}}",
+  "@rruleDaily": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleWeekly": "{count, plural, =1{Weekly} other{Every {count} weeks}}",
+  "@rruleWeekly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleMonthly": "{count, plural, =1{Monthly} other{Every {count} months}}",
+  "@rruleMonthly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleYearly": "{count, plural, =1{Yearly} other{Every {count} years}}",
+  "@rruleYearly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleOnWeekdays": "on {days}",
+  "@rruleOnWeekdays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleOnMonthDays": "on the {days}",
+  "@rruleOnMonthDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleInMonths": "in {months}",
+  "@rruleInMonths": {
+    "placeholders": {
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleOnMonthDaysInMonths": "on the {days} in {months}",
+  "@rruleOnMonthDaysInMonths": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "months": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleWithCount": "{rule}, {count, plural, =1{1 time} other{{count} times}}",
+  "@rruleWithCount": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleWithUntil": "{rule}, until {date}",
+  "@rruleWithUntil": {
+    "placeholders": {
+      "rule": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleOrdinal": "{n}{category, select, one{st} two{nd} few{rd} other{th}}",
+  "@rruleOrdinal": {
+    "description": "Ordinal number; category is the English ordinal plural category of n (one, two, few, other).",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleOrdinalFromLast": "{ordinal} from last",
+  "@rruleOrdinalFromLast": {
+    "description": "Day of the month counted from the end; ordinal is rruleOrdinal of n.",
+    "placeholders": {
+      "ordinal": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "rruleWeekdayNth": "the {ordinal} {day}",
+  "@rruleWeekdayNth": {
+    "placeholders": {
+      "ordinal": {
+        "type": "String"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleWeekdayLast": "the last {day}",
+  "@rruleWeekdayLast": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleWeekdayNthFromLast": "the {ordinal} from last {day}",
+  "@rruleWeekdayNthFromLast": {
+    "description": "Weekday counted from the end of the period; ordinal is rruleOrdinal of n.",
+    "placeholders": {
+      "ordinal": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      },
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleListPair": "{first} and {second}",
+  "@rruleListPair": {
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleListSeries": "{head}, and {last}",
+  "@rruleListSeries": {
+    "description": "Last item of a list of three or more; head is the earlier items joined with commas.",
+    "placeholders": {
+      "head": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "rruleDayFallback": "Day {day}",
+  "@rruleDayFallback": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    }
+  }
+}

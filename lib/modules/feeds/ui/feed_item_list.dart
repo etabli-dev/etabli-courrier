@@ -3,20 +3,24 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 class FeedItemList extends StatelessWidget {
-  FeedItemList({required this.items, this.onItemTap, super.key});
+  const FeedItemList({required this.items, this.onItemTap, super.key});
 
   final List<FeedItem> items;
   final ValueChanged<FeedItem>? onItemTap;
-
-  final DateFormat _date = DateFormat.MMMd();
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
       return const _Empty();
     }
+    // Locale data is loaded with the Material localizations; plain widget tests fall back to en_US.
+    final localeName = context.l10n.localeName;
+    final date = DateFormat.localeExists(localeName)
+        ? DateFormat.MMMd(localeName)
+        : DateFormat.MMMd();
     return ListView.separated(
       padding: const EdgeInsets.symmetric(
         horizontal: CourrierTokens.space5,
@@ -43,7 +47,7 @@ class FeedItemList extends StatelessWidget {
                       top: 6,
                       right: CourrierTokens.space2,
                     ),
-                    color: CourrierTokens.accent,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 Expanded(
                   child: Column(
@@ -67,7 +71,7 @@ class FeedItemList extends StatelessWidget {
                             const Spacer(),
                           if (item.publishedAt != null)
                             Text(
-                              _date.format(item.publishedAt!),
+                              date.format(item.publishedAt!),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                         ],
@@ -93,7 +97,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No items in this feed.',
+          context.l10n.feedsItemsEmpty,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),

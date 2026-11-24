@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 class FeedSubscriptionList extends StatelessWidget {
   const FeedSubscriptionList({
@@ -63,12 +64,14 @@ class FeedSubscriptionList extends StatelessWidget {
                       vertical: 1,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(color: CourrierTokens.accent),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     child: Text(
                       '$unread',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: CourrierTokens.accent,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -90,7 +93,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No subscriptions yet.',
+          context.l10n.feedsSubscriptionsEmpty,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),

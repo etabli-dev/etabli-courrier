@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 class ContactsListView extends StatelessWidget {
   const ContactsListView({
@@ -106,7 +107,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No contacts yet.',
+          context.l10n.contactsEmpty,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),

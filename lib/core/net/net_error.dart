@@ -91,8 +91,11 @@ class ServerError extends NetError {
 }
 
 class ParseFailureError extends NetError {
-  const ParseFailureError(String detail, {super.cause})
+  const ParseFailureError(this.detail, {super.cause})
     : super('parse failure: $detail');
+
+  /// What could not be parsed (technical, English).
+  final String detail;
   @override
   String get kind => 'ParseFailureError';
 }

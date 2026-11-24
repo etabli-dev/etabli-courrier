@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 
+import '../../l10n/l10n.dart';
 import '../db/database.dart';
 
 // Cross-module search. M11 ships a SQL-fan-out implementation that hits the
@@ -92,7 +93,7 @@ class GlobalSearchService {
           (r) => GlobalSearchHit(
             module: SearchModule.calendar,
             targetId: r.id,
-            title: r.summary ?? '(no title)',
+            title: r.summary ?? L10n.current.calendarNoTitle,
             snippet: r.description ?? r.location ?? '',
             subtitle: r.location,
             date: r.dtstart,
@@ -123,7 +124,10 @@ class GlobalSearchService {
           (r) => GlobalSearchHit(
             module: SearchModule.contacts,
             targetId: r.id,
-            title: r.formattedName ?? r.organization ?? '(no name)',
+            title:
+                r.formattedName ??
+                r.organization ??
+                L10n.current.contactsNoName,
             snippet: r.primaryEmail ?? r.organization ?? '',
           ),
         )
@@ -146,7 +150,7 @@ class GlobalSearchService {
           (r) => GlobalSearchHit(
             module: SearchModule.tasks,
             targetId: r.id,
-            title: r.summary ?? '(no summary)',
+            title: r.summary ?? L10n.current.tasksNoSummary,
             snippet: r.description ?? '',
             date: r.due,
           ),
@@ -171,7 +175,7 @@ class GlobalSearchService {
             module: SearchModule.notes,
             targetId: r.id,
             title: r.title,
-            snippet: r.locked ? '(locked)' : r.content,
+            snippet: r.locked ? L10n.current.searchLocked : r.content,
             date: r.modified,
           ),
         )
@@ -196,7 +200,7 @@ class GlobalSearchService {
           (r) => GlobalSearchHit(
             module: SearchModule.mail,
             targetId: r.id,
-            title: r.subject ?? '(no subject)',
+            title: r.subject ?? L10n.current.searchNoSubject,
             snippet: r.snippet ?? '',
             subtitle: r.fromAddress,
             date: r.receivedAt,

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:flutter/material.dart';
 
 import '../../core/db/database.dart';
+import '../../l10n/l10n.dart';
 import 'backend/mail_backend.dart';
 import 'data/mail_repository.dart';
 import 'render/mime_render_plan.dart';
@@ -44,11 +45,12 @@ class _MailScreenState extends State<MailScreen> {
         widget.db.mailAttachments,
       )..where((t) => t.messageId.equals(message.id))).get();
       if (!mounted) return;
+      final l10n = context.l10n;
       final plan = const MimeRenderer().plan(
         MailBodyPayload(
           textPart: message.bodyDownloaded
               ? message.bodyText
-              : 'This message body has not been downloaded. Connect the account and sync this folder to read it offline.',
+              : l10n.mailBodyNotDownloaded,
           htmlPart: message.bodyHtml,
           attachments: attachments
               .map(
@@ -65,18 +67,18 @@ class _MailScreenState extends State<MailScreen> {
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => Scaffold(
-            appBar: AppBar(title: Text(message.subject ?? 'Message')),
+            appBar: AppBar(
+              title: Text(message.subject ?? l10n.mailMessageFallbackTitle),
+            ),
             body: MessageView(message: message, plan: plan),
           ),
         ),
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open this message. Please try again.'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.mailOpenFailed)));
       }
     }
   }
@@ -86,7 +88,7 @@ class _MailScreenState extends State<MailScreen> {
     stream: _folders,
     builder: (context, snapshot) {
       if (snapshot.hasError) {
-        return const Center(child: Text('Could not load mail folders.'));
+        return Center(child: Text(context.l10n.mailFoldersLoadFailed));
       }
       if (!snapshot.hasData) {
         return const Center(child: CircularProgressIndicator());
@@ -94,12 +96,10 @@ class _MailScreenState extends State<MailScreen> {
       final folders = snapshot.data!;
       if (_selected == null || !folders.any((f) => f.id == _selected!.id)) {
         if (folders.isEmpty) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Text(
-                'No cached mail yet. Add an email account in Accounts, then sync its folders.',
-              ),
+              padding: const EdgeInsets.all(24),
+              child: Text(context.l10n.mailNoCachedMail),
             ),
           );
         }
@@ -109,7 +109,9 @@ class _MailScreenState extends State<MailScreen> {
               ListTile(
                 leading: const Icon(Icons.folder_outlined),
                 title: Text(folder.name),
-                subtitle: Text('Account ${folder.accountId}'),
+                subtitle: Text(
+                  context.l10n.mailFolderAccount('${folder.accountId}'),
+                ),
                 onTap: () => _select(folder),
               ),
           ],
@@ -119,7 +121,7 @@ class _MailScreenState extends State<MailScreen> {
         children: [
           ListTile(
             leading: IconButton(
-              tooltip: 'All folders',
+              tooltip: context.l10n.mailAllFolders,
               icon: const Icon(Icons.arrow_back),
               onPressed: () => setState(() => _selected = null),
             ),
@@ -130,7 +132,9 @@ class _MailScreenState extends State<MailScreen> {
               stream: _messages,
               builder: (context, messages) {
                 if (messages.hasError) {
-                  return const Center(child: Text('Could not load messages.'));
+                  return Center(
+                    child: Text(context.l10n.mailMessagesLoadFailed),
+                  );
                 }
                 if (!messages.hasData) {
                   return const Center(child: CircularProgressIndicator());

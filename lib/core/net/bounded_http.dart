@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import '../../l10n/l10n.dart';
 import 'net_error.dart';
 
 Uri requireHttps(Uri uri) {
@@ -11,9 +12,7 @@ Uri requireHttps(Uri uri) {
       uri.host.isEmpty ||
       uri.userInfo.isNotEmpty ||
       uri.hasFragment) {
-    throw const FormatException(
-      'Use an HTTPS URL without embedded credentials or a fragment.',
-    );
+    throw FormatException(L10n.current.netHttpsRequired);
   }
   return uri;
 }
@@ -21,7 +20,7 @@ Uri requireHttps(Uri uri) {
 Uri serverBase(String value) {
   final uri = requireHttps(Uri.parse(value.trim()));
   if (uri.hasQuery) {
-    throw const FormatException('The server base URL cannot contain a query.');
+    throw FormatException(L10n.current.netBaseUrlQuery);
   }
   return uri.replace(path: uri.path.endsWith('/') ? uri.path : '${uri.path}/');
 }
@@ -29,7 +28,7 @@ Uri serverBase(String value) {
 Uri sameOrigin(Uri base, String href) {
   final target = requireHttps(base.resolve(href));
   if (target.origin != base.origin) {
-    throw const FormatException('The server returned a different origin.');
+    throw FormatException(L10n.current.netDifferentOrigin);
   }
   return target;
 }

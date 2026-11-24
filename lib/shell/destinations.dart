@@ -4,6 +4,7 @@ import '../core/db/database.dart';
 import '../core/lock/app_security.dart';
 import '../core/platform/platform_capabilities.dart';
 import '../core/sync/account_services.dart';
+import '../l10n/l10n.dart';
 import '../modules/calendar/calendar_screen.dart';
 import '../modules/calendar/data/calendar_repository.dart';
 import '../modules/contacts/contacts_screen.dart';
@@ -27,7 +28,8 @@ class ModuleDestination {
     required this.builder,
   });
 
-  final String label;
+  /// The module's name in the app's current language.
+  final String Function(AppLocalizations l10n) label;
   final IconData icon;
   final WidgetBuilder builder;
 }
@@ -38,28 +40,28 @@ List<ModuleDestination> moduleDestinations(
   ReminderCoordinator? reminders,
 }) => [
   ModuleDestination(
-    label: 'mail',
+    label: (l) => l.navMail,
     icon: Icons.mail_outline,
     builder: (_) =>
         MailScreen(db: db, downloadMessage: services?.downloadMessage),
   ),
   ModuleDestination(
-    label: 'calendar',
+    label: (l) => l.navCalendar,
     icon: Icons.calendar_today_outlined,
     builder: (_) => CalendarScreen(repository: CalendarRepository(db: db)),
   ),
   ModuleDestination(
-    label: 'contacts',
+    label: (l) => l.navContacts,
     icon: Icons.person_outline,
     builder: (_) => ContactsScreen(repository: ContactRepository(db: db)),
   ),
   ModuleDestination(
-    label: 'tasks',
+    label: (l) => l.navTasks,
     icon: Icons.check_box_outlined,
     builder: (_) => TasksScreen(repository: TaskRepository(db: db)),
   ),
   ModuleDestination(
-    label: 'reminders',
+    label: (l) => l.navReminders,
     icon: Icons.alarm,
     builder: (_) {
       final scheduler = reminders?.scheduler ?? LocalNotificationScheduler();
@@ -71,14 +73,14 @@ List<ModuleDestination> moduleDestinations(
             ReminderRearmService(db: db, scheduler: scheduler),
         unavailableReason: PlatformCapabilities.scheduledReminders
             ? null
-            : 'Reminder notifications are not delivered in '
-                  '${PlatformCapabilities.buildName} yet. The list below shows '
-                  'what is due; check it while courrier is open.',
+            : L10n.current.shellRemindersUnavailable(
+                PlatformCapabilities.inBuildName,
+              ),
       );
     },
   ),
   ModuleDestination(
-    label: 'notes',
+    label: (l) => l.navNotes,
     icon: Icons.notes,
     builder: (_) => NotesScreen(
       repository: NoteRepository(db: db),
@@ -88,7 +90,7 @@ List<ModuleDestination> moduleDestinations(
     ),
   ),
   ModuleDestination(
-    label: 'feeds',
+    label: (l) => l.navFeeds,
     icon: Icons.rss_feed,
     builder: (_) => FeedsScreen(db: db),
   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n.dart';
 import '../theme/tokens.dart';
 
 // Shared interval picker used by Feeds (refresh interval) and the M11
@@ -76,6 +77,7 @@ class _CustomIntervalPickerState extends State<CustomIntervalPicker> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -101,10 +103,22 @@ class _CustomIntervalPickerState extends State<CustomIntervalPicker> {
             ),
             const SizedBox(width: CourrierTokens.space3),
             SegmentedButton<IntervalUnit>(
-              segments: const [
-                ButtonSegment(value: IntervalUnit.minutes, label: Text('min')),
-                ButtonSegment(value: IntervalUnit.hours, label: Text('hr')),
-                ButtonSegment(value: IntervalUnit.days, label: Text('day')),
+              segments: [
+                ButtonSegment(
+                  value: IntervalUnit.minutes,
+                  label: Text(l10n.intervalMinutes),
+                  tooltip: l10n.intervalMinutesTooltip,
+                ),
+                ButtonSegment(
+                  value: IntervalUnit.hours,
+                  label: Text(l10n.intervalHours),
+                  tooltip: l10n.intervalHoursTooltip,
+                ),
+                ButtonSegment(
+                  value: IntervalUnit.days,
+                  label: Text(l10n.intervalDays),
+                  tooltip: l10n.intervalDaysTooltip,
+                ),
               ],
               selected: {_unit},
               onSelectionChanged: (s) {

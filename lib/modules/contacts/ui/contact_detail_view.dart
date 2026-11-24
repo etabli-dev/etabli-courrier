@@ -4,6 +4,7 @@ import '../../../core/db/database.dart';
 import '../../../core/ical/ical_reader.dart';
 import '../../../core/ical/vcard.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 class ContactDetailView extends StatelessWidget {
   const ContactDetailView({required this.contact, super.key});
@@ -15,6 +16,7 @@ class ContactDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     VCard? vcard;
     try {
       vcard = VCard.from(_reader.parse(contact.rawVcard));
@@ -31,7 +33,7 @@ class ContactDetailView extends StatelessWidget {
       padding: const EdgeInsets.all(CourrierTokens.space5),
       children: [
         Text(
-          contact.formattedName ?? '(no name)',
+          contact.formattedName ?? l10n.contactsNoName,
           style: theme.textTheme.titleLarge,
         ),
         if (contact.organization != null) ...[
@@ -39,9 +41,9 @@ class ContactDetailView extends StatelessWidget {
           Text(contact.organization!, style: theme.textTheme.bodyMedium),
         ],
         const SizedBox(height: CourrierTokens.space5),
-        _Section(label: 'Email', items: emails),
-        _Section(label: 'Phone', items: phones),
-        _Section(label: 'Address', items: addresses),
+        _Section(label: l10n.contactsEmail, items: emails),
+        _Section(label: l10n.contactsPhone, items: phones),
+        _Section(label: l10n.contactsAddress, items: addresses),
       ],
     );
   }

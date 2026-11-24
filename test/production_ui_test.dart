@@ -91,7 +91,12 @@ void main() {
       await tester.tap(find.byTooltip('Settings'));
       await tester.pumpAndSettle();
       await capture('settings');
-      await tester.ensureVisible(find.text('Open-source licenses'));
+      // The settings list is lazy; Appearance now sits above the licenses entry.
+      await tester.dragUntilVisible(
+        find.text('Open-source licenses'),
+        find.byType(ListView),
+        const Offset(0, -200),
+      );
       await tester.tap(find.text('Open-source licenses'));
       await tester.pumpAndSettle();
       expect(find.byType(LicensePage), findsOneWidget);

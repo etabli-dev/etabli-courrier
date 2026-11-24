@@ -1,0 +1,2 @@
+/* Der Grund, den iOS in der Face-ID-/Code-Abfrage zeigt (Info.plist NSFaceIDUsageDescription). */
+"NSFaceIDUsageDescription" = "Authentifiziere dich, um courrier und geschützte Notizen zu entsperren.";

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/db/database.dart';
+import '../../l10n/l10n.dart';
 import 'data/note_draft.dart';
 import 'data/note_repository.dart';
 import 'ui/note_editor.dart';
@@ -20,9 +21,7 @@ class NotesScreen extends StatelessWidget {
       if (note?.locked == true && (unlock == null || !await unlock!())) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Unlock is required to open this note.'),
-            ),
+            SnackBar(content: Text(context.l10n.notesUnlockRequired)),
           );
         }
         return;
@@ -37,9 +36,7 @@ class NotesScreen extends StatelessWidget {
         if (!context.mounted) return;
         if (collections.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Create a notes collection in Accounts first.'),
-            ),
+            SnackBar(content: Text(context.l10n.notesNoCollection)),
           );
           return;
         }
@@ -48,7 +45,7 @@ class NotesScreen extends StatelessWidget {
             : await showDialog<int>(
                 context: context,
                 builder: (context) => SimpleDialog(
-                  title: const Text('Choose a notebook'),
+                  title: Text(context.l10n.notesChooseNotebook),
                   children: [
                     for (final collection in collections)
                       SimpleDialogOption(
@@ -73,7 +70,11 @@ class NotesScreen extends StatelessWidget {
         MaterialPageRoute<void>(
           builder: (editorContext) => Scaffold(
             appBar: AppBar(
-              title: Text(note == null ? 'New note' : 'Edit note'),
+              title: Text(
+                note == null
+                    ? editorContext.l10n.notesNew
+                    : editorContext.l10n.notesEdit,
+              ),
             ),
             body: SafeArea(
               child: NoteEditor(
@@ -102,11 +103,9 @@ class NotesScreen extends StatelessWidget {
       );
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open the note. Please try again.'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.notesOpenFailed)));
       }
     }
   }
@@ -125,14 +124,14 @@ class NotesScreen extends StatelessWidget {
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
             onPressed: () => _edit(context, null),
-            tooltip: 'New note',
+            tooltip: context.l10n.notesNew,
             child: const Icon(Icons.add),
           ),
           body: StreamBuilder<List<NoteItem>>(
             stream: repository.watchNotes(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return const Center(child: Text('Could not load notes.'));
+                return Center(child: Text(context.l10n.notesLoadFailed));
               }
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());

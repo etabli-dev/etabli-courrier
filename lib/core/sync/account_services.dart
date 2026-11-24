@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import '../../l10n/l10n.dart';
 import '../../modules/calendar/sync/calendar_sync_backend.dart';
 import '../../modules/contacts/sync/contacts_sync_backend.dart';
 import '../../modules/feeds/data/feed_repository.dart';
@@ -15,6 +16,7 @@ import '../config/secrets_store.dart';
 import '../db/database.dart';
 import '../net/bounded_http.dart';
 import '../net/dav/dav_client.dart';
+import '../net/net_error_text.dart';
 import 'sync_backend.dart';
 
 class AccountServices {
@@ -34,7 +36,7 @@ class AccountServices {
         'Account setup is incomplete. Reconnect the same account to finish setup.',
       );
     }
-    if (account.kind == 'local') return 'Local data stays on this device.';
+    if (account.kind == 'local') return L10n.current.accountsSyncLocal;
     if (account.kind == 'imap') {
       return withMail(account, (repository) async {
         final folders = await repository.syncFolders();
@@ -47,7 +49,7 @@ class AccountServices {
         for (final folder in folders) {
           messages += await repository.syncEnvelopes(folderName: folder.name);
         }
-        return 'Checked ${folders.length} folders; $messages new envelopes. Open a message to download its body.';
+        return L10n.current.accountsSyncMailReport(folders.length, messages);
       });
     }
     if (account.kind != 'nextcloud') {
@@ -75,9 +77,10 @@ class AccountServices {
       newsClient: news,
     );
     Uri resolve(Collection c) => sameOrigin(base, c.remoteHref!);
+    final l10n = L10n.current;
     final backends = <(String, SyncBackend)>[
       (
-        'Calendar',
+        l10n.accountsModuleCalendar,
         CalendarSyncBackend(
           db: db,
           davClient: dav,
@@ -85,7 +88,7 @@ class AccountServices {
         ),
       ),
       (
-        'Contacts',
+        l10n.accountsModuleContacts,
         ContactsSyncBackend(
           db: db,
           davClient: dav,
@@ -93,15 +96,15 @@ class AccountServices {
         ),
       ),
       (
-        'Tasks',
+        l10n.accountsModuleTasks,
         TasksSyncBackend(
           db: db,
           davClient: dav,
           collectionUrlResolver: resolve,
         ),
       ),
-      ('Notes', NotesSyncBackend(db: db, client: notes)),
-      ('News', feeds),
+      (l10n.accountsModuleNotes, NotesSyncBackend(db: db, client: notes)),
+      (l10n.accountsModuleNews, feeds),
     ];
     final reports = <String>[];
     try {
@@ -109,21 +112,30 @@ class AccountServices {
         try {
           final push = await backend.push(accountId: account.id);
           if (!push.success) {
+            final error = push.error;
             reports.add(
-              '$label: ${push.conflicts > 0 ? 'conflict; local changes retained' : push.error?.message ?? 'could not upload; changes retained'}',
+              push.conflicts > 0
+                  ? l10n.accountsSyncConflict(label)
+                  : error != null
+                  ? '$label: ${l10n.netError(error)}'
+                  : l10n.accountsSyncUploadFailed(label),
             );
             continue;
           }
           final pull = await backend.pull(accountId: account.id);
+          final error = pull.error;
           reports.add(
             pull.success
-                ? '$label: ${pull.pulled} records read, ${push.pushed} changes sent'
-                : '$label: ${pull.error?.message ?? 'could not refresh'}; cached data retained',
+                ? l10n.accountsSyncPulled(label, pull.pulled, push.pushed)
+                : l10n.accountsSyncPullFailed(
+                    label,
+                    error != null
+                        ? l10n.netError(error)
+                        : l10n.accountsSyncCouldNotRefresh,
+                  ),
           );
         } on Exception {
-          reports.add(
-            '$label: could not refresh; cached data retained. Check connection and server app permissions.',
-          );
+          reports.add(l10n.accountsSyncBackendFailed(label));
         }
       }
       return reports.join('\n');

@@ -1,5 +1,10 @@
 import 'package:drift/drift.dart';
+import '../../l10n/l10n.dart';
 import '../db/database.dart';
+
+/// Stored name of the local account that holds preserved conflicts. It is also
+/// the lookup key, so it stays English; screens show a localized label for it.
+const preservedConflictsAccountName = 'Preserved sync conflicts';
 
 /// Preserve the current local record in a separate offline collection, then
 /// permit a full server reload. A stale queue identity cannot discard a new edit.
@@ -38,7 +43,7 @@ Future<void> archivePendingEdit(
       await (db.select(db.accounts)..where(
             (t) =>
                 t.kind.equals('local') &
-                t.displayName.equals('Preserved sync conflicts'),
+                t.displayName.equals(preservedConflictsAccountName),
           ))
           .getSingleOrNull();
   final archiveId =
@@ -48,7 +53,7 @@ Future<void> archivePendingEdit(
           .insert(
             AccountsCompanion.insert(
               kind: 'local',
-              displayName: 'Preserved sync conflicts',
+              displayName: preservedConflictsAccountName,
             ),
           );
   final collectionId = await db
@@ -57,7 +62,9 @@ Future<void> archivePendingEdit(
         CollectionsCompanion.insert(
           accountId: archiveId,
           kind: kind,
-          displayName: 'Offline copy · ${original.displayName}',
+          displayName: L10n.current.accountsOfflineCopyName(
+            original.displayName,
+          ),
         ),
       );
   final remoteField = table == 'note_items' ? 'remote_id' : 'remote_href';

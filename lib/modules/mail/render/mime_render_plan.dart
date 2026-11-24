@@ -2,6 +2,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:meta/meta.dart';
 
+import '../../../l10n/l10n.dart';
 import '../backend/mail_backend.dart';
 
 // Produces a sanitised render plan from a MailBodyPayload.
@@ -144,7 +145,7 @@ class MimeRenderer {
     for (final element in document.querySelectorAll('img').toList()) {
       final src = element.attributes['src'];
       if (src == null || _isRemoteUri(src)) {
-        final placeholder = dom.Text('[image blocked]');
+        final placeholder = dom.Text(L10n.current.mailImageBlocked);
         element.replaceWith(placeholder);
       }
     }

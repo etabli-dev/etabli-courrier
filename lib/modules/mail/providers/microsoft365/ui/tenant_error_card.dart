@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/tokens.dart';
+import '../../../../../l10n/l10n.dart';
 import '../tenant_state.dart';
 
 class TenantErrorCard extends StatelessWidget {
@@ -18,7 +19,8 @@ class TenantErrorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final descriptor = _describe(state);
+    final l10n = context.l10n;
+    final descriptor = _describe(state, l10n);
     if (descriptor == null) {
       return const SizedBox.shrink();
     }
@@ -41,15 +43,18 @@ class TenantErrorCard extends StatelessWidget {
           Row(
             children: [
               if (descriptor.adminDocsCta != null && onOpenAdminDocs != null)
-                TextButton(
-                  onPressed: onOpenAdminDocs,
-                  child: Text(descriptor.adminDocsCta!),
+                Tooltip(
+                  message: l10n.m365OpenAdminDocsTooltip,
+                  child: TextButton(
+                    onPressed: onOpenAdminDocs,
+                    child: Text(descriptor.adminDocsCta!),
+                  ),
                 ),
               const Spacer(),
               if (onRetry != null)
                 FilledButton(
                   onPressed: onRetry,
-                  child: const Text('Try again'),
+                  child: Text(l10n.m365TryAgain),
                 ),
             ],
           ),
@@ -58,50 +63,42 @@ class TenantErrorCard extends StatelessWidget {
     );
   }
 
-  _TenantErrorDescriptor? _describe(TenantState state) {
+  _TenantErrorDescriptor? _describe(TenantState state, AppLocalizations l10n) {
     switch (state) {
       case TenantConnected():
         return null;
       case AdminConsentRequired(:final detail):
         return _TenantErrorDescriptor(
-          title: 'Admin consent required',
-          body:
-              'Your IT administrator needs to grant courrier access for your '
-              'tenant. Share the documentation link with them, then try again.',
+          title: l10n.m365ConsentTitle,
+          body: l10n.m365ConsentBody,
           detail: detail,
-          adminDocsCta: 'Open admin docs',
+          adminDocsCta: l10n.m365OpenAdminDocs,
         );
       case AppBlockedByTenantPolicy(:final detail):
         return _TenantErrorDescriptor(
-          title: 'App blocked by tenant policy',
-          body:
-              'Your tenant blocks third-party mail apps. Ask your admin to '
-              'allow courrier, then try again.',
+          title: l10n.m365BlockedTitle,
+          body: l10n.m365BlockedBody,
           detail: detail,
-          adminDocsCta: 'Open admin docs',
+          adminDocsCta: l10n.m365OpenAdminDocs,
         );
       case ImapDisabledByAdmin(:final detail):
         return _TenantErrorDescriptor(
-          title: 'IMAP disabled by your admin',
-          body:
-              'IMAP is turned off on this tenant. Your admin needs to enable '
-              'IMAP access for your mailbox before courrier can sync mail.',
+          title: l10n.m365ImapDisabledTitle,
+          body: l10n.m365ImapDisabledBody,
           detail: detail,
-          adminDocsCta: 'Open admin docs',
+          adminDocsCta: l10n.m365OpenAdminDocs,
         );
       case SmtpAuthDisabledForMailbox(:final detail):
         return _TenantErrorDescriptor(
-          title: 'SMTP AUTH disabled for this mailbox',
-          body:
-              'Modern tenants disable SMTP AUTH per-mailbox by default. Your '
-              'admin needs to enable SMTP AUTH on your mailbox to send mail.',
+          title: l10n.m365SmtpDisabledTitle,
+          body: l10n.m365SmtpDisabledBody,
           detail: detail,
-          adminDocsCta: 'Open admin docs',
+          adminDocsCta: l10n.m365OpenAdminDocs,
         );
       case TenantAuthFailedGeneric(:final detail):
         return _TenantErrorDescriptor(
-          title: 'Connection failed',
-          body: 'courrier could not sign in to Microsoft 365.',
+          title: l10n.m365FailedTitle,
+          body: l10n.m365FailedBody,
           detail: detail,
         );
     }

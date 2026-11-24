@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/db/database.dart';
+import '../../l10n/l10n.dart';
 import 'data/contact_repository.dart';
 import 'ui/contact_detail_view.dart';
 import 'ui/contacts_list_view.dart';
@@ -34,7 +35,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => setState(() => _selected = null),
-                  tooltip: 'Back to contacts list',
+                  tooltip: context.l10n.contactsBackToList,
                 ),
               ),
             ],

@@ -10,6 +10,8 @@ import '../../core/net/bounded_http.dart';
 import '../../core/net/dav/dav_client.dart';
 import '../../core/net/dav/discovery.dart';
 import '../../core/net/net_error.dart';
+import '../../core/net/net_error_text.dart';
+import '../../l10n/l10n.dart';
 import '../mail/autoconfig/autoconfig_models.dart';
 import '../mail/autoconfig/autoconfig_resolver.dart';
 import '../mail/backend/imap_mail_backend.dart';
@@ -67,7 +69,7 @@ class OnboardingController {
     try {
       serverBase(baseUrl);
       if (username.trim().isEmpty || appPassword.isEmpty) {
-        throw const FormatException('Username and app password are required.');
+        throw FormatException(L10n.current.onboardingCredentialsRequired);
       }
       final credentials = DavCredentials(
         username: username,
@@ -84,11 +86,10 @@ class OnboardingController {
         final result = await discovery.discover();
 
         if (result.principalHref == null) {
-          throw const FormatException(
-            'No authenticated DAV principal was found.',
-          );
+          throw FormatException(L10n.current.onboardingNoPrincipal);
         }
         final base = serverBase(baseUrl);
+        final l10n = L10n.current;
         final specs = <({String kind, String name, String? href})>[];
         for (final calendar in result.calendarCollections) {
           final href = sameOrigin(base, calendar.href).toString();
@@ -96,14 +97,14 @@ class OnboardingController {
           if (components == null || components.contains('VEVENT')) {
             specs.add((
               kind: 'calendar',
-              name: calendar.displayName ?? 'Calendar',
+              name: calendar.displayName ?? l10n.accountsModuleCalendar,
               href: href,
             ));
           }
           if (components == null || components.contains('VTODO')) {
             specs.add((
               kind: 'tasks',
-              name: calendar.displayName ?? 'Tasks',
+              name: calendar.displayName ?? l10n.accountsModuleTasks,
               href: href,
             ));
           }
@@ -111,13 +112,13 @@ class OnboardingController {
         for (final book in result.addressbookCollections) {
           specs.add((
             kind: 'contacts',
-            name: book.displayName ?? 'Address book',
+            name: book.displayName ?? l10n.accountsAddressBook,
             href: sameOrigin(base, book.href).toString(),
           ));
         }
         specs.addAll([
-          (kind: 'notes', name: 'Notes', href: null),
-          (kind: 'feeds', name: 'News', href: null),
+          (kind: 'notes', name: l10n.accountsModuleNotes, href: null),
+          (kind: 'feeds', name: l10n.accountsModuleNews, href: null),
         ]);
         final collectionIds = <int>[];
         final accountId = await _storeAccount(
@@ -158,22 +159,20 @@ class OnboardingController {
       }
     } on NetError catch (e) {
       final outcome = StepFailed(
-        message: 'Nextcloud connection failed (${e.kind}).',
-        detail: e.message,
+        message: L10n.current.onboardingNextcloudFailed(e.kind),
+        detail: L10n.current.netError(e),
       );
       _emit(_state.copyWith(nextcloud: outcome));
       return outcome;
     } on FormatException catch (e) {
       final outcome = StepFailed(
-        message: 'Bad URL — please paste your Nextcloud base URL.',
+        message: L10n.current.onboardingBadUrl,
         detail: e.message,
       );
       _emit(_state.copyWith(nextcloud: outcome));
       return outcome;
     } on Exception {
-      const outcome = StepFailed(
-        message: 'Could not save the account. Check secure storage and retry.',
-      );
+      final outcome = StepFailed(message: L10n.current.onboardingSaveFailed);
       _emit(_state.copyWith(nextcloud: outcome));
       return outcome;
     }
@@ -209,34 +208,32 @@ class OnboardingController {
       final config = manualConfig ?? await r.resolve(emailAddress);
       if (config == null) {
         final outcome = StepFailed(
-          message: 'No autoconfig found for ${emailAddress.split('@').last}.',
-          detail: 'Add the server manually from Settings → Accounts.',
+          message: L10n.current.onboardingNoAutoconfig(
+            emailAddress.split('@').last,
+          ),
+          detail: L10n.current.onboardingAddManually,
         );
         _emit(_state.copyWith(imap: outcome));
         return outcome;
       }
       if (emailAddress.trim().isEmpty || password.isEmpty) {
-        throw const FormatException('Email and password are required.');
+        throw FormatException(L10n.current.onboardingEmailPasswordRequired);
       }
       if (config.incoming.socketType == MailSocketType.plain ||
           config.outgoing.socketType == MailSocketType.plain) {
-        throw const FormatException(
-          'Unencrypted mail connections are not supported.',
-        );
+        throw FormatException(L10n.current.onboardingUnencrypted);
       }
       for (final server in [config.incoming, config.outgoing]) {
         if (server.host.isEmpty ||
             server.host.contains(RegExp(r'[\s/@]')) ||
             server.port < 1 ||
             server.port > 65535) {
-          throw const FormatException('Invalid mail server or port.');
+          throw FormatException(L10n.current.onboardingInvalidServer);
         }
       }
       final username = config.incoming.resolveUsername(emailAddress);
       if (username != config.outgoing.resolveUsername(emailAddress)) {
-        throw const FormatException(
-          'Separate SMTP usernames are not supported yet.',
-        );
+        throw FormatException(L10n.current.onboardingSeparateSmtpUser);
       }
       final backend =
           backendBuilder?.call(config) ??
@@ -282,8 +279,7 @@ class OnboardingController {
       return outcome;
     } on Exception catch (e) {
       final outcome = StepFailed(
-        message:
-            'Mail connection failed. Check the server settings and app password.',
+        message: L10n.current.onboardingMailFailed,
         detail: e is FormatException ? e.message.toString() : null,
       );
       _emit(_state.copyWith(imap: outcome));
@@ -355,9 +351,7 @@ class OnboardingController {
           /* Retain the disabled identity if secure cleanup fails. */
         }
       }
-      const outcome = StepFailed(
-        message: 'Microsoft 365 sign-in failed. Cached accounts are unchanged.',
-      );
+      final outcome = StepFailed(message: L10n.current.onboardingM365Failed);
       _emit(_state.copyWith(microsoft365: outcome));
       return outcome;
     } finally {

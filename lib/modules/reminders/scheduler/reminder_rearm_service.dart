@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../../../core/db/database.dart';
+import '../../../l10n/l10n.dart';
 import 'notification_scheduler.dart';
 
 // Rebuild every scheduled notification from the database. Called:
@@ -127,7 +128,7 @@ class ReminderRearmService {
       result.add(
         ScheduledNotification(
           id: _eventReminderId(reminder.id),
-          title: event.summary ?? 'Reminder',
+          title: event.summary ?? L10n.current.remindersNotificationFallback,
           body: _bodyForEvent(event, reminder),
           fireAt: fireAt,
           label: reminder.label,
@@ -166,8 +167,8 @@ class ReminderRearmService {
       result.add(
         ScheduledNotification(
           id: _taskDueId(task.id),
-          title: task.summary ?? 'Task due',
-          body: task.description ?? 'Task is due now.',
+          title: task.summary ?? L10n.current.remindersTaskDueTitle,
+          body: task.description ?? L10n.current.remindersTaskDueBody,
           fireAt: due,
         ),
       );
@@ -197,7 +198,7 @@ class ReminderRearmService {
     if (event.location != null && event.location!.isNotEmpty) {
       return event.location!;
     }
-    return 'Reminder';
+    return L10n.current.remindersNotificationFallback;
   }
 
   // Stable id-space split so event reminders and task dues never collide and

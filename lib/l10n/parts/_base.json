@@ -1,0 +1,310 @@
+{
+  "navMail": {
+    "en": "mail",
+    "de": "mail"
+  },
+  "navCalendar": {
+    "en": "calendar",
+    "de": "kalender"
+  },
+  "navContacts": {
+    "en": "contacts",
+    "de": "kontakte"
+  },
+  "navTasks": {
+    "en": "tasks",
+    "de": "aufgaben"
+  },
+  "navReminders": {
+    "en": "reminders",
+    "de": "erinnerungen"
+  },
+  "navNotes": {
+    "en": "notes",
+    "de": "notizen"
+  },
+  "navFeeds": {
+    "en": "feeds",
+    "de": "feeds"
+  },
+  "navMore": {
+    "en": "more",
+    "de": "mehr"
+  },
+  "navMoreTooltip": {
+    "en": "More modules",
+    "de": "Weitere Module"
+  },
+  "shellTitle": {
+    "en": "courrier · {module}",
+    "de": "courrier · {module}",
+    "placeholders": {
+      "module": "String"
+    }
+  },
+  "shellModules": {
+    "en": "Modules",
+    "de": "Module"
+  },
+  "shellShortcuts": {
+    "en": "Keyboard shortcuts",
+    "de": "Tastenkürzel"
+  },
+  "shellShortcutsBody": {
+    "en": "Ctrl / Cmd + 1–7: switch module\nCtrl / Cmd + comma: settings\nCtrl / Cmd + Shift + A: accounts\nCtrl / Cmd + N: new note (in Notes)\nF1: show this help",
+    "de": "Strg / Cmd + 1–7: Modul wechseln\nStrg / Cmd + Komma: Einstellungen\nStrg / Cmd + Umschalt + A: Konten\nStrg / Cmd + N: neue Notiz (in Notizen)\nF1: diese Hilfe anzeigen"
+  },
+  "shellSettings": {
+    "en": "Settings",
+    "de": "Einstellungen"
+  },
+  "shellAccounts": {
+    "en": "Accounts",
+    "de": "Konten"
+  },
+  "commonClose": {
+    "en": "Close",
+    "de": "Schließen"
+  },
+  "commonCancel": {
+    "en": "Cancel",
+    "de": "Abbrechen"
+  },
+  "commonRetry": {
+    "en": "Retry",
+    "de": "Erneut versuchen"
+  },
+  "commonOk": {
+    "en": "OK",
+    "de": "OK"
+  },
+  "commonSave": {
+    "en": "Save",
+    "de": "Speichern"
+  },
+  "commonDelete": {
+    "en": "Delete",
+    "de": "Löschen"
+  },
+  "bootDatabaseFailed": {
+    "en": "Could not open the local database. Free storage if necessary, then retry. Existing files have been retained.",
+    "de": "Die lokale Datenbank konnte nicht geöffnet werden. Gib bei Bedarf Speicher frei und versuche es erneut. Vorhandene Dateien bleiben erhalten."
+  },
+  "settingsTitle": {
+    "en": "Settings",
+    "de": "Einstellungen"
+  },
+  "settingsSecurity": {
+    "en": "Security",
+    "de": "Sicherheit"
+  },
+  "settingsLockToggle": {
+    "en": "Toggle app lock",
+    "de": "App-Sperre umschalten"
+  },
+  "settingsLockTitle": {
+    "en": "App lock (device authentication)",
+    "de": "App-Sperre (Geräteauthentifizierung)"
+  },
+  "settingsLockSubtitle": {
+    "en": "Require unlocking when courrier resumes from background.",
+    "de": "Beim Zurückkehren aus dem Hintergrund entsperren lassen."
+  },
+  "settingsLockUnavailable": {
+    "en": "Not available {inBuild}: it has no device-authentication service.",
+    "de": "Nicht verfügbar {inBuild}: Dort gibt es keinen Dienst für die Geräteauthentifizierung.",
+    "placeholders": {
+      "inBuild": "String"
+    }
+  },
+  "settingsExportImport": {
+    "en": "Settings export / import",
+    "de": "Einstellungen exportieren / importieren"
+  },
+  "settingsExportLabel": {
+    "en": "Export settings as JSON",
+    "de": "Einstellungen als JSON exportieren"
+  },
+  "settingsExport": {
+    "en": "Export",
+    "de": "Exportieren"
+  },
+  "settingsImportLabel": {
+    "en": "Import settings from JSON",
+    "de": "Einstellungen aus JSON importieren"
+  },
+  "settingsImport": {
+    "en": "Import",
+    "de": "Importieren"
+  },
+  "settingsAbout": {
+    "en": "About",
+    "de": "Über"
+  },
+  "settingsVersion": {
+    "en": "Version",
+    "de": "Version"
+  },
+  "settingsSupport": {
+    "en": "Support development",
+    "de": "Entwicklung unterstützen"
+  },
+  "settingsDocs": {
+    "en": "Documentation",
+    "de": "Dokumentation"
+  },
+  "settingsLicenses": {
+    "en": "Open-source licenses",
+    "de": "Open-Source-Lizenzen"
+  },
+  "settingsFooter": {
+    "en": "courrier is part of the Établi Suite. AGPL-3.0-only.",
+    "de": "courrier gehört zur Établi Suite. AGPL-3.0-only."
+  },
+  "settingsLockAuthRequired": {
+    "en": "Device authentication is required to change app lock.",
+    "de": "Zum Ändern der App-Sperre ist die Geräteauthentifizierung nötig."
+  },
+  "settingsLockSaveFailed": {
+    "en": "Could not save app-lock settings.",
+    "de": "Die App-Sperre konnte nicht gespeichert werden."
+  },
+  "settingsExportTitle": {
+    "en": "Non-sensitive settings",
+    "de": "Nicht vertrauliche Einstellungen"
+  },
+  "settingsCopyJson": {
+    "en": "Copy JSON",
+    "de": "JSON kopieren"
+  },
+  "settingsExportFailed": {
+    "en": "Could not export settings.",
+    "de": "Die Einstellungen konnten nicht exportiert werden."
+  },
+  "settingsImported": {
+    "en": "{count, plural, =1{Imported 1 preference.} other{Imported {count} preferences.}}",
+    "de": "{count, plural, =1{1 Einstellung importiert.} other{{count} Einstellungen importiert.}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "settingsImportFailed": {
+    "en": "Import failed. Use a supported settings export with valid preference values.",
+    "de": "Import fehlgeschlagen. Verwende einen unterstützten Einstellungsexport mit gültigen Werten."
+  },
+  "settingsLoadFailed": {
+    "en": "Could not load settings. Reopen this screen to retry.",
+    "de": "Die Einstellungen konnten nicht geladen werden. Öffne diese Seite erneut."
+  },
+  "settingsImportTitle": {
+    "en": "Import settings JSON",
+    "de": "Einstellungs-JSON importieren"
+  },
+  "settingsImportHint": {
+    "en": "Paste a settings export. App lock and credentials are excluded.",
+    "de": "Einstellungsexport einfügen. App-Sperre und Zugangsdaten sind ausgenommen."
+  },
+  "settingsAppearance": {
+    "en": "Appearance",
+    "de": "Darstellung"
+  },
+  "settingsLanguage": {
+    "en": "App language",
+    "de": "App-Sprache"
+  },
+  "settingsMode": {
+    "en": "Mode",
+    "de": "Modus"
+  },
+  "modeSystem": {
+    "en": "System",
+    "de": "System"
+  },
+  "modeLight": {
+    "en": "Light",
+    "de": "Hell"
+  },
+  "modeDark": {
+    "en": "Dark",
+    "de": "Dunkel"
+  },
+  "languageSystem": {
+    "en": "System",
+    "de": "System"
+  },
+  "settingsAccent": {
+    "en": "Accent colour",
+    "de": "Akzentfarbe"
+  },
+  "accentCoderBlue": {
+    "en": "Coder blue",
+    "de": "Coder-Blau"
+  },
+  "accentGreen": {
+    "en": "Green",
+    "de": "Grün"
+  },
+  "accentYellow": {
+    "en": "Yellow",
+    "de": "Gelb"
+  },
+  "accentOrange": {
+    "en": "Orange",
+    "de": "Orange"
+  },
+  "accentRed": {
+    "en": "Red",
+    "de": "Rot"
+  },
+  "accentPurple": {
+    "en": "Purple",
+    "de": "Violett"
+  },
+  "accentGraphite": {
+    "en": "Graphite",
+    "de": "Graphit"
+  },
+  "settingsAppearanceNote": {
+    "en": "Language, mode and accent colour apply at once. Default: Hugo Coder palette.",
+    "de": "Sprache, Modus und Akzentfarbe gelten sofort. Voreinstellung: Hugo-Coder-Palette."
+  },
+  "platformBuildLinux": {
+    "en": "the Linux build",
+    "de": "der Linux-Build"
+  },
+  "platformBuildWindows": {
+    "en": "the Windows build",
+    "de": "der Windows-Build"
+  },
+  "platformBuildMacos": {
+    "en": "the macOS build",
+    "de": "der macOS-Build"
+  },
+  "platformBuildThis": {
+    "en": "this build",
+    "de": "dieser Build"
+  },
+  "platformInLinux": {
+    "en": "in the Linux build",
+    "de": "im Linux-Build"
+  },
+  "platformInWindows": {
+    "en": "in the Windows build",
+    "de": "im Windows-Build"
+  },
+  "platformInMacos": {
+    "en": "in the macOS build",
+    "de": "im macOS-Build"
+  },
+  "platformInThis": {
+    "en": "in this build",
+    "de": "in diesem Build"
+  },
+  "shellRemindersUnavailable": {
+    "en": "Reminder notifications are not delivered {inBuild} yet. The list below shows what is due; check it while courrier is open.",
+    "de": "Erinnerungen werden {inBuild} noch nicht zugestellt. Die Liste unten zeigt, was fällig ist; sieh sie dir an, solange courrier geöffnet ist.",
+    "placeholders": {
+      "inBuild": "String"
+    }
+  }
+}

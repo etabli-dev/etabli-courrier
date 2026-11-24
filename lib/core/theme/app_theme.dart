@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 
+import 'appearance.dart';
 import 'tokens.dart';
 
 @immutable
 class CourrierTheme {
   const CourrierTheme._();
 
-  static ThemeData light() => _build(Brightness.light);
+  static ThemeData light([AccentChoice accent = AccentChoice.coderBlue]) =>
+      build(Brightness.light, accent);
 
-  static ThemeData dark() => _build(Brightness.dark);
+  static ThemeData dark([AccentChoice accent = AccentChoice.coderBlue]) =>
+      build(Brightness.dark, accent);
 
-  static ThemeData _build(Brightness brightness) {
+  /// The theme for a mode and the user's accent. Containers (cards, dialogs, menus, bars) use the page
+  /// background, so accent text on them keeps at least 4.5:1. Selection fills use
+  /// [AccentChoice.selectionColor] (neutral for yellow and orange): no background is tinted yellow.
+  static ThemeData build(Brightness brightness, AccentChoice accentChoice) {
     final isDark = brightness == Brightness.dark;
     final background = isDark
         ? CourrierTokens.darkBackground
@@ -27,25 +33,57 @@ class CourrierTheme {
     final textSecondary = isDark
         ? CourrierTokens.darkTextSecondary
         : CourrierTokens.lightTextSecondary;
-    final textMuted = isDark
-        ? CourrierTokens.darkTextMuted
-        : CourrierTokens.lightTextMuted;
+    final textMuted = textSecondary;
+    final accent = accentChoice.color(brightness);
+    final onAccent = CoderPalette.color(CoderPalette.onAccent(brightness));
+    final danger = CoderPalette.color(CoderPalette.danger(brightness));
+    final selectionFill = accentChoice
+        .selectionColor(brightness)
+        .withValues(alpha: AccentChoice.selectionOpacity);
+    final selectionOverlay = WidgetStateProperty.resolveWith<Color?>(
+      (states) =>
+          states.contains(WidgetState.pressed) ||
+              states.contains(WidgetState.hovered) ||
+              states.contains(WidgetState.focused)
+          ? selectionFill
+          : null,
+    );
 
     final colorScheme = ColorScheme(
       brightness: brightness,
-      primary: CourrierTokens.accent,
-      onPrimary: isDark
-          ? CourrierTokens.darkBackground
-          : CourrierTokens.lightBackground,
-      secondary: CourrierTokens.accent,
-      onSecondary: isDark
-          ? CourrierTokens.darkBackground
-          : CourrierTokens.lightBackground,
-      error: CourrierTokens.accent,
-      onError: textPrimary,
-      surface: surface,
+      primary: accent,
+      onPrimary: onAccent,
+      primaryContainer: selectionFill,
+      onPrimaryContainer: textPrimary,
+      secondary: accent,
+      onSecondary: onAccent,
+      secondaryContainer: selectionFill,
+      onSecondaryContainer: textPrimary,
+      tertiary: accent,
+      onTertiary: onAccent,
+      tertiaryContainer: selectionFill,
+      onTertiaryContainer: textPrimary,
+      error: danger,
+      onError: onAccent,
+      surface: background,
       onSurface: textPrimary,
+      onSurfaceVariant: textSecondary,
+      surfaceContainerLowest: background,
+      surfaceContainerLow: background,
+      surfaceContainer: background,
+      surfaceContainerHigh: background,
+      surfaceContainerHighest: surface,
       outline: border,
+      outlineVariant: border,
+      inverseSurface: textPrimary,
+      onInverseSurface: background,
+      inversePrimary: accentChoice.color(
+        isDark ? Brightness.light : Brightness.dark,
+      ),
+      // No accent tint on elevated surfaces (dialogs, menus, sheets).
+      surfaceTint: Colors.transparent,
+      shadow: Colors.black,
+      scrim: Colors.black,
     );
 
     final textTheme = TextTheme(
@@ -105,27 +143,106 @@ class CourrierTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         height: 64,
-        indicatorColor: surface,
-        labelTextStyle: WidgetStatePropertyAll(textTheme.labelLarge),
-        iconTheme: WidgetStatePropertyAll(IconThemeData(color: textPrimary)),
+        indicatorColor: selectionFill,
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => textTheme.labelLarge?.copyWith(
+            color: states.contains(WidgetState.selected)
+                ? accent
+                : textSecondary,
+          ),
+        ),
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? accent
+                : textSecondary,
+          ),
+        ),
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: background,
-        // The default indicator is the accent, which hid the accent icon.
-        indicatorColor: surface,
-        selectedIconTheme: const IconThemeData(color: CourrierTokens.accent),
+        indicatorColor: selectionFill,
+        selectedIconTheme: IconThemeData(color: accent),
         unselectedIconTheme: IconThemeData(color: textSecondary),
-        selectedLabelTextStyle: textTheme.labelLarge?.copyWith(
-          color: CourrierTokens.accent,
-        ),
+        selectedLabelTextStyle: textTheme.labelLarge?.copyWith(color: accent),
         unselectedLabelTextStyle: textTheme.labelLarge?.copyWith(
           color: textSecondary,
         ),
       ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: accent,
+        selectionColor: accentChoice
+            .selectionColor(brightness)
+            .withValues(alpha: AccentChoice.textSelectionOpacity),
+        selectionHandleColor: accent,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: background,
+        surfaceTintColor: Colors.transparent,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+      ),
+      drawerTheme: DrawerThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
+      ),
+      listTileTheme: ListTileThemeData(
+        selectedColor: accent,
+        selectedTileColor: selectionFill,
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? selectionFill
+                : Colors.transparent,
+          ),
+          // Labels on a selection fill stay in the text colour (at least 4.5:1 on every fill).
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.disabled)
+                ? textSecondary
+                : textPrimary,
+          ),
+          overlayColor: selectionOverlay,
+          side: WidgetStatePropertyAll(BorderSide(color: border)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith(
+            (states) =>
+                states.contains(WidgetState.disabled) ? textSecondary : accent,
+          ),
+          overlayColor: selectionOverlay,
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: accent,
+          foregroundColor: onAccent,
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        selectedColor: selectionFill,
+        backgroundColor: background,
+        side: BorderSide(color: border),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: textPrimary,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(color: background),
+        actionTextColor: background,
+      ),
       cardTheme: CardThemeData(
-        color: surface,
+        color: background,
         elevation: 0,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: border),
@@ -143,9 +260,9 @@ class CourrierTheme {
             Radius.circular(CourrierTokens.borderRadius),
           ),
         ),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: CourrierTokens.accent),
-          borderRadius: BorderRadius.all(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: accent),
+          borderRadius: const BorderRadius.all(
             Radius.circular(CourrierTokens.borderRadius),
           ),
         ),

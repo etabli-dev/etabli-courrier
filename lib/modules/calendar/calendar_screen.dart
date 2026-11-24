@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/db/database.dart';
 import '../../core/theme/tokens.dart';
+import '../../l10n/l10n.dart';
 import 'data/calendar_repository.dart';
 import 'ui/agenda_view.dart';
 import 'ui/month_view.dart';
@@ -45,9 +46,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Row(
             children: [
               SegmentedButton<_Mode>(
-                segments: const [
-                  ButtonSegment(value: _Mode.agenda, label: Text('Agenda')),
-                  ButtonSegment(value: _Mode.month, label: Text('Month')),
+                segments: [
+                  ButtonSegment(
+                    value: _Mode.agenda,
+                    label: Text(context.l10n.calendarAgenda),
+                  ),
+                  ButtonSegment(
+                    value: _Mode.month,
+                    label: Text(context.l10n.calendarMonth),
+                  ),
                 ],
                 selected: {_mode},
                 onSelectionChanged: (s) => setState(() => _mode = s.first),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 // "Delete recurring event" UX: the user picks
 // THIS occurrence, THIS AND FOLLOWING, or ALL occurrences. The repository
@@ -21,22 +22,26 @@ class RecurrenceDeleteDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SimpleDialog(
-      title: Text('Delete recurring event'),
-      contentPadding: EdgeInsets.symmetric(
+    final l10n = context.l10n;
+    return SimpleDialog(
+      title: Text(l10n.calendarDeleteRecurringTitle),
+      contentPadding: const EdgeInsets.symmetric(
         horizontal: CourrierTokens.space5,
         vertical: CourrierTokens.space4,
       ),
       children: [
         _OptionTile(
-          label: 'This occurrence only',
+          label: l10n.calendarDeleteThisOccurrence,
           value: RecurrenceDeleteScope.thisOccurrence,
         ),
         _OptionTile(
-          label: 'This and following occurrences',
+          label: l10n.calendarDeleteThisAndFollowing,
           value: RecurrenceDeleteScope.thisAndFollowing,
         ),
-        _OptionTile(label: 'All occurrences', value: RecurrenceDeleteScope.all),
+        _OptionTile(
+          label: l10n.calendarDeleteAllOccurrences,
+          value: RecurrenceDeleteScope.all,
+        ),
       ],
     );
   }

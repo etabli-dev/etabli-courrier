@@ -3,10 +3,12 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 import '../render/mime_render_plan.dart';
 
 class MessageView extends StatelessWidget {
-  MessageView({
+  const MessageView({
     required this.message,
     required this.plan,
     this.onRevealRemoteContent,
@@ -21,39 +23,40 @@ class MessageView extends StatelessWidget {
   final VoidCallback? onArchive;
   final VoidCallback? onTrash;
 
-  final DateFormat _dateFmt = DateFormat('MMM d · HH:mm');
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
+    final locale = l10n.dateLocale;
     final showRevealCard =
         plan.containedRemoteContent && !message.remoteContentAllowed;
     return ListView(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       children: [
         Text(
-          message.subject ?? '(no subject)',
+          message.subject ?? l10n.mailNoSubject,
           style: theme.textTheme.titleLarge,
         ),
         const SizedBox(height: CourrierTokens.space2),
         Text(
-          message.fromAddress ?? '(unknown sender)',
+          message.fromAddress ?? l10n.mailUnknownSender,
           style: theme.textTheme.bodyMedium,
         ),
         Text(
-          _dateFmt.format(message.receivedAt),
+          '${DateFormat.MMMd(locale).format(message.receivedAt)} · '
+          '${DateFormat.Hm(locale).format(message.receivedAt)}',
           style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: CourrierTokens.space5),
         if (showRevealCard) _RemoteContentCard(onReveal: onRevealRemoteContent),
         if (showRevealCard) const SizedBox(height: CourrierTokens.space4),
         if (plan.preferredText.isEmpty)
-          Text('(empty body)', style: theme.textTheme.bodyMedium)
+          Text(l10n.mailEmptyBody, style: theme.textTheme.bodyMedium)
         else
           SelectableText(plan.preferredText, style: theme.textTheme.bodyMedium),
         if (plan.hasAttachments) ...[
           const SizedBox(height: CourrierTokens.space5),
-          Text('Attachments', style: theme.textTheme.titleMedium),
+          Text(l10n.mailAttachments, style: theme.textTheme.titleMedium),
           const SizedBox(height: CourrierTokens.space2),
           for (final attachment in plan.attachments)
             Padding(
@@ -71,7 +74,7 @@ class MessageView extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _formatBytes(attachment.sizeBytes),
+                    _formatBytes(attachment.sizeBytes, l10n.localeName),
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -83,12 +86,15 @@ class MessageView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             if (onArchive != null)
-              TextButton(onPressed: onArchive, child: const Text('Archive')),
+              TextButton(onPressed: onArchive, child: Text(l10n.mailArchive)),
             const SizedBox(width: CourrierTokens.space2),
             if (onTrash != null)
-              FilledButton.tonal(
-                onPressed: onTrash,
-                child: const Text('Move to trash'),
+              Tooltip(
+                message: l10n.mailMoveToTrashTooltip,
+                child: FilledButton.tonal(
+                  onPressed: onTrash,
+                  child: Text(l10n.mailMoveToTrash),
+                ),
               ),
           ],
         ),
@@ -96,14 +102,15 @@ class MessageView extends StatelessWidget {
     );
   }
 
-  String _formatBytes(int bytes) {
+  String _formatBytes(int bytes, String locale) {
     if (bytes < 1024) {
       return '$bytes B';
     }
+    final oneDecimal = NumberFormat('0.0', locale);
     if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      return '${oneDecimal.format(bytes / 1024)} KB';
     }
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    return '${oneDecimal.format(bytes / (1024 * 1024))} MB';
   }
 }
 
@@ -124,13 +131,16 @@ class _RemoteContentCard extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Remote content blocked. Showing local content only.',
+              context.l10n.mailRemoteContentBlocked,
               style: theme.textTheme.bodyMedium,
             ),
           ),
           const SizedBox(width: CourrierTokens.space3),
           if (onReveal != null)
-            TextButton(onPressed: onReveal, child: const Text('Show images')),
+            TextButton(
+              onPressed: onReveal,
+              child: Text(context.l10n.mailShowImages),
+            ),
         ],
       ),
     );

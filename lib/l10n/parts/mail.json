@@ -1,0 +1,658 @@
+{
+  "mailBodyNotDownloaded": {
+    "en": "This message body has not been downloaded. Connect the account and sync this folder to read it offline.",
+    "de": "Der Inhalt dieser Nachricht wurde noch nicht geladen. Verbinde das Konto und synchronisiere diesen Ordner, um sie offline zu lesen."
+  },
+  "mailMessageFallbackTitle": {
+    "en": "Message",
+    "de": "Nachricht"
+  },
+  "mailOpenFailed": {
+    "en": "Could not open this message. Please try again.",
+    "de": "Die Nachricht konnte nicht geöffnet werden. Bitte versuche es erneut."
+  },
+  "mailFoldersLoadFailed": {
+    "en": "Could not load mail folders.",
+    "de": "Die Mail-Ordner konnten nicht geladen werden."
+  },
+  "mailNoCachedMail": {
+    "en": "No cached mail yet. Add an email account in Accounts, then sync its folders.",
+    "de": "Noch keine Mails gespeichert. Füge unter „Konten“ ein E-Mail-Konto hinzu und synchronisiere dann seine Ordner."
+  },
+  "mailFolderAccount": {
+    "en": "Account {accountId}",
+    "de": "Konto {accountId}",
+    "placeholders": {
+      "accountId": "String"
+    }
+  },
+  "mailAllFolders": {
+    "en": "All folders",
+    "de": "Alle Ordner"
+  },
+  "mailMessagesLoadFailed": {
+    "en": "Could not load messages.",
+    "de": "Die Nachrichten konnten nicht geladen werden."
+  },
+  "mailUnknownSender": {
+    "en": "(unknown sender)",
+    "de": "(unbekannter Absender)"
+  },
+  "mailNoSubject": {
+    "en": "(no subject)",
+    "de": "(kein Betreff)"
+  },
+  "mailNoMessages": {
+    "en": "No messages.",
+    "de": "Keine Nachrichten."
+  },
+  "mailEmptyBody": {
+    "en": "(empty body)",
+    "de": "(kein Inhalt)"
+  },
+  "mailAttachments": {
+    "en": "Attachments",
+    "de": "Anhänge"
+  },
+  "mailArchive": {
+    "en": "Archive",
+    "de": "Archivieren"
+  },
+  "mailMoveToTrash": {
+    "en": "Move to trash",
+    "de": "In Papierkorb"
+  },
+  "mailMoveToTrashTooltip": {
+    "en": "Move to trash",
+    "de": "In den Papierkorb verschieben"
+  },
+  "mailRemoteContentBlocked": {
+    "en": "Remote content blocked. Showing local content only.",
+    "de": "Externe Inhalte blockiert. Es werden nur lokale Inhalte angezeigt."
+  },
+  "mailShowImages": {
+    "en": "Show images",
+    "de": "Bilder laden"
+  },
+  "mailImageBlocked": {
+    "en": "[image blocked]",
+    "de": "[Bild blockiert]"
+  },
+  "mailComposeTo": {
+    "en": "To",
+    "de": "An"
+  },
+  "mailComposeToHint": {
+    "en": "comma-separated",
+    "de": "durch Kommas getrennt"
+  },
+  "mailComposeSubject": {
+    "en": "Subject",
+    "de": "Betreff"
+  },
+  "mailComposeBody": {
+    "en": "Body",
+    "de": "Nachricht"
+  },
+  "mailSaveDraft": {
+    "en": "Save draft",
+    "de": "Speichern"
+  },
+  "mailSaveDraftTooltip": {
+    "en": "Save draft",
+    "de": "Entwurf speichern"
+  },
+  "mailSend": {
+    "en": "Send",
+    "de": "Senden"
+  },
+  "mailSending": {
+    "en": "Sending…",
+    "de": "Wird gesendet …"
+  },
+  "mailComposePlainTextNote": {
+    "en": "Plain text only. Attachments + HTML composition land at M11 polish.",
+    "de": "Nur reiner Text. Anhänge und HTML-Nachrichten folgen mit dem M11-Feinschliff."
+  },
+  "mailQuoteDatePattern": {
+    "en": "EEE, MMM d yyyy, HH:mm",
+    "de": "EEE, d. MMM yyyy, HH:mm",
+    "description": "intl DateFormat pattern for the date in reply quotes and forwarded-message headers."
+  },
+  "mailReplyIntro": {
+    "en": "On {date}, {sender} wrote:",
+    "de": "Am {date} schrieb {sender}:",
+    "placeholders": {
+      "date": "String",
+      "sender": "String"
+    }
+  },
+  "mailReplySomeone": {
+    "en": "someone",
+    "de": "jemand"
+  },
+  "mailForwardHeader": {
+    "en": "---------- Forwarded message ----------",
+    "de": "---------- Weitergeleitete Nachricht ----------"
+  },
+  "mailForwardFrom": {
+    "en": "From: {value}",
+    "de": "Von: {value}",
+    "placeholders": {
+      "value": "String"
+    }
+  },
+  "mailForwardDate": {
+    "en": "Date: {value}",
+    "de": "Datum: {value}",
+    "placeholders": {
+      "value": "String"
+    }
+  },
+  "mailForwardSubject": {
+    "en": "Subject: {value}",
+    "de": "Betreff: {value}",
+    "placeholders": {
+      "value": "String"
+    }
+  },
+  "mailForwardTo": {
+    "en": "To: {value}",
+    "de": "An: {value}",
+    "placeholders": {
+      "value": "String"
+    }
+  },
+  "mailArchivedAccountName": {
+    "en": "Archived mail · {timestamp}",
+    "de": "Archivierte Mails · {timestamp}",
+    "placeholders": {
+      "timestamp": "String"
+    }
+  },
+  "m365ConnectTitle": {
+    "en": "Connect Microsoft 365",
+    "de": "Microsoft 365 verbinden"
+  },
+  "m365ConnectIntro": {
+    "en": "courrier signs in via your tenant's standard OAuth flow. Your password is never sent through the app.",
+    "de": "courrier meldet dich über den Standard-OAuth-Ablauf deines Mandanten an. Dein Passwort wird nie über die App gesendet."
+  },
+  "m365SigningIn": {
+    "en": "Signing in…",
+    "de": "Anmelden …"
+  },
+  "m365SignIn": {
+    "en": "Sign in with Microsoft",
+    "de": "Mit Microsoft anmelden"
+  },
+  "m365TryAgain": {
+    "en": "Try again",
+    "de": "Wiederholen"
+  },
+  "m365OpenAdminDocs": {
+    "en": "Open admin docs",
+    "de": "Admin-Doku"
+  },
+  "m365OpenAdminDocsTooltip": {
+    "en": "Open admin docs",
+    "de": "Dokumentation für Admins öffnen"
+  },
+  "m365ConsentTitle": {
+    "en": "Admin consent required",
+    "de": "Zustimmung des Admins nötig"
+  },
+  "m365ConsentBody": {
+    "en": "Your IT administrator needs to grant courrier access for your tenant. Share the documentation link with them, then try again.",
+    "de": "Deine IT-Administration muss courrier für deinen Mandanten freigeben. Teile den Link zur Dokumentation mit ihr und versuche es dann erneut."
+  },
+  "m365BlockedTitle": {
+    "en": "App blocked by tenant policy",
+    "de": "App durch Mandantenrichtlinie blockiert"
+  },
+  "m365BlockedBody": {
+    "en": "Your tenant blocks third-party mail apps. Ask your admin to allow courrier, then try again.",
+    "de": "Dein Mandant blockiert Mail-Apps von Drittanbietern. Bitte deinen Admin, courrier zuzulassen, und versuche es dann erneut."
+  },
+  "m365ImapDisabledTitle": {
+    "en": "IMAP disabled by your admin",
+    "de": "IMAP von deinem Admin deaktiviert"
+  },
+  "m365ImapDisabledBody": {
+    "en": "IMAP is turned off on this tenant. Your admin needs to enable IMAP access for your mailbox before courrier can sync mail.",
+    "de": "IMAP ist für diesen Mandanten ausgeschaltet. Dein Admin muss den IMAP-Zugriff für dein Postfach aktivieren, bevor courrier Mails synchronisieren kann."
+  },
+  "m365SmtpDisabledTitle": {
+    "en": "SMTP AUTH disabled for this mailbox",
+    "de": "SMTP AUTH für dieses Postfach deaktiviert"
+  },
+  "m365SmtpDisabledBody": {
+    "en": "Modern tenants disable SMTP AUTH per-mailbox by default. Your admin needs to enable SMTP AUTH on your mailbox to send mail.",
+    "de": "Neuere Mandanten deaktivieren SMTP AUTH standardmäßig pro Postfach. Dein Admin muss SMTP AUTH für dein Postfach aktivieren, damit du Mails senden kannst."
+  },
+  "m365FailedTitle": {
+    "en": "Connection failed",
+    "de": "Verbindung fehlgeschlagen"
+  },
+  "m365FailedBody": {
+    "en": "courrier could not sign in to Microsoft 365.",
+    "de": "courrier konnte sich nicht bei Microsoft 365 anmelden."
+  },
+  "m365NoRefreshToken": {
+    "en": "No refresh token stored — sign in again.",
+    "de": "Kein Aktualisierungstoken gespeichert – melde dich erneut an."
+  },
+  "oauthSignInCancelled": {
+    "en": "User cancelled the sign-in flow.",
+    "de": "Die Anmeldung wurde abgebrochen."
+  },
+  "oauthPlatformError": {
+    "en": "AppAuth platform error",
+    "de": "AppAuth-Plattformfehler"
+  },
+  "oauthRefreshError": {
+    "en": "AppAuth refresh error",
+    "de": "AppAuth-Fehler beim Aktualisieren"
+  },
+  "oauthNoAccessToken": {
+    "en": "AppAuth returned no access token.",
+    "de": "AppAuth hat kein Zugriffstoken geliefert."
+  },
+  "oauthRefreshNoAccessToken": {
+    "en": "AppAuth refresh returned no access token.",
+    "de": "Die AppAuth-Aktualisierung hat kein Zugriffstoken geliefert."
+  },
+  "accountsSyncFailed": {
+    "en": "Could not sync. Check the network and reconnect with current credentials. Cached data is retained.",
+    "de": "Synchronisieren fehlgeschlagen. Prüfe das Netzwerk und verbinde dich mit aktuellen Zugangsdaten neu. Gespeicherte Daten bleiben erhalten."
+  },
+  "accountsDisconnected": {
+    "en": "Disconnected. Cached data remains on this device. Add the same server and username to reconnect.",
+    "de": "Getrennt. Gespeicherte Daten bleiben auf diesem Gerät. Füge denselben Server und Benutzernamen hinzu, um dich neu zu verbinden."
+  },
+  "accountsDisconnectFailed": {
+    "en": "Could not finish disconnecting. Please retry.",
+    "de": "Das Trennen konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+  },
+  "accountsConnectNextcloud": {
+    "en": "Connect Nextcloud",
+    "de": "Nextcloud verbinden"
+  },
+  "accountsConnectImap": {
+    "en": "Connect IMAP",
+    "de": "IMAP verbinden"
+  },
+  "accountsSyncInfo": {
+    "en": "Sync runs when you tap Refresh. Mail downloads the latest 100 envelopes per folder; open a message to cache its body. Nextcloud Notes and News require their server apps. News read state is local. Microsoft 365 OAuth is not enabled in this build; its tenant registration and device sign-in still require validation.",
+    "de": "Synchronisiert wird, wenn du auf „Aktualisieren“ tippst. Mail lädt die neuesten 100 Nachrichtenköpfe pro Ordner; öffne eine Nachricht, um ihren Inhalt zu speichern. Nextcloud Notes und News benötigen ihre Server-Apps. Der Lesestatus von News bleibt lokal. Microsoft 365 OAuth ist in diesem Build nicht aktiviert; Mandantenregistrierung und Anmeldung auf dem Gerät müssen noch geprüft werden."
+  },
+  "accountsLoadFailed": {
+    "en": "Could not load accounts.",
+    "de": "Die Konten konnten nicht geladen werden."
+  },
+  "accountsKindLocal": {
+    "en": "local",
+    "de": "lokal"
+  },
+  "accountsKindDisconnected": {
+    "en": "{kind} · disconnected",
+    "de": "{kind} · getrennt",
+    "placeholders": {
+      "kind": "String"
+    }
+  },
+  "accountsPreservedConflicts": {
+    "en": "Preserved sync conflicts",
+    "de": "Gesicherte Sync-Konflikte"
+  },
+  "accountsOfflineCopyName": {
+    "en": "Offline copy · {name}",
+    "de": "Offline-Kopie · {name}",
+    "placeholders": {
+      "name": "String"
+    }
+  },
+  "accountsRefresh": {
+    "en": "Refresh",
+    "de": "Aktualisieren"
+  },
+  "accountsPendingEdits": {
+    "en": "Pending edits / recovery",
+    "de": "Offene Änderungen"
+  },
+  "accountsPendingEditsTooltip": {
+    "en": "Pending edits / recovery",
+    "de": "Offene Änderungen und Wiederherstellung"
+  },
+  "accountsDisconnect": {
+    "en": "Disconnect; keep cache",
+    "de": "Trennen, Cache behalten"
+  },
+  "accountsConnectionIncomplete": {
+    "en": "Connection did not finish.",
+    "de": "Die Verbindung wurde nicht abgeschlossen."
+  },
+  "accountsConnectFailed": {
+    "en": "Could not connect. Check the settings and try again.",
+    "de": "Verbinden fehlgeschlagen. Prüfe die Einstellungen und versuche es erneut."
+  },
+  "accountsManualSettings": {
+    "en": "Enter server settings manually",
+    "de": "Servereinstellungen manuell eingeben"
+  },
+  "accountsServerUrl": {
+    "en": "HTTPS server URL",
+    "de": "HTTPS-Server-URL"
+  },
+  "accountsServerUrlHelper": {
+    "en": "Include the installation subfolder, if any.",
+    "de": "Gib ggf. auch den Unterordner der Installation an."
+  },
+  "accountsImapHost": {
+    "en": "IMAP hostname",
+    "de": "IMAP-Hostname"
+  },
+  "accountsUsername": {
+    "en": "Username",
+    "de": "Benutzername"
+  },
+  "accountsEmailLogin": {
+    "en": "Email / login username",
+    "de": "E-Mail / Benutzername"
+  },
+  "accountsAppPassword": {
+    "en": "App password",
+    "de": "App-Passwort"
+  },
+  "accountsImapPort": {
+    "en": "IMAP port",
+    "de": "IMAP-Port"
+  },
+  "accountsImapStartTls": {
+    "en": "IMAP STARTTLS (usually port 143)",
+    "de": "IMAP STARTTLS (meist Port 143)"
+  },
+  "accountsSmtpHost": {
+    "en": "SMTP hostname (saved for future sending)",
+    "de": "SMTP-Hostname (für späteren Versand)"
+  },
+  "accountsSmtpPort": {
+    "en": "SMTP port",
+    "de": "SMTP-Port"
+  },
+  "accountsCredentialsNote": {
+    "en": "Credentials are kept in platform secure storage. This screen verifies incoming access. Sending and background synchronization are not available in the current production UI.",
+    "de": "Zugangsdaten liegen im sicheren Speicher des Systems. Diese Seite prüft den Zugriff auf eingehende Mails. Senden und Synchronisieren im Hintergrund sind in der aktuellen Oberfläche nicht verfügbar."
+  },
+  "accountsConnecting": {
+    "en": "Connecting…",
+    "de": "Wird verbunden …"
+  },
+  "accountsConnect": {
+    "en": "Connect",
+    "de": "Verbinden"
+  },
+  "accountsPendingTitle": {
+    "en": "Pending edits",
+    "de": "Offene Änderungen"
+  },
+  "accountsPreserveTitle": {
+    "en": "Preserve this edit offline?",
+    "de": "Diese Änderung offline sichern?"
+  },
+  "accountsPreserveBody": {
+    "en": "The current local record will move to an offline collection, including a locally deleted record. Its upload will stop. The server is unchanged. Return to Accounts and Refresh to load the server version separately. A server write whose response was lost may already exist there.",
+    "de": "Der aktuelle lokale Eintrag wird in eine Offline-Sammlung verschoben, auch wenn er lokal gelöscht wurde. Er wird nicht mehr hochgeladen. Der Server bleibt unverändert. Kehre zu „Konten“ zurück und tippe auf „Aktualisieren“, um die Serverversion separat zu laden. Ein Schreibvorgang, dessen Antwort verloren ging, kann dort bereits vorhanden sein."
+  },
+  "accountsKeepOfflineCopy": {
+    "en": "Keep offline copy",
+    "de": "Offline-Kopie behalten"
+  },
+  "accountsPreserveFailed": {
+    "en": "Could not preserve this version. Nothing was discarded; refresh the list and retry.",
+    "de": "Diese Version konnte nicht gesichert werden. Es wurde nichts verworfen; aktualisiere die Liste und versuche es erneut."
+  },
+  "accountsPendingReadFailed": {
+    "en": "Could not read pending edits.",
+    "de": "Offene Änderungen konnten nicht gelesen werden."
+  },
+  "accountsNoPendingEdits": {
+    "en": "No pending edits. Return to Accounts to refresh.",
+    "de": "Keine offenen Änderungen. Kehre zu „Konten“ zurück, um zu aktualisieren."
+  },
+  "accountsPendingIntro": {
+    "en": "Refresh normally retries pending work with its original server precondition. If it cannot be reconciled, preserve the local record offline before reloading the server.",
+    "de": "„Aktualisieren“ wiederholt offene Vorgänge normalerweise mit ihrer ursprünglichen Server-Vorbedingung. Lassen sie sich nicht abgleichen, sichere den lokalen Eintrag offline, bevor du die Serverdaten neu lädst."
+  },
+  "accountsRecordNote": {
+    "en": "Note",
+    "de": "Notiz"
+  },
+  "accountsRecordTask": {
+    "en": "Task",
+    "de": "Aufgabe"
+  },
+  "accountsRecordEvent": {
+    "en": "Event",
+    "de": "Termin"
+  },
+  "accountsRecordContact": {
+    "en": "Contact",
+    "de": "Kontakt"
+  },
+  "accountsRecordOther": {
+    "en": "Record",
+    "de": "Eintrag"
+  },
+  "accountsSavedEditTitle": {
+    "en": "Saved local edit",
+    "de": "Gespeicherte lokale Änderung"
+  },
+  "accountsDeletionIntent": {
+    "en": "Deletion intent; the original record is retained.",
+    "de": "Löschabsicht; der ursprüngliche Eintrag bleibt erhalten."
+  },
+  "accountsReviewEdit": {
+    "en": "Review saved local edit",
+    "de": "Lokale Änderung ansehen"
+  },
+  "accountsKeepOfflineReload": {
+    "en": "Keep offline copy; reload server",
+    "de": "Offline sichern, Server neu laden"
+  },
+  "accountsModuleCalendar": {
+    "en": "Calendar",
+    "de": "Kalender"
+  },
+  "accountsModuleContacts": {
+    "en": "Contacts",
+    "de": "Kontakte"
+  },
+  "accountsModuleTasks": {
+    "en": "Tasks",
+    "de": "Aufgaben"
+  },
+  "accountsModuleNotes": {
+    "en": "Notes",
+    "de": "Notizen"
+  },
+  "accountsModuleNews": {
+    "en": "News",
+    "de": "News"
+  },
+  "accountsAddressBook": {
+    "en": "Address book",
+    "de": "Adressbuch"
+  },
+  "accountsSyncLocal": {
+    "en": "Local data stays on this device.",
+    "de": "Lokale Daten bleiben auf diesem Gerät."
+  },
+  "accountsSyncMailReport": {
+    "en": "Checked {folders, plural, =1{1 folder} other{{folders} folders}}; {messages, plural, =1{1 new envelope} other{{messages} new envelopes}}. Open a message to download its body.",
+    "de": "{folders, plural, =1{1 Ordner} other{{folders} Ordner}} geprüft; {messages, plural, =1{1 neuer Nachrichtenkopf} other{{messages} neue Nachrichtenköpfe}}. Öffne eine Nachricht, um ihren Inhalt zu laden.",
+    "placeholders": {
+      "folders": "int",
+      "messages": "int"
+    }
+  },
+  "accountsSyncConflict": {
+    "en": "{label}: conflict; local changes retained",
+    "de": "{label}: Konflikt; lokale Änderungen bleiben erhalten",
+    "placeholders": {
+      "label": "String"
+    }
+  },
+  "accountsSyncUploadFailed": {
+    "en": "{label}: could not upload; changes retained",
+    "de": "{label}: Hochladen nicht möglich; Änderungen bleiben erhalten",
+    "placeholders": {
+      "label": "String"
+    }
+  },
+  "accountsSyncPulled": {
+    "en": "{label}: {pulled, plural, =1{1 record read} other{{pulled} records read}}, {pushed, plural, =1{1 change sent} other{{pushed} changes sent}}",
+    "de": "{label}: {pulled, plural, =1{1 Eintrag gelesen} other{{pulled} Einträge gelesen}}, {pushed, plural, =1{1 Änderung gesendet} other{{pushed} Änderungen gesendet}}",
+    "placeholders": {
+      "label": "String",
+      "pulled": "int",
+      "pushed": "int"
+    }
+  },
+  "accountsSyncPullFailed": {
+    "en": "{label}: {detail}; cached data retained",
+    "de": "{label}: {detail}; gespeicherte Daten bleiben erhalten",
+    "placeholders": {
+      "label": "String",
+      "detail": "String"
+    }
+  },
+  "accountsSyncCouldNotRefresh": {
+    "en": "could not refresh",
+    "de": "Aktualisieren nicht möglich"
+  },
+  "accountsSyncBackendFailed": {
+    "en": "{label}: could not refresh; cached data retained. Check connection and server app permissions.",
+    "de": "{label}: Aktualisieren nicht möglich; gespeicherte Daten bleiben erhalten. Prüfe die Verbindung und die Berechtigungen der Server-App.",
+    "placeholders": {
+      "label": "String"
+    }
+  },
+  "onboardingCredentialsRequired": {
+    "en": "Username and app password are required.",
+    "de": "Benutzername und App-Passwort sind erforderlich."
+  },
+  "onboardingNoPrincipal": {
+    "en": "No authenticated DAV principal was found.",
+    "de": "Es wurde kein angemeldeter DAV-Principal gefunden."
+  },
+  "onboardingNextcloudFailed": {
+    "en": "Nextcloud connection failed ({kind}).",
+    "de": "Nextcloud-Verbindung fehlgeschlagen ({kind}).",
+    "placeholders": {
+      "kind": "String"
+    }
+  },
+  "onboardingBadUrl": {
+    "en": "Bad URL — please paste your Nextcloud base URL.",
+    "de": "Ungültige URL – füge die Basis-URL deiner Nextcloud ein."
+  },
+  "onboardingSaveFailed": {
+    "en": "Could not save the account. Check secure storage and retry.",
+    "de": "Das Konto konnte nicht gespeichert werden. Prüfe den sicheren Speicher und versuche es erneut."
+  },
+  "onboardingNoAutoconfig": {
+    "en": "No autoconfig found for {domain}.",
+    "de": "Keine automatische Konfiguration für {domain} gefunden.",
+    "placeholders": {
+      "domain": "String"
+    }
+  },
+  "onboardingAddManually": {
+    "en": "Add the server manually from Settings → Accounts.",
+    "de": "Füge den Server manuell unter Einstellungen → Konten hinzu."
+  },
+  "onboardingEmailPasswordRequired": {
+    "en": "Email and password are required.",
+    "de": "E-Mail und Passwort sind erforderlich."
+  },
+  "onboardingUnencrypted": {
+    "en": "Unencrypted mail connections are not supported.",
+    "de": "Unverschlüsselte Mail-Verbindungen werden nicht unterstützt."
+  },
+  "onboardingInvalidServer": {
+    "en": "Invalid mail server or port.",
+    "de": "Ungültiger Mailserver oder Port."
+  },
+  "onboardingSeparateSmtpUser": {
+    "en": "Separate SMTP usernames are not supported yet.",
+    "de": "Eigene SMTP-Benutzernamen werden noch nicht unterstützt."
+  },
+  "onboardingMailFailed": {
+    "en": "Mail connection failed. Check the server settings and app password.",
+    "de": "Mail-Verbindung fehlgeschlagen. Prüfe die Servereinstellungen und das App-Passwort."
+  },
+  "onboardingM365Failed": {
+    "en": "Microsoft 365 sign-in failed. Cached accounts are unchanged.",
+    "de": "Anmeldung bei Microsoft 365 fehlgeschlagen. Gespeicherte Konten bleiben unverändert."
+  },
+  "netHttpsRequired": {
+    "en": "Use an HTTPS URL without embedded credentials or a fragment.",
+    "de": "Verwende eine HTTPS-URL ohne eingebettete Zugangsdaten und ohne Fragment."
+  },
+  "netBaseUrlQuery": {
+    "en": "The server base URL cannot contain a query.",
+    "de": "Die Basis-URL des Servers darf keine Abfrage enthalten."
+  },
+  "netDifferentOrigin": {
+    "en": "The server returned a different origin.",
+    "de": "Der Server hat einen anderen Ursprung geliefert."
+  },
+  "netDtdUnsupported": {
+    "en": "DTD and entity declarations are not supported.",
+    "de": "DTD- und Entity-Deklarationen werden nicht unterstützt."
+  },
+  "netErrorOffline": {
+    "en": "offline",
+    "de": "offline"
+  },
+  "netErrorUnauthorized": {
+    "en": "unauthorized",
+    "de": "nicht angemeldet"
+  },
+  "netErrorForbidden": {
+    "en": "forbidden",
+    "de": "Zugriff verweigert"
+  },
+  "netErrorNotFound": {
+    "en": "not found",
+    "de": "nicht gefunden"
+  },
+  "netErrorPrecondition": {
+    "en": "etag mismatch",
+    "de": "ETag stimmt nicht überein"
+  },
+  "netErrorConflict": {
+    "en": "conflict",
+    "de": "Konflikt"
+  },
+  "netErrorThrottled": {
+    "en": "throttled",
+    "de": "gedrosselt"
+  },
+  "netErrorServer": {
+    "en": "server error",
+    "de": "Serverfehler"
+  },
+  "netErrorParse": {
+    "en": "parse failure: {detail}",
+    "de": "Antwort nicht lesbar: {detail}",
+    "placeholders": {
+      "detail": "String"
+    }
+  },
+  "netErrorUnknown": {
+    "en": "unknown network error",
+    "de": "unbekannter Netzwerkfehler"
+  }
+}

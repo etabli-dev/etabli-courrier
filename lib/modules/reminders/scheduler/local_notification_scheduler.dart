@@ -5,6 +5,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import '../../../l10n/l10n.dart';
 import 'notification_scheduler.dart';
 
 // Real scheduler backed by flutter_local_notifications.
@@ -27,9 +28,12 @@ class LocalNotificationScheduler implements NotificationScheduler {
   final FlutterLocalNotificationsPlugin _plugin;
 
   static const String _androidChannelId = 'courrier_reminders';
-  static const String _androidChannelName = 'Reminders';
-  static const String _androidChannelDescription =
-      'Event reminders and task due-dates from courrier.';
+
+  // Shown in the Android notification settings; re-sent in the current
+  // language whenever [initialize] recreates the channel.
+  static String get _androidChannelName => L10n.current.remindersChannelName;
+  static String get _androidChannelDescription =>
+      L10n.current.remindersChannelDescription;
 
   @override
   Future<void> initialize() async {
@@ -54,7 +58,7 @@ class LocalNotificationScheduler implements NotificationScheduler {
           AndroidFlutterLocalNotificationsPlugin
         >();
     await androidImpl?.createNotificationChannel(
-      const AndroidNotificationChannel(
+      AndroidNotificationChannel(
         _androidChannelId,
         _androidChannelName,
         description: _androidChannelDescription,

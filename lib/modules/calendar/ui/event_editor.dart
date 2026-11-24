@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 import '../data/event_draft.dart';
 import '../data/event_reminder_spec.dart';
 
@@ -34,9 +36,6 @@ class _EventEditorState extends State<EventEditor> {
   late final TextEditingController _attendees;
   late List<EventReminderSpec> _reminders;
 
-  final DateFormat _date = DateFormat.yMd();
-  final DateFormat _time = DateFormat.Hm();
-
   @override
   void initState() {
     super.initState();
@@ -63,6 +62,9 @@ class _EventEditorState extends State<EventEditor> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final dateFmt = DateFormat.yMd(l10n.dateLocale);
+    final timeFmt = DateFormat.Hm(l10n.dateLocale);
     return Padding(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       child: SingleChildScrollView(
@@ -71,34 +73,34 @@ class _EventEditorState extends State<EventEditor> {
           children: [
             TextField(
               controller: _summary,
-              decoration: const InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: l10n.calendarEventTitle),
             ),
             const SizedBox(height: CourrierTokens.space4),
             Row(
               children: [
                 Expanded(
                   child: _DateField(
-                    label: 'Starts',
+                    label: l10n.calendarEventStarts,
                     value: _draft.start,
                     allDay: _draft.allDay,
                     onChanged: (next) => setState(() {
                       _draft = _draft.copyWith(start: next);
                     }),
-                    dateFmt: _date,
-                    timeFmt: _time,
+                    dateFmt: dateFmt,
+                    timeFmt: timeFmt,
                   ),
                 ),
                 const SizedBox(width: CourrierTokens.space3),
                 Expanded(
                   child: _DateField(
-                    label: 'Ends',
+                    label: l10n.calendarEventEnds,
                     value: _draft.end,
                     allDay: _draft.allDay,
                     onChanged: (next) => setState(() {
                       _draft = _draft.copyWith(end: next);
                     }),
-                    dateFmt: _date,
-                    timeFmt: _time,
+                    dateFmt: dateFmt,
+                    timeFmt: timeFmt,
                   ),
                 ),
               ],
@@ -112,38 +114,44 @@ class _EventEditorState extends State<EventEditor> {
                 _draft = _draft.copyWith(allDay: v);
               }),
               title: Text(
-                'All-day',
+                l10n.calendarEventAllDay,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ),
             TextField(
               controller: _location,
-              decoration: const InputDecoration(labelText: 'Location'),
+              decoration: InputDecoration(
+                labelText: l10n.calendarEventLocation,
+              ),
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _description,
-              decoration: const InputDecoration(labelText: 'Description'),
+              decoration: InputDecoration(
+                labelText: l10n.calendarEventDescription,
+              ),
               maxLines: 3,
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _rrule,
-              decoration: const InputDecoration(
-                labelText: 'Recurrence (RRULE)',
+              decoration: InputDecoration(
+                labelText: l10n.calendarEventRecurrence,
                 hintText: 'FREQ=WEEKLY;BYDAY=MO',
               ),
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _organizer,
-              decoration: const InputDecoration(labelText: 'Organizer'),
+              decoration: InputDecoration(
+                labelText: l10n.calendarEventOrganizer,
+              ),
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _attendees,
-              decoration: const InputDecoration(
-                labelText: 'Attendees (one per line)',
+              decoration: InputDecoration(
+                labelText: l10n.calendarEventAttendees,
               ),
               maxLines: 3,
             ),
@@ -167,12 +175,12 @@ class _EventEditorState extends State<EventEditor> {
                 if (widget.onCancel != null)
                   TextButton(
                     onPressed: widget.onCancel,
-                    child: const Text('Cancel'),
+                    child: Text(l10n.commonCancel),
                   ),
                 const SizedBox(width: CourrierTokens.space3),
                 FilledButton(
                   onPressed: _onSavePressed,
-                  child: const Text('Save'),
+                  child: Text(l10n.commonSave),
                 ),
               ],
             ),
@@ -281,17 +289,21 @@ class _RemindersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text('Reminders', style: theme.textTheme.bodyLarge),
+            Text(l10n.calendarEventReminders, style: theme.textTheme.bodyLarge),
             const Spacer(),
-            TextButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add reminder'),
+            Tooltip(
+              message: l10n.calendarAddReminderTooltip,
+              child: TextButton.icon(
+                onPressed: onAdd,
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l10n.calendarAddReminder),
+              ),
             ),
           ],
         ),
@@ -302,14 +314,16 @@ class _RemindersSection extends StatelessWidget {
             leading: const Icon(Icons.notifications_none),
             title: Text(
               reminders[i].minutesBeforeStart != null
-                  ? '${reminders[i].minutesBeforeStart} min before'
-                  : 'At a specific time',
+                  ? l10n.calendarReminderMinutesBefore(
+                      reminders[i].minutesBeforeStart!,
+                    )
+                  : l10n.calendarReminderAtTime,
               style: theme.textTheme.bodyMedium,
             ),
             trailing: IconButton(
               icon: const Icon(Icons.close, size: 18),
               onPressed: () => onRemove(i),
-              tooltip: 'Remove reminder',
+              tooltip: l10n.calendarRemoveReminder,
             ),
           ),
       ],

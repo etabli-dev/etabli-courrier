@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/db/database.dart';
+import '../../l10n/l10n.dart';
 import 'data/task_repository.dart';
 import 'ui/task_list_view.dart';
 
@@ -36,7 +37,7 @@ class _TasksScreenState extends State<TasksScreen> {
           return Center(
             child: TextButton(
               onPressed: _reload,
-              child: const Text('Could not load tasks. Retry'),
+              child: Text(context.l10n.tasksLoadFailedRetry),
             ),
           );
         }
@@ -56,10 +57,8 @@ class _TasksScreenState extends State<TasksScreen> {
                   } catch (_) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Could not complete the task. Your saved task is retained.',
-                          ),
+                        SnackBar(
+                          content: Text(context.l10n.tasksCompleteFailed),
                         ),
                       );
                     }

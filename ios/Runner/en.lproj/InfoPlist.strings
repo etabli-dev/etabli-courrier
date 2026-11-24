@@ -1,0 +1,2 @@
+/* The reason iOS shows in the Face ID / passcode prompt (Info.plist NSFaceIDUsageDescription). */
+"NSFaceIDUsageDescription" = "Authenticate to unlock courrier and protected notes.";

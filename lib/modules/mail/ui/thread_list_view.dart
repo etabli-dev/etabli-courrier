@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 import '../data/mail_repository.dart';
 
 class ThreadListView extends StatelessWidget {
-  ThreadListView({required this.threads, this.onThreadTap, super.key});
+  const ThreadListView({required this.threads, this.onThreadTap, super.key});
 
   final List<MailThread> threads;
   final ValueChanged<MailThread>? onThreadTap;
-
-  final DateFormat _date = DateFormat.MMMd();
 
   @override
   Widget build(BuildContext context) {
     if (threads.isEmpty) {
       return const _Empty();
     }
+    final date = DateFormat.MMMd(context.l10n.dateLocale);
     return ListView.separated(
       padding: const EdgeInsets.symmetric(
         horizontal: CourrierTokens.space5,
@@ -28,7 +29,7 @@ class ThreadListView extends StatelessWidget {
         final thread = threads[i];
         return _ThreadTile(
           thread: thread,
-          dateLabel: _date.format(thread.lastReceivedAt),
+          dateLabel: date.format(thread.lastReceivedAt),
           onTap: onThreadTap == null ? null : () => onThreadTap!(thread),
         );
       },
@@ -50,6 +51,7 @@ class _ThreadTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final latest = thread.latest;
     final unread = !latest.seen;
     final count = thread.messages.length;
@@ -68,7 +70,7 @@ class _ThreadTile extends StatelessWidget {
                   top: 6,
                   right: CourrierTokens.space2,
                 ),
-                color: CourrierTokens.accent,
+                color: Theme.of(context).colorScheme.primary,
               ),
             Expanded(
               child: Column(
@@ -78,7 +80,7 @@ class _ThreadTile extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          latest.fromAddress ?? '(unknown sender)',
+                          latest.fromAddress ?? l10n.mailUnknownSender,
                           style: theme.textTheme.titleMedium,
                         ),
                       ),
@@ -97,7 +99,7 @@ class _ThreadTile extends StatelessWidget {
                   ),
                   const SizedBox(height: CourrierTokens.space1),
                   Text(
-                    latest.subject ?? '(no subject)',
+                    latest.subject ?? l10n.mailNoSubject,
                     style: theme.textTheme.bodyMedium,
                   ),
                   if (latest.snippet != null) ...[
@@ -128,7 +130,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No messages.',
+          context.l10n.mailNoMessages,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),

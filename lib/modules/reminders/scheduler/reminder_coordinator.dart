@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../core/db/database.dart';
+import '../../../l10n/l10n.dart';
 import 'notification_scheduler.dart';
 import 'reminder_rearm_service.dart';
 
@@ -24,7 +25,12 @@ class ReminderCoordinator extends ChangeNotifier with WidgetsBindingObserver {
   final CourrierDatabase db;
   final NotificationScheduler scheduler;
   final ReminderRearmService service;
-  String? error;
+
+  /// The last refresh failure, in the app's current language; null after a
+  /// successful refresh.
+  String? get error =>
+      _refreshFailed ? L10n.current.remindersRefreshFailed : null;
+  bool _refreshFailed = false;
   StreamSubscription<Set<TableUpdate>>? _changes;
   Timer? _debounce;
   Future<void>? _inFlight;
@@ -76,10 +82,9 @@ class ReminderCoordinator extends ChangeNotifier with WidgetsBindingObserver {
           if (_disposed) return;
           await service.rearmAll();
         }
-        error = null;
+        _refreshFailed = false;
       } catch (_) {
-        error =
-            'Reminders could not refresh. Open Reminders and choose Reload.';
+        _refreshFailed = true;
       }
       if (!_disposed) notifyListeners();
     } while (_repeat && !_disposed);

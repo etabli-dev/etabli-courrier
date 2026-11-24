@@ -1,5 +1,6 @@
 import 'package:flutter_appauth/flutter_appauth.dart';
 
+import '../../l10n/l10n.dart';
 import 'oauth_provider.dart';
 
 // flutter_appauth-backed OAuthProvider. NEVER used in `flutter test` — the
@@ -32,13 +33,13 @@ class AppAuthOAuthProvider implements OAuthProvider {
     } on FlutterAppAuthUserCancelledException catch (e) {
       throw OAuthError(
         kind: 'access_denied',
-        message: 'User cancelled the sign-in flow.',
+        message: L10n.current.oauthSignInCancelled,
         cause: e,
       );
     } on FlutterAppAuthPlatformException catch (e) {
       throw OAuthError(
         kind: _classifyAppAuthError(e),
-        message: e.message ?? 'AppAuth platform error',
+        message: e.message ?? L10n.current.oauthPlatformError,
         cause: e,
       );
     }
@@ -79,7 +80,7 @@ class AppAuthOAuthProvider implements OAuthProvider {
     } on FlutterAppAuthPlatformException catch (e) {
       throw OAuthError(
         kind: _classifyAppAuthError(e),
-        message: e.message ?? 'AppAuth refresh error',
+        message: e.message ?? L10n.current.oauthRefreshError,
         cause: e,
       );
     }
@@ -88,9 +89,9 @@ class AppAuthOAuthProvider implements OAuthProvider {
   AuthBundle _bundleFromResponse(AuthorizationTokenResponse response) {
     final accessToken = response.accessToken;
     if (accessToken == null) {
-      throw const OAuthError(
+      throw OAuthError(
         kind: 'invalid_request',
-        message: 'AppAuth returned no access token.',
+        message: L10n.current.oauthNoAccessToken,
       );
     }
     return AuthBundle(
@@ -109,9 +110,9 @@ class AppAuthOAuthProvider implements OAuthProvider {
   }) {
     final accessToken = response.accessToken;
     if (accessToken == null) {
-      throw const OAuthError(
+      throw OAuthError(
         kind: 'invalid_grant',
-        message: 'AppAuth refresh returned no access token.',
+        message: L10n.current.oauthRefreshNoAccessToken,
       );
     }
     return AuthBundle(

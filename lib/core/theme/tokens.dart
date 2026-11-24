@@ -1,30 +1,41 @@
-// THE ONLY FILE IN THE TREE THAT MAY CONTAIN HEX COLOR LITERALS.
-// Do not add hex color literals anywhere else; use these tokens.
+// THE ONLY FILES IN THE TREE THAT MAY CONTAIN HEX COLOR LITERALS: this one and appearance.dart.
+// Do not add hex color literals anywhere else; use these tokens or the theme.
 
 import 'package:flutter/material.dart';
+
+import 'appearance.dart';
 
 @immutable
 class CourrierTokens {
   const CourrierTokens._();
 
-  // The single accent (Établi green). Do not introduce a second accent.
-  static const Color accent = Color(0xFF28A745);
+  // Hugo Coder neutrals (appearance.dart, shared with every Établi app). The accent is the user's choice:
+  // widgets read `Theme.of(context).colorScheme.primary`, never a fixed colour.
+  static final Color lightBackground = CoderPalette.color(
+    CoderPalette.backgroundLight,
+  );
+  static final Color lightSurface = CoderPalette.color(
+    CoderPalette.surfaceLight,
+  );
+  static final Color lightBorder = CoderPalette.color(CoderPalette.borderLight);
+  static final Color lightTextPrimary = CoderPalette.color(
+    CoderPalette.foregroundLight,
+  );
+  static final Color lightTextSecondary = CoderPalette.color(
+    CoderPalette.mutedLight,
+  );
 
-  // Light palette — minimal, whitespace-heavy, borders over shadows.
-  static const Color lightBackground = Color(0xFFFFFFFF);
-  static const Color lightSurface = Color(0xFFFAFAFA);
-  static const Color lightBorder = Color(0xFFE5E5E5);
-  static const Color lightTextPrimary = Color(0xFF111111);
-  static const Color lightTextSecondary = Color(0xFF555555);
-  static const Color lightTextMuted = Color(0xFF888888);
-
-  // Dark palette.
-  static const Color darkBackground = Color(0xFF0E0E0E);
-  static const Color darkSurface = Color(0xFF151515);
-  static const Color darkBorder = Color(0xFF262626);
-  static const Color darkTextPrimary = Color(0xFFF2F2F2);
-  static const Color darkTextSecondary = Color(0xFFB5B5B5);
-  static const Color darkTextMuted = Color(0xFF808080);
+  static final Color darkBackground = CoderPalette.color(
+    CoderPalette.backgroundDark,
+  );
+  static final Color darkSurface = CoderPalette.color(CoderPalette.surfaceDark);
+  static final Color darkBorder = CoderPalette.color(CoderPalette.borderDark);
+  static final Color darkTextPrimary = CoderPalette.color(
+    CoderPalette.foregroundDark,
+  );
+  static final Color darkTextSecondary = CoderPalette.color(
+    CoderPalette.mutedDark,
+  );
 
   // Spacing scale (4pt grid).
   static const double space1 = 4;
@@ -39,7 +50,6 @@ class CourrierTokens {
   static const double borderWidth = 1;
   static const double borderRadius = 2;
 
-  // Type — monospaced per Coder/Hugo aesthetic. Fonts ship system-supplied at M0;
-  // a bundled mono face can be added at M11 if needed.
+  // Type — monospaced per Coder/Hugo aesthetic, system-supplied.
   static const String monoFontFamily = 'Menlo';
 }

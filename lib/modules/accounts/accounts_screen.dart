@@ -5,6 +5,8 @@ import '../../core/auth/oauth_token_store.dart';
 import '../../core/config/secrets_store.dart';
 import '../../core/db/database.dart';
 import '../../core/sync/account_services.dart';
+import '../../core/sync/conflict_recovery.dart';
+import '../../l10n/l10n.dart';
 import '../mail/autoconfig/autoconfig_models.dart';
 import '../onboarding/onboarding_controller.dart';
 import '../onboarding/onboarding_state.dart';
@@ -35,10 +37,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
       if (mounted) setState(() => _reports[account.id] = report);
     } catch (_) {
       if (mounted) {
-        setState(
-          () => _reports[account.id] =
-              'Could not sync. Check the network and reconnect with current credentials. Cached data is retained.',
-        );
+        setState(() => _reports[account.id] = context.l10n.accountsSyncFailed);
       }
     } finally {
       if (mounted) setState(() => _busy.remove(account.id));
@@ -62,23 +61,35 @@ class _AccountsScreenState extends State<AccountsScreen> {
       await widget.secrets.deleteAccount(account.id);
       if (mounted) {
         setState(
-          () => _reports[account.id] =
-              'Disconnected. Cached data remains on this device. Add the same server and username to reconnect.',
+          () => _reports[account.id] = context.l10n.accountsDisconnected,
         );
       }
     } catch (_) {
       if (mounted) {
         setState(
-          () => _reports[account.id] =
-              'Could not finish disconnecting. Please retry.',
+          () => _reports[account.id] = context.l10n.accountsDisconnectFailed,
         );
       }
     }
   }
 
+  /// The stored names of app-created local accounts are English lookup keys.
+  String _displayName(Account account, AppLocalizations l10n) =>
+      account.kind == 'local' &&
+          account.displayName == preservedConflictsAccountName
+      ? l10n.accountsPreservedConflicts
+      : account.displayName;
+
+  String _kindLabel(Account account, AppLocalizations l10n) {
+    final kind = account.kind == 'local'
+        ? l10n.accountsKindLocal
+        : account.kind;
+    return account.enabled ? kind : l10n.accountsKindDisconnected(kind);
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Accounts')),
+    appBar: AppBar(title: Text(context.l10n.shellAccounts)),
     body: ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -89,26 +100,25 @@ class _AccountsScreenState extends State<AccountsScreen> {
             FilledButton.icon(
               onPressed: () => _configure('nextcloud'),
               icon: const Icon(Icons.cloud_outlined),
-              label: const Text('Connect Nextcloud'),
+              label: Text(context.l10n.accountsConnectNextcloud),
             ),
             FilledButton.tonalIcon(
               onPressed: () => _configure('imap'),
               icon: const Icon(Icons.mail_outline),
-              label: const Text('Connect IMAP'),
+              label: Text(context.l10n.accountsConnectImap),
             ),
           ],
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: Text(
-            'Sync runs when you tap Refresh. Mail downloads the latest 100 envelopes per folder; open a message to cache its body. Nextcloud Notes and News require their server apps. News read state is local. Microsoft 365 OAuth is not enabled in this build; its tenant registration and device sign-in still require validation.',
-          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Text(context.l10n.accountsSyncInfo),
         ),
         StreamBuilder<List<Account>>(
           stream: _accounts,
           builder: (context, snapshot) {
+            final l10n = context.l10n;
             if (snapshot.hasError) {
-              return const Text('Could not load accounts.');
+              return Text(l10n.accountsLoadFailed);
             }
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -123,12 +133,10 @@ class _AccountsScreenState extends State<AccountsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            account.displayName,
+                            _displayName(account, l10n),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
-                          Text(
-                            '${account.kind}${account.enabled ? '' : ' · disconnected'}',
-                          ),
+                          Text(_kindLabel(account, l10n)),
                           if (_reports[account.id] case final String report)
                             SelectableText(report),
                           if (account.kind != 'local')
@@ -149,26 +157,30 @@ class _AccountsScreenState extends State<AccountsScreen> {
                                           ),
                                         )
                                       : const Icon(Icons.refresh),
-                                  label: const Text('Refresh'),
+                                  label: Text(l10n.accountsRefresh),
                                 ),
-                                TextButton(
-                                  onPressed: _busy.contains(account.id)
-                                      ? null
-                                      : () => Navigator.of(context).push(
-                                          MaterialPageRoute<void>(
-                                            builder: (_) => PendingEditsScreen(
-                                              db: widget.db,
-                                              accountId: account.id,
+                                Tooltip(
+                                  message: l10n.accountsPendingEditsTooltip,
+                                  child: TextButton(
+                                    onPressed: _busy.contains(account.id)
+                                        ? null
+                                        : () => Navigator.of(context).push(
+                                            MaterialPageRoute<void>(
+                                              builder: (_) =>
+                                                  PendingEditsScreen(
+                                                    db: widget.db,
+                                                    accountId: account.id,
+                                                  ),
                                             ),
                                           ),
-                                        ),
-                                  child: const Text('Pending edits / recovery'),
+                                    child: Text(l10n.accountsPendingEdits),
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: _busy.contains(account.id)
                                       ? null
                                       : () => _disconnect(account),
-                                  child: const Text('Disconnect; keep cache'),
+                                  child: Text(l10n.accountsDisconnect),
                                 ),
                               ],
                             ),
@@ -275,14 +287,11 @@ class _AccountFormState extends State<_AccountForm> {
       setState(
         () => _message = outcome is StepFailed
             ? [outcome.message, outcome.detail].whereType<String>().join('\n')
-            : 'Connection did not finish.',
+            : context.l10n.accountsConnectionIncomplete,
       );
     } catch (_) {
       if (mounted) {
-        setState(
-          () =>
-              _message = 'Could not connect. Check the settings and try again.',
-        );
+        setState(() => _message = context.l10n.accountsConnectFailed);
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -310,66 +319,75 @@ class _AccountFormState extends State<_AccountForm> {
     ),
   );
   @override
-  Widget build(BuildContext context) => PopScope(
-    canPop: !_busy,
-    child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.kind == 'nextcloud' ? 'Connect Nextcloud' : 'Connect IMAP',
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return PopScope(
+      canPop: !_busy,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            widget.kind == 'nextcloud'
+                ? l10n.accountsConnectNextcloud
+                : l10n.accountsConnectImap,
+          ),
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            if (widget.kind == 'imap')
+              SwitchListTile(
+                title: Text(l10n.accountsManualSettings),
+                value: _manual,
+                onChanged: _busy ? null : (v) => setState(() => _manual = v),
+              ),
+            if (widget.kind == 'nextcloud' || _manual)
+              _field(
+                _server,
+                widget.kind == 'nextcloud'
+                    ? l10n.accountsServerUrl
+                    : l10n.accountsImapHost,
+                helper: widget.kind == 'nextcloud'
+                    ? l10n.accountsServerUrlHelper
+                    : null,
+              ),
+            _field(
+              _username,
+              widget.kind == 'nextcloud'
+                  ? l10n.accountsUsername
+                  : l10n.accountsEmailLogin,
+            ),
+            _field(_password, l10n.accountsAppPassword, secret: true),
+            if (_manual && widget.kind == 'imap') ...[
+              _field(_port, l10n.accountsImapPort),
+              SwitchListTile(
+                title: Text(l10n.accountsImapStartTls),
+                value: _startTls,
+                onChanged: _busy
+                    ? null
+                    : (v) => setState(() {
+                        _startTls = v;
+                        _port.text = v ? '143' : '993';
+                      }),
+              ),
+              _field(_smtp, l10n.accountsSmtpHost),
+              _field(_smtpPort, l10n.accountsSmtpPort),
+            ],
+            Text(l10n.accountsCredentialsNote),
+            if (_message != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(_message!),
+              ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: _busy ? null : _connect,
+              child: Text(
+                _busy ? l10n.accountsConnecting : l10n.accountsConnect,
+              ),
+            ),
+          ],
         ),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          if (widget.kind == 'imap')
-            SwitchListTile(
-              title: const Text('Enter server settings manually'),
-              value: _manual,
-              onChanged: _busy ? null : (v) => setState(() => _manual = v),
-            ),
-          if (widget.kind == 'nextcloud' || _manual)
-            _field(
-              _server,
-              widget.kind == 'nextcloud' ? 'HTTPS server URL' : 'IMAP hostname',
-              helper: widget.kind == 'nextcloud'
-                  ? 'Include the installation subfolder, if any.'
-                  : null,
-            ),
-          _field(
-            _username,
-            widget.kind == 'nextcloud' ? 'Username' : 'Email / login username',
-          ),
-          _field(_password, 'App password', secret: true),
-          if (_manual && widget.kind == 'imap') ...[
-            _field(_port, 'IMAP port'),
-            SwitchListTile(
-              title: const Text('IMAP STARTTLS (usually port 143)'),
-              value: _startTls,
-              onChanged: _busy
-                  ? null
-                  : (v) => setState(() {
-                      _startTls = v;
-                      _port.text = v ? '143' : '993';
-                    }),
-            ),
-            _field(_smtp, 'SMTP hostname (saved for future sending)'),
-            _field(_smtpPort, 'SMTP port'),
-          ],
-          const Text(
-            'Credentials are kept in platform secure storage. This screen verifies incoming access. Sending and background synchronization are not available in the current production UI.',
-          ),
-          if (_message != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Text(_message!),
-            ),
-          const SizedBox(height: 16),
-          FilledButton(
-            onPressed: _busy ? null : _connect,
-            child: Text(_busy ? 'Connecting…' : 'Connect'),
-          ),
-        ],
-      ),
-    ),
-  );
+    );
+  }
 }

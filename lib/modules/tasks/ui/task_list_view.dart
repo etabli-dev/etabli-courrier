@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 
 class TaskListView extends StatelessWidget {
-  TaskListView({
+  const TaskListView({
     required this.tasks,
     this.onToggleComplete,
     this.onTaskTap,
@@ -16,13 +18,12 @@ class TaskListView extends StatelessWidget {
   final ValueChanged<TodoItem>? onToggleComplete;
   final ValueChanged<TodoItem>? onTaskTap;
 
-  final DateFormat _due = DateFormat.MMMEd();
-
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
       return _Empty();
     }
+    final due = DateFormat.MMMEd(context.l10n.dateLocale);
     final rows = _flattenWithDepth();
     return ListView.separated(
       padding: const EdgeInsets.symmetric(
@@ -36,7 +37,7 @@ class TaskListView extends StatelessWidget {
         return _TaskRow(
           task: row.task,
           depth: row.depth,
-          dueLabel: row.task.due == null ? null : _due.format(row.task.due!),
+          dueLabel: row.task.due == null ? null : due.format(row.task.due!),
           onToggleComplete: onToggleComplete == null
               ? null
               : () => onToggleComplete!(row.task),
@@ -122,15 +123,15 @@ class _TaskRow extends StatelessWidget {
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: complete
-                        ? CourrierTokens.accent
+                        ? Theme.of(context).colorScheme.primary
                         : theme.dividerTheme.color!,
                   ),
                 ),
                 child: complete
-                    ? const Icon(
+                    ? Icon(
                         Icons.check,
                         size: 14,
-                        color: CourrierTokens.accent,
+                        color: Theme.of(context).colorScheme.primary,
                       )
                     : null,
               ),
@@ -141,7 +142,7 @@ class _TaskRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.summary ?? '(no summary)',
+                    task.summary ?? context.l10n.tasksNoSummary,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       decoration: complete ? TextDecoration.lineThrough : null,
                     ),
@@ -165,7 +166,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No tasks yet.',
+          context.l10n.tasksEmpty,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),

@@ -1,0 +1,425 @@
+{
+  "calendarAgenda": {
+    "en": "Agenda",
+    "de": "Agenda"
+  },
+  "calendarMonth": {
+    "en": "Month",
+    "de": "Monat"
+  },
+  "calendarNoTitle": {
+    "en": "(no title)",
+    "de": "(ohne Titel)"
+  },
+  "calendarNoEvents": {
+    "en": "No events in this range.",
+    "de": "Keine Termine in diesem Zeitraum."
+  },
+  "calendarDeleteRecurringTitle": {
+    "en": "Delete recurring event",
+    "de": "Serientermin löschen"
+  },
+  "calendarDeleteThisOccurrence": {
+    "en": "This occurrence only",
+    "de": "Nur diesen Termin"
+  },
+  "calendarDeleteThisAndFollowing": {
+    "en": "This and following occurrences",
+    "de": "Ab diesem Termin"
+  },
+  "calendarDeleteAllOccurrences": {
+    "en": "All occurrences",
+    "de": "Alle Termine der Serie"
+  },
+  "calendarEventTitle": {
+    "en": "Title",
+    "de": "Titel"
+  },
+  "calendarEventStarts": {
+    "en": "Starts",
+    "de": "Beginn"
+  },
+  "calendarEventEnds": {
+    "en": "Ends",
+    "de": "Ende"
+  },
+  "calendarEventAllDay": {
+    "en": "All-day",
+    "de": "Ganztägig"
+  },
+  "calendarEventLocation": {
+    "en": "Location",
+    "de": "Ort"
+  },
+  "calendarEventDescription": {
+    "en": "Description",
+    "de": "Beschreibung"
+  },
+  "calendarEventRecurrence": {
+    "en": "Recurrence (RRULE)",
+    "de": "Wiederholung (RRULE)"
+  },
+  "calendarEventOrganizer": {
+    "en": "Organizer",
+    "de": "Organisator"
+  },
+  "calendarEventAttendees": {
+    "en": "Attendees (one per line)",
+    "de": "Teilnehmer (einer pro Zeile)"
+  },
+  "calendarEventReminders": {
+    "en": "Reminders",
+    "de": "Erinnerungen"
+  },
+  "calendarAddReminder": {
+    "en": "Add reminder",
+    "de": "Hinzufügen",
+    "description": "Short button label next to the Reminders heading; the full wording is calendarAddReminderTooltip."
+  },
+  "calendarAddReminderTooltip": {
+    "en": "Add reminder",
+    "de": "Erinnerung hinzufügen"
+  },
+  "calendarReminderMinutesBefore": {
+    "en": "{minutes} min before",
+    "de": "{minutes} Min. vorher",
+    "placeholders": {
+      "minutes": "int"
+    }
+  },
+  "calendarReminderAtTime": {
+    "en": "At a specific time",
+    "de": "Zu einem bestimmten Zeitpunkt"
+  },
+  "calendarRemoveReminder": {
+    "en": "Remove reminder",
+    "de": "Erinnerung entfernen"
+  },
+  "contactsBackToList": {
+    "en": "Back to contacts list",
+    "de": "Zurück zur Kontaktliste"
+  },
+  "contactsNoName": {
+    "en": "(no name)",
+    "de": "(ohne Namen)"
+  },
+  "contactsEmail": {
+    "en": "Email",
+    "de": "E-Mail"
+  },
+  "contactsPhone": {
+    "en": "Phone",
+    "de": "Telefon"
+  },
+  "contactsAddress": {
+    "en": "Address",
+    "de": "Adresse"
+  },
+  "contactsDisplayName": {
+    "en": "Display name",
+    "de": "Anzeigename"
+  },
+  "contactsGivenName": {
+    "en": "Given name",
+    "de": "Vorname"
+  },
+  "contactsFamilyName": {
+    "en": "Family name",
+    "de": "Nachname"
+  },
+  "contactsOrganisation": {
+    "en": "Organisation",
+    "de": "Organisation"
+  },
+  "contactsEmails": {
+    "en": "Emails (one per line)",
+    "de": "E-Mail-Adressen (eine pro Zeile)"
+  },
+  "contactsPhones": {
+    "en": "Phones (one per line)",
+    "de": "Telefonnummern (eine pro Zeile)"
+  },
+  "contactsNote": {
+    "en": "Note",
+    "de": "Notiz"
+  },
+  "contactsGroups": {
+    "en": "Groups",
+    "de": "Gruppen"
+  },
+  "contactsEmpty": {
+    "en": "No contacts yet.",
+    "de": "Noch keine Kontakte."
+  },
+  "tasksLoadFailedRetry": {
+    "en": "Could not load tasks. Retry",
+    "de": "Laden fehlgeschlagen. Erneut versuchen"
+  },
+  "tasksCompleteFailed": {
+    "en": "Could not complete the task. Your saved task is retained.",
+    "de": "Die Aufgabe konnte nicht als erledigt markiert werden. Deine gespeicherte Aufgabe bleibt erhalten."
+  },
+  "tasksNoSummary": {
+    "en": "(no summary)",
+    "de": "(ohne Titel)"
+  },
+  "tasksEmpty": {
+    "en": "No tasks yet.",
+    "de": "Noch keine Aufgaben."
+  },
+  "remindersUpcoming": {
+    "en": "Upcoming reminders",
+    "de": "Anstehende Erinnerungen"
+  },
+  "remindersReload": {
+    "en": "Reload",
+    "de": "Neu laden"
+  },
+  "remindersScheduleLimit": {
+    "en": "{count, plural, =1{Notifications cover the next reminder. Open courrier regularly to schedule later ones.} other{Notifications cover the next {count} reminders. Open courrier regularly to schedule later ones.}}",
+    "de": "{count, plural, =1{Benachrichtigungen decken die nächste Erinnerung ab. Öffne courrier regelmäßig, damit auch spätere eingeplant werden.} other{Benachrichtigungen decken die nächsten {count} Erinnerungen ab. Öffne courrier regelmäßig, damit auch spätere eingeplant werden.}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "remindersNothingScheduled": {
+    "en": "Nothing scheduled.",
+    "de": "Nichts geplant."
+  },
+  "remindersPermissionTitle": {
+    "en": "Notification permission required",
+    "de": "Berechtigung für Benachrichtigungen nötig"
+  },
+  "remindersPermissionBody": {
+    "en": "courrier needs permission to send reminders for calendar events and tasks.",
+    "de": "courrier braucht deine Erlaubnis, um Erinnerungen für Termine und Aufgaben zu senden."
+  },
+  "remindersAllowNotifications": {
+    "en": "Allow notifications",
+    "de": "Benachrichtigungen erlauben"
+  },
+  "remindersUnavailableTitle": {
+    "en": "Reminder notifications unavailable",
+    "de": "Benachrichtigungen für Erinnerungen nicht verfügbar"
+  },
+  "remindersWeekly": {
+    "en": "weekly",
+    "de": "wöchentlich"
+  },
+  "remindersLoadFailed": {
+    "en": "Could not load reminders. Please try Reload.",
+    "de": "Erinnerungen konnten nicht geladen werden. Versuche es mit „Neu laden“."
+  },
+  "remindersEnableFailed": {
+    "en": "Could not enable reminders. Check notification permissions.",
+    "de": "Erinnerungen konnten nicht aktiviert werden. Prüfe die Berechtigung für Benachrichtigungen."
+  },
+  "remindersReloadFailed": {
+    "en": "Reload failed. Existing reminders have been retained where possible.",
+    "de": "Neu laden fehlgeschlagen. Vorhandene Erinnerungen bleiben nach Möglichkeit erhalten."
+  },
+  "remindersRefreshFailed": {
+    "en": "Reminders could not refresh. Open Reminders and choose Reload.",
+    "de": "Erinnerungen konnten nicht aktualisiert werden. Öffne „Erinnerungen“ und wähle „Neu laden“."
+  },
+  "remindersNotificationFallback": {
+    "en": "Reminder",
+    "de": "Erinnerung",
+    "description": "Notification title or body when the event has no title, location or label."
+  },
+  "remindersTaskDueTitle": {
+    "en": "Task due",
+    "de": "Aufgabe fällig",
+    "description": "Notification title for a task without a title."
+  },
+  "remindersTaskDueBody": {
+    "en": "Task is due now.",
+    "de": "Die Aufgabe ist jetzt fällig.",
+    "description": "Notification body for a task without a description."
+  },
+  "remindersChannelName": {
+    "en": "Reminders",
+    "de": "Erinnerungen",
+    "description": "Android notification channel name, shown in the system notification settings."
+  },
+  "remindersChannelDescription": {
+    "en": "Event reminders and task due-dates from courrier.",
+    "de": "Terminerinnerungen und fällige Aufgaben aus courrier."
+  },
+  "intervalMinutes": {
+    "en": "min",
+    "de": "Min"
+  },
+  "intervalHours": {
+    "en": "hr",
+    "de": "Std"
+  },
+  "intervalDays": {
+    "en": "day",
+    "de": "Tag"
+  },
+  "intervalMinutesTooltip": {
+    "en": "Minutes",
+    "de": "Minuten"
+  },
+  "intervalHoursTooltip": {
+    "en": "Hours",
+    "de": "Stunden"
+  },
+  "intervalDaysTooltip": {
+    "en": "Days",
+    "de": "Tage"
+  },
+  "searchNoSubject": {
+    "en": "(no subject)",
+    "de": "(kein Betreff)"
+  },
+  "searchLocked": {
+    "en": "(locked)",
+    "de": "(gesperrt)"
+  },
+  "rruleCustom": {
+    "en": "Custom recurrence",
+    "de": "Benutzerdefinierte Wiederholung"
+  },
+  "rruleDaily": {
+    "en": "{count, plural, =1{Daily} other{Every {count} days}}",
+    "de": "{count, plural, =1{Täglich} other{Alle {count} Tage}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "rruleWeekly": {
+    "en": "{count, plural, =1{Weekly} other{Every {count} weeks}}",
+    "de": "{count, plural, =1{Wöchentlich} other{Alle {count} Wochen}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "rruleMonthly": {
+    "en": "{count, plural, =1{Monthly} other{Every {count} months}}",
+    "de": "{count, plural, =1{Monatlich} other{Alle {count} Monate}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "rruleYearly": {
+    "en": "{count, plural, =1{Yearly} other{Every {count} years}}",
+    "de": "{count, plural, =1{Jährlich} other{Alle {count} Jahre}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "rruleOnWeekdays": {
+    "en": "on {days}",
+    "de": "am {days}",
+    "placeholders": {
+      "days": "String"
+    }
+  },
+  "rruleOnMonthDays": {
+    "en": "on the {days}",
+    "de": "am {days}",
+    "placeholders": {
+      "days": "String"
+    }
+  },
+  "rruleInMonths": {
+    "en": "in {months}",
+    "de": "im {months}",
+    "placeholders": {
+      "months": "String"
+    }
+  },
+  "rruleOnMonthDaysInMonths": {
+    "en": "on the {days} in {months}",
+    "de": "am {days} {months}",
+    "placeholders": {
+      "days": "String",
+      "months": "String"
+    }
+  },
+  "rruleWithCount": {
+    "en": "{rule}, {count, plural, =1{1 time} other{{count} times}}",
+    "de": "{rule}, {count, plural, =1{einmal} other{{count}-mal}}",
+    "placeholders": {
+      "rule": "String",
+      "count": "int"
+    }
+  },
+  "rruleWithUntil": {
+    "en": "{rule}, until {date}",
+    "de": "{rule}, bis {date}",
+    "placeholders": {
+      "rule": "String",
+      "date": "String"
+    }
+  },
+  "rruleOrdinal": {
+    "en": "{n}{category, select, one{st} two{nd} few{rd} other{th}}",
+    "de": "{n}.",
+    "description": "Ordinal number; category is the English ordinal plural category of n (one, two, few, other).",
+    "placeholders": {
+      "n": "int",
+      "category": "String"
+    }
+  },
+  "rruleOrdinalFromLast": {
+    "en": "{ordinal} from last",
+    "de": "{n, plural, =1{letzten Tag} =2{vorletzten Tag} other{{ordinal}-letzten Tag}}",
+    "description": "Day of the month counted from the end; ordinal is rruleOrdinal of n.",
+    "placeholders": {
+      "ordinal": "String",
+      "n": "int"
+    }
+  },
+  "rruleWeekdayNth": {
+    "en": "the {ordinal} {day}",
+    "de": "{ordinal} {day}",
+    "placeholders": {
+      "ordinal": "String",
+      "day": "String"
+    }
+  },
+  "rruleWeekdayLast": {
+    "en": "the last {day}",
+    "de": "letzten {day}",
+    "placeholders": {
+      "day": "String"
+    }
+  },
+  "rruleWeekdayNthFromLast": {
+    "en": "the {ordinal} from last {day}",
+    "de": "{n, plural, =2{vorletzten {day}} other{{ordinal}-letzten {day}}}",
+    "description": "Weekday counted from the end of the period; ordinal is rruleOrdinal of n.",
+    "placeholders": {
+      "ordinal": "String",
+      "n": "int",
+      "day": "String"
+    }
+  },
+  "rruleListPair": {
+    "en": "{first} and {second}",
+    "de": "{first} und {second}",
+    "placeholders": {
+      "first": "String",
+      "second": "String"
+    }
+  },
+  "rruleListSeries": {
+    "en": "{head}, and {last}",
+    "de": "{head} und {last}",
+    "description": "Last item of a list of three or more; head is the earlier items joined with commas.",
+    "placeholders": {
+      "head": "String",
+      "last": "String"
+    }
+  },
+  "rruleDayFallback": {
+    "en": "Day {day}",
+    "de": "Tag {day}",
+    "placeholders": {
+      "day": "int"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/tokens.dart';
+import '../l10n/l10n.dart';
 
 class ModulePlaceholder extends StatelessWidget {
   const ModulePlaceholder({
@@ -25,13 +26,13 @@ class ModulePlaceholder extends StatelessWidget {
           Container(
             width: CourrierTokens.space7,
             height: CourrierTokens.borderWidth,
-            color: CourrierTokens.accent,
+            color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(height: CourrierTokens.space5),
           Text(synopsis, style: theme.textTheme.bodyMedium),
           const SizedBox(height: CourrierTokens.space5),
           Text(
-            'Empty by design at M0. Module wired in during its milestone.',
+            context.l10n.modulePlaceholderNote,
             style: theme.textTheme.bodySmall,
           ),
         ],

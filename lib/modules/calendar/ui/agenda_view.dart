@@ -4,22 +4,24 @@ import 'package:intl/intl.dart';
 import '../../../core/db/database.dart';
 import '../../../core/recurrence/rrule_formatter.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 
 class AgendaView extends StatelessWidget {
-  AgendaView({required this.events, this.onEventTap, super.key});
+  const AgendaView({required this.events, this.onEventTap, super.key});
 
   final List<CalendarEvent> events;
   final ValueChanged<CalendarEvent>? onEventTap;
-
-  final RruleFormatter _rrule = RruleFormatter();
-  final DateFormat _date = DateFormat.MMMEd();
-  final DateFormat _time = DateFormat.Hm();
 
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
       return _Empty();
     }
+    final l10n = context.l10n;
+    final rrule = RruleFormatter(l10n: l10n);
+    final date = DateFormat.MMMEd(l10n.dateLocale);
+    final time = DateFormat.Hm(l10n.dateLocale);
     return ListView.separated(
       padding: const EdgeInsets.symmetric(
         horizontal: CourrierTokens.space5,
@@ -31,10 +33,10 @@ class AgendaView extends StatelessWidget {
         final event = events[i];
         return _AgendaTile(
           event: event,
-          rruleText: event.rrule == null ? null : _rrule.format(event.rrule!),
+          rruleText: event.rrule == null ? null : rrule.format(event.rrule!),
           dateLabel: event.allDay
-              ? _date.format(event.dtstart!)
-              : '${_date.format(event.dtstart!)} · ${_time.format(event.dtstart!)}',
+              ? date.format(event.dtstart!)
+              : '${date.format(event.dtstart!)} · ${time.format(event.dtstart!)}',
           onTap: onEventTap == null ? null : () => onEventTap!(event),
         );
       },
@@ -72,14 +74,14 @@ class _AgendaTile extends StatelessWidget {
                 top: 4,
                 right: CourrierTokens.space3,
               ),
-              color: CourrierTokens.accent,
+              color: Theme.of(context).colorScheme.primary,
             ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.summary ?? '(no title)',
+                    event.summary ?? context.l10n.calendarNoTitle,
                     style: theme.textTheme.titleMedium,
                   ),
                   const SizedBox(height: CourrierTokens.space1),
@@ -110,7 +112,7 @@ class _Empty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(CourrierTokens.space6),
         child: Text(
-          'No events in this range.',
+          context.l10n.calendarNoEvents,
           style: theme.textTheme.bodyMedium,
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 import '../compose/compose_draft.dart';
 
 class ComposeView extends StatefulWidget {
@@ -71,6 +72,7 @@ class _ComposeViewState extends State<ComposeView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       child: SingleChildScrollView(
@@ -79,9 +81,9 @@ class _ComposeViewState extends State<ComposeView> {
           children: [
             TextField(
               controller: _to,
-              decoration: const InputDecoration(
-                labelText: 'To',
-                hintText: 'comma-separated',
+              decoration: InputDecoration(
+                labelText: l10n.mailComposeTo,
+                hintText: l10n.mailComposeToHint,
               ),
             ),
             const SizedBox(height: CourrierTokens.space3),
@@ -97,12 +99,12 @@ class _ComposeViewState extends State<ComposeView> {
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _subject,
-              decoration: const InputDecoration(labelText: 'Subject'),
+              decoration: InputDecoration(labelText: l10n.mailComposeSubject),
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _body,
-              decoration: const InputDecoration(labelText: 'Body'),
+              decoration: InputDecoration(labelText: l10n.mailComposeBody),
               minLines: 6,
               maxLines: 16,
             ),
@@ -113,16 +115,19 @@ class _ComposeViewState extends State<ComposeView> {
                 if (widget.onCancel != null)
                   TextButton(
                     onPressed: _sending ? null : widget.onCancel,
-                    child: const Text('Cancel'),
+                    child: Text(l10n.commonCancel),
                   ),
                 if (widget.onSaveDraft != null)
-                  TextButton(
-                    onPressed: _sending
-                        ? null
-                        : () async {
-                            await widget.onSaveDraft!(_currentDraft());
-                          },
-                    child: const Text('Save draft'),
+                  Tooltip(
+                    message: l10n.mailSaveDraftTooltip,
+                    child: TextButton(
+                      onPressed: _sending
+                          ? null
+                          : () async {
+                              await widget.onSaveDraft!(_currentDraft());
+                            },
+                      child: Text(l10n.mailSaveDraft),
+                    ),
                   ),
                 const SizedBox(width: CourrierTokens.space2),
                 FilledButton(
@@ -138,13 +143,13 @@ class _ComposeViewState extends State<ComposeView> {
                             }
                           }
                         },
-                  child: Text(_sending ? 'Sending…' : 'Send'),
+                  child: Text(_sending ? l10n.mailSending : l10n.mailSend),
                 ),
               ],
             ),
             const SizedBox(height: CourrierTokens.space3),
             Text(
-              'Plain text only. Attachments + HTML composition land at M11 polish.',
+              l10n.mailComposePlainTextNote,
               style: theme.textTheme.bodySmall,
             ),
           ],

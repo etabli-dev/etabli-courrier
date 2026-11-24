@@ -1,6 +1,8 @@
 import 'package:intl/intl.dart';
 
 import '../../../core/db/database.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 import 'compose_draft.dart';
 
 // Reply / forward seeders. Take an existing message (and the user's identity)
@@ -9,10 +11,17 @@ import 'compose_draft.dart';
 // the quote so HTML messages still produce a readable quoted body.
 
 class ReplyForwardSeeder {
-  ReplyForwardSeeder({DateFormat? dateFormat})
-    : _dateFormat = dateFormat ?? DateFormat('EEE, MMM d yyyy, HH:mm');
+  ReplyForwardSeeder({this.dateFormat});
 
-  final DateFormat _dateFormat;
+  /// Overrides the current app language's quote-date format.
+  final DateFormat? dateFormat;
+
+  String _formatDate(DateTime value) {
+    final l10n = L10n.current;
+    return (dateFormat ??
+            DateFormat(l10n.mailQuoteDatePattern, l10n.dateLocale))
+        .format(value);
+  }
 
   ComposeDraft reply({
     required String fromAddress,
@@ -51,12 +60,13 @@ class ReplyForwardSeeder {
     required String preferredText,
   }) {
     final subject = _withPrefix(original.subject, 'Fwd:');
+    final l10n = L10n.current;
     final body = StringBuffer()
-      ..writeln('---------- Forwarded message ----------')
-      ..writeln('From: ${original.fromAddress ?? ''}')
-      ..writeln('Date: ${_dateFormat.format(original.receivedAt)}')
-      ..writeln('Subject: ${original.subject ?? ''}')
-      ..writeln('To: ${original.toAddresses ?? ''}')
+      ..writeln(l10n.mailForwardHeader)
+      ..writeln(l10n.mailForwardFrom(original.fromAddress ?? ''))
+      ..writeln(l10n.mailForwardDate(_formatDate(original.receivedAt)))
+      ..writeln(l10n.mailForwardSubject(original.subject ?? ''))
+      ..writeln(l10n.mailForwardTo(original.toAddresses ?? ''))
       ..writeln()
       ..writeln(preferredText);
     return ComposeDraft(
@@ -72,9 +82,11 @@ class ReplyForwardSeeder {
     required String preferredText,
     required MailMessage original,
   }) {
-    final intro =
-        'On ${_dateFormat.format(original.receivedAt)}, '
-        '${original.fromAddress ?? 'someone'} wrote:';
+    final l10n = L10n.current;
+    final intro = l10n.mailReplyIntro(
+      _formatDate(original.receivedAt),
+      original.fromAddress ?? l10n.mailReplySomeone,
+    );
     final quoted = preferredText
         .split('\n')
         .map((line) => '> $line')

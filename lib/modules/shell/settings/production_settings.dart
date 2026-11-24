@@ -6,6 +6,7 @@ import '../../../core/lock/app_security.dart';
 import '../../../core/platform/platform_capabilities.dart';
 import '../../../core/settings/about_info.dart';
 import '../../../core/settings/settings_io.dart';
+import '../../../l10n/l10n.dart';
 import 'settings_screen.dart';
 
 class ProductionSettings extends StatefulWidget {
@@ -30,7 +31,7 @@ class _ProductionSettingsState extends State<ProductionSettings> {
     setState(() => _busy = true);
     try {
       if (!await AppSecurity.unlock()) {
-        _message('Device authentication is required to change app lock.');
+        _message(L10n.current.settingsLockAuthRequired);
         return;
       }
       final prefs = await _prefs;
@@ -39,7 +40,7 @@ class _ProductionSettingsState extends State<ProductionSettings> {
       }
       AppSecurity.revision.value++;
     } catch (_) {
-      _message('Could not save app-lock settings.');
+      _message(L10n.current.settingsLockSaveFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -52,25 +53,25 @@ class _ProductionSettingsState extends State<ProductionSettings> {
       await showDialog<void>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('Non-sensitive settings'),
+          title: Text(c.l10n.settingsExportTitle),
           content: SingleChildScrollView(child: SelectableText(text)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c),
-              child: const Text('Close'),
+              child: Text(c.l10n.commonClose),
             ),
             FilledButton(
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: text));
                 if (c.mounted) Navigator.pop(c);
               },
-              child: const Text('Copy JSON'),
+              child: Text(c.l10n.settingsCopyJson),
             ),
           ],
         ),
       );
     } catch (_) {
-      _message('Could not export settings.');
+      _message(L10n.current.settingsExportFailed);
     }
   }
 
@@ -85,26 +86,20 @@ class _ProductionSettingsState extends State<ProductionSettings> {
         text,
         await _prefs,
       );
-      _message('Imported $count preferences.');
+      _message(L10n.current.settingsImported(count));
     } catch (_) {
-      _message(
-        'Import failed. Use a supported settings export with valid preference values.',
-      );
+      _message(L10n.current.settingsImportFailed);
     }
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Settings')),
+    appBar: AppBar(title: Text(context.l10n.settingsTitle)),
     body: FutureBuilder<PreferencesStore>(
       future: _prefs,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(
-            child: Text(
-              'Could not load settings. Reopen this screen to retry.',
-            ),
-          );
+          return Center(child: Text(context.l10n.settingsLoadFailed));
         }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -119,8 +114,9 @@ class _ProductionSettingsState extends State<ProductionSettings> {
             onImport: _import,
             lockUnavailableReason: PlatformCapabilities.deviceAuthentication
                 ? null
-                : 'Not available in ${PlatformCapabilities.buildName}: it has no '
-                      'device-authentication service.',
+                : context.l10n.settingsLockUnavailable(
+                    PlatformCapabilities.inBuildName,
+                  ),
           ),
         );
       },
@@ -144,24 +140,21 @@ class _SettingsImportDialogState extends State<_SettingsImportDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Import settings JSON'),
+    title: Text(context.l10n.settingsImportTitle),
     content: TextField(
       controller: _text,
       maxLines: 8,
       maxLength: 65536,
-      decoration: const InputDecoration(
-        hintText:
-            'Paste a settings export. App lock and credentials are excluded.',
-      ),
+      decoration: InputDecoration(hintText: context.l10n.settingsImportHint),
     ),
     actions: [
       TextButton(
         onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
+        child: Text(context.l10n.commonCancel),
       ),
       FilledButton(
         onPressed: () => Navigator.pop(context, _text.text),
-        child: const Text('Import'),
+        child: Text(context.l10n.settingsImport),
       ),
     ],
   );

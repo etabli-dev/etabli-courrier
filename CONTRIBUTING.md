@@ -37,7 +37,10 @@ PRs must meet this quality bar:
 - `flutter test` — all green, none skipped.
 - No new runtime warnings, framework assertions, overflow/key warnings, or dropped frames.
 - New user-facing features include their vignette/doc section.
-- No hardcoded colors (use `core/theme` tokens); respect Auto/Light/Dark.
+- No hardcoded colors (use `core/theme` tokens and `Theme.of(context).colorScheme.primary` for the accent);
+  respect System/Light/Dark and the user's accent.
+- Every user-facing string in English and German (`lib/l10n/app_en.arb`, `app_de.arb`, then
+  `flutter gen-l10n`); no button, tab, chip or menu label may wrap on a 375-pt phone in either language.
 
 ## Workflow
 1. Open an issue to discuss non-trivial changes first.
@@ -51,8 +54,9 @@ own test Nextcloud / IMAP / M365 values, then run
 `secrets.json`.
 
 ## Scope reminders (deliberate non-goals)
-`courrier` is **paid-upfront, no IAP** (no freemium/feature-locking), uses a **single green
-accent** (no arbitrary color customization), and owns its **own DAV/offline layer** (no
+`courrier` is **paid-upfront, no IAP** (no freemium/feature-locking), uses the **suite's accent
+set** (Coder blue by default; the owner's seven colours of 2026-11-24, no free colour picker), and owns
+its **own DAV/offline layer** (no
 dependency on a system PIM provider). Microsoft **Graph** and **DavMail** integration are
 **post-v0.1.0**; DavMail is documented, never bundled. PRs contradicting these are out of
 scope by design.

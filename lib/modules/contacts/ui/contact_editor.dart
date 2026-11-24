@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 import '../data/contact_draft.dart';
 
 class ContactEditor extends StatefulWidget {
@@ -72,6 +73,7 @@ class _ContactEditorState extends State<ContactEditor> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       child: SingleChildScrollView(
@@ -80,7 +82,7 @@ class _ContactEditorState extends State<ContactEditor> {
           children: [
             TextField(
               controller: _fn,
-              decoration: const InputDecoration(labelText: 'Display name'),
+              decoration: InputDecoration(labelText: l10n.contactsDisplayName),
             ),
             const SizedBox(height: CourrierTokens.space3),
             Row(
@@ -88,14 +90,18 @@ class _ContactEditorState extends State<ContactEditor> {
                 Expanded(
                   child: TextField(
                     controller: _given,
-                    decoration: const InputDecoration(labelText: 'Given name'),
+                    decoration: InputDecoration(
+                      labelText: l10n.contactsGivenName,
+                    ),
                   ),
                 ),
                 const SizedBox(width: CourrierTokens.space3),
                 Expanded(
                   child: TextField(
                     controller: _family,
-                    decoration: const InputDecoration(labelText: 'Family name'),
+                    decoration: InputDecoration(
+                      labelText: l10n.contactsFamilyName,
+                    ),
                   ),
                 ),
               ],
@@ -103,33 +109,29 @@ class _ContactEditorState extends State<ContactEditor> {
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _org,
-              decoration: const InputDecoration(labelText: 'Organisation'),
+              decoration: InputDecoration(labelText: l10n.contactsOrganisation),
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _emails,
-              decoration: const InputDecoration(
-                labelText: 'Emails (one per line)',
-              ),
+              decoration: InputDecoration(labelText: l10n.contactsEmails),
               maxLines: 3,
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _phones,
-              decoration: const InputDecoration(
-                labelText: 'Phones (one per line)',
-              ),
+              decoration: InputDecoration(labelText: l10n.contactsPhones),
               maxLines: 3,
             ),
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _note,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: InputDecoration(labelText: l10n.contactsNote),
               maxLines: 3,
             ),
             if (widget.availableGroups.isNotEmpty) ...[
               const SizedBox(height: CourrierTokens.space4),
-              Text('Groups', style: theme.textTheme.bodyLarge),
+              Text(l10n.contactsGroups, style: theme.textTheme.bodyLarge),
               for (final group in widget.availableGroups)
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
@@ -152,12 +154,12 @@ class _ContactEditorState extends State<ContactEditor> {
                 if (widget.onCancel != null)
                   TextButton(
                     onPressed: widget.onCancel,
-                    child: const Text('Cancel'),
+                    child: Text(l10n.commonCancel),
                   ),
                 const SizedBox(width: CourrierTokens.space3),
                 FilledButton(
                   onPressed: _onSavePressed,
-                  child: const Text('Save'),
+                  child: Text(l10n.commonSave),
                 ),
               ],
             ),

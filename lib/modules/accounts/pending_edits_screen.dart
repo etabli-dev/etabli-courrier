@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/db/database.dart';
 import '../../core/lock/app_security.dart';
 import '../../core/sync/conflict_recovery.dart';
+import '../../l10n/l10n.dart';
 
 class PendingEditsScreen extends StatefulWidget {
   const PendingEditsScreen({
@@ -24,21 +25,20 @@ class _PendingEditsScreenState extends State<PendingEditsScreen> {
           .watch();
   bool _busy = false;
   Future<void> _archive(PendingChange edit) async {
+    final l10n = context.l10n;
     final approved = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Preserve this edit offline?'),
-        content: const Text(
-          'The current local record will move to an offline collection, including a locally deleted record. Its upload will stop. The server is unchanged. Return to Accounts and Refresh to load the server version separately. A server write whose response was lost may already exist there.',
-        ),
+        title: Text(l10n.accountsPreserveTitle),
+        content: Text(l10n.accountsPreserveBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Keep offline copy'),
+            child: Text(l10n.accountsKeepOfflineCopy),
           ),
         ],
       ),
@@ -50,11 +50,7 @@ class _PendingEditsScreenState extends State<PendingEditsScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Could not preserve this version. Nothing was discarded; refresh the list and retry.',
-            ),
-          ),
+          SnackBar(content: Text(context.l10n.accountsPreserveFailed)),
         );
       }
     } finally {
@@ -64,28 +60,25 @@ class _PendingEditsScreenState extends State<PendingEditsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Pending edits')),
+    appBar: AppBar(title: Text(context.l10n.accountsPendingTitle)),
     body: StreamBuilder<List<PendingChange>>(
       stream: _pending,
       builder: (context, snapshot) {
+        final l10n = context.l10n;
         if (snapshot.hasError) {
-          return const Center(child: Text('Could not read pending edits.'));
+          return Center(child: Text(l10n.accountsPendingReadFailed));
         }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.data!.isEmpty) {
-          return const Center(
-            child: Text('No pending edits. Return to Accounts to refresh.'),
-          );
+          return Center(child: Text(l10n.accountsNoPendingEdits));
         }
         return ListView(
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(
-                'Refresh normally retries pending work with its original server precondition. If it cannot be reconciled, preserve the local record offline before reloading the server.',
-              ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(l10n.accountsPendingIntro),
             ),
             for (final edit in snapshot.data!)
               Card(
@@ -96,11 +89,11 @@ class _PendingEditsScreenState extends State<PendingEditsScreen> {
                     children: [
                       Text(
                         '${switch (edit.entityTable) {
-                          'note_items' => 'Note',
-                          'todo_items' => 'Task',
-                          'calendar_events' => 'Event',
-                          'contact_cards' => 'Contact',
-                          _ => 'Record',
+                          'note_items' => l10n.accountsRecordNote,
+                          'todo_items' => l10n.accountsRecordTask,
+                          'calendar_events' => l10n.accountsRecordEvent,
+                          'contact_cards' => l10n.accountsRecordContact,
+                          _ => l10n.accountsRecordOther,
                         }} · ${edit.operation} · ${edit.entityId}',
                       ),
                       if (edit.lastError != null) Text(edit.lastError!),
@@ -121,27 +114,26 @@ class _PendingEditsScreenState extends State<PendingEditsScreen> {
                           await showDialog<void>(
                             context: context,
                             builder: (c) => AlertDialog(
-                              title: const Text('Saved local edit'),
+                              title: Text(l10n.accountsSavedEditTitle),
                               content: SingleChildScrollView(
                                 child: SelectableText(
-                                  edit.payload ??
-                                      'Deletion intent; the original record is retained.',
+                                  edit.payload ?? l10n.accountsDeletionIntent,
                                 ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(c),
-                                  child: const Text('Close'),
+                                  child: Text(l10n.commonClose),
                                 ),
                               ],
                             ),
                           );
                         },
-                        child: const Text('Review saved local edit'),
+                        child: Text(l10n.accountsReviewEdit),
                       ),
                       TextButton(
                         onPressed: _busy ? null : () => _archive(edit),
-                        child: const Text('Keep offline copy; reload server'),
+                        child: Text(l10n.accountsKeepOfflineReload),
                       ),
                     ],
                   ),

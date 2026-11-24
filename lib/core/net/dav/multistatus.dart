@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:xml/xml.dart';
 
+import '../../../l10n/l10n.dart';
 import 'dav_namespaces.dart';
 
 // Parse a DAV `<multistatus>` response into a structured list of resources +
@@ -100,9 +101,7 @@ class Multistatus {
   factory Multistatus.parse(String xml) {
     if (xml.toUpperCase().contains('<!DOCTYPE') ||
         xml.toUpperCase().contains('<!ENTITY')) {
-      throw const FormatException(
-        'DTD and entity declarations are not supported.',
-      );
+      throw FormatException(L10n.current.netDtdUnsupported);
     }
     final document = XmlDocument.parse(xml);
     final root = document.rootElement;
@@ -209,9 +208,7 @@ class Multistatus {
   static String? extractSyncToken(String xml) {
     if (xml.toUpperCase().contains('<!DOCTYPE') ||
         xml.toUpperCase().contains('<!ENTITY')) {
-      throw const FormatException(
-        'DTD and entity declarations are not supported.',
-      );
+      throw FormatException(L10n.current.netDtdUnsupported);
     }
     final document = XmlDocument.parse(xml);
     final root = document.rootElement;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/tokens.dart';
+import '../../../../../l10n/l10n.dart';
 import '../m365_backend.dart';
 import '../tenant_state.dart';
 import 'tenant_error_card.dart';
@@ -53,22 +54,19 @@ class _ConnectMicrosoftScreenState extends State<ConnectMicrosoftScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(CourrierTokens.space5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Connect Microsoft 365', style: theme.textTheme.titleLarge),
+          Text(l10n.m365ConnectTitle, style: theme.textTheme.titleLarge),
           const SizedBox(height: CourrierTokens.space2),
-          Text(
-            'courrier signs in via your tenant\'s standard OAuth flow. '
-            'Your password is never sent through the app.',
-            style: theme.textTheme.bodyMedium,
-          ),
+          Text(l10n.m365ConnectIntro, style: theme.textTheme.bodyMedium),
           const SizedBox(height: CourrierTokens.space5),
           FilledButton(
             onPressed: _busy ? null : _connect,
-            child: Text(_busy ? 'Signing in…' : 'Sign in with Microsoft'),
+            child: Text(_busy ? l10n.m365SigningIn : l10n.m365SignIn),
           ),
           if (_attempted && _state is! TenantConnected) ...[
             const SizedBox(height: CourrierTokens.space5),

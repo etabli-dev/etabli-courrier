@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/bootstrap/sample_content_installer.dart';
 import 'core/db/database.dart';
 import 'core/lock/app_security.dart';
 import 'core/platform/platform_capabilities.dart';
+import 'core/settings/appearance_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'dev/demo_app.dart';
 import 'dev/demo_services.dart';
+import 'l10n/l10n.dart';
 import 'modules/reminders/scheduler/local_notification_scheduler.dart';
 import 'modules/reminders/scheduler/reminder_coordinator.dart';
 import 'shell/app_shell.dart';
@@ -34,25 +37,60 @@ Future<void> main() async {
   runApp(const CourrierBootstrap());
 }
 
-class CourrierApp extends StatelessWidget {
-  const CourrierApp({required this.database, this.reminders, super.key});
+class CourrierApp extends StatefulWidget {
+  const CourrierApp({
+    required this.database,
+    this.reminders,
+    this.appearance,
+    super.key,
+  });
 
   final CourrierDatabase database;
   final ReminderCoordinator? reminders;
 
+  /// The stored language, mode and accent; defaults only when null (tests).
+  final AppearanceController? appearance;
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'courrier',
-      builder: (context, child) =>
-          AppLockHost(child: child ?? const SizedBox.shrink()),
-      debugShowCheckedModeBanner: false,
-      theme: CourrierTheme.light(),
-      darkTheme: CourrierTheme.dark(),
-      home: AppShell(database: database, reminders: reminders),
-    );
-  }
+  State<CourrierApp> createState() => _CourrierAppState();
 }
+
+class _CourrierAppState extends State<CourrierApp> {
+  late final AppearanceController _appearance =
+      widget.appearance ?? AppearanceController.memory();
+
+  @override
+  Widget build(BuildContext context) => AppearanceScope(
+    controller: _appearance,
+    child: ListenableBuilder(
+      listenable: _appearance,
+      builder: (context, _) => MaterialApp(
+        title: 'courrier',
+        builder: (context, child) {
+          // Texts made outside widgets (services, notifications) follow the same language.
+          L10n.update(Localizations.localeOf(context));
+          return AppLockHost(child: child ?? const SizedBox.shrink());
+        },
+        debugShowCheckedModeBanner: false,
+        theme: CourrierTheme.light(_appearance.accent),
+        darkTheme: CourrierTheme.dark(_appearance.accent),
+        themeMode: _appearance.mode.themeMode,
+        locale: _appearance.language.locale,
+        supportedLocales: appSupportedLocales,
+        localizationsDelegates: courrierLocalizationsDelegates,
+        home: AppShell(database: widget.database, reminders: widget.reminders),
+      ),
+    ),
+  );
+}
+
+/// The app's and Flutter's own (Material, Cupertino, widgets) German and English strings.
+const List<LocalizationsDelegate<Object>> courrierLocalizationsDelegates = [
+  AppLocalizations.delegate,
+  GlobalMaterialLocalizations.delegate,
+  GlobalWidgetsLocalizations.delegate,
+  GlobalCupertinoLocalizations.delegate,
+];
 
 class CourrierBootstrap extends StatefulWidget {
   const CourrierBootstrap({super.key});
@@ -63,6 +101,7 @@ class CourrierBootstrap extends StatefulWidget {
 class _CourrierBootstrapState extends State<CourrierBootstrap> {
   CourrierDatabase? _database;
   ReminderCoordinator? _reminders;
+  AppearanceController? _appearance;
   bool _ready = false;
   String? _error;
   @override
@@ -77,6 +116,7 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
       _reminders?.dispose();
       _reminders = null;
       await _database?.close();
+      _appearance ??= await AppearanceController.load();
       final db = _database = CourrierDatabase();
       await const SampleContentInstaller().installIfMissing(db);
       if (!mounted) return;
@@ -88,12 +128,7 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
       }
       setState(() => _ready = true);
     } catch (_) {
-      if (mounted) {
-        setState(
-          () => _error =
-              'Could not open the local database. Free storage if necessary, then retry. Existing files have been retained.',
-        );
-      }
+      if (mounted) setState(() => _error = L10n.current.bootDatabaseFailed);
     }
   }
 
@@ -106,8 +141,19 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
 
   @override
   Widget build(BuildContext context) => _ready
-      ? CourrierApp(database: _database!, reminders: _reminders)
+      ? CourrierApp(
+          database: _database!,
+          reminders: _reminders,
+          appearance: _appearance,
+        )
       : MaterialApp(
+          locale: _appearance?.language.locale,
+          supportedLocales: appSupportedLocales,
+          localizationsDelegates: courrierLocalizationsDelegates,
+          builder: (context, child) {
+            L10n.update(Localizations.localeOf(context));
+            return child ?? const SizedBox.shrink();
+          },
           home: Scaffold(
             body: Center(
               child: Padding(
@@ -117,11 +163,17 @@ class _CourrierBootstrapState extends State<CourrierBootstrap> {
                     : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(_error!),
+                          Builder(
+                            builder: (context) =>
+                                Text(context.l10n.bootDatabaseFailed),
+                          ),
                           const SizedBox(height: 16),
                           FilledButton(
                             onPressed: _open,
-                            child: const Text('Retry'),
+                            child: Builder(
+                              builder: (context) =>
+                                  Text(context.l10n.commonRetry),
+                            ),
                           ),
                         ],
                       ),

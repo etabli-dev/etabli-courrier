@@ -39,6 +39,15 @@ Open the app to explore the bundled offline examples. On phones, **More** opens 
 
 Sync is explicit. Errors preserve cached records and pending edits. **Accounts → Pending edits / recovery** can preserve a conflicted local record in a separate offline collection before a full server reload. It never forces an overwrite of an unseen remote version. A failed create whose response was lost requires review, because the server may already have accepted it.
 
+## Appearance and language
+
+Settings → Appearance sets the app language (System, Deutsch, English), the mode (System, Light, Dark) and
+an accent colour (Coder blue, Green, Yellow, Orange, Red, Purple, Graphite), as in every Établi app. All three
+apply at once. The neutrals are the Hugo Coder palette; the yellow and orange accents keep selection fills
+neutral grey. Every screen, dialog, error, notification and accessibility label is in English and German;
+other device languages fall back to English. Sample content and server data stay as they are. Changes are
+listed in [CHANGELOG.md](CHANGELOG.md).
+
 ## Data, privacy and recovery
 
 No analytics or author-operated account service is configured. Connected servers and feed URLs receive their requested network traffic; mail autoconfiguration contacts provider discovery services. Application dependencies are listed in `pubspec.lock` and the license manifest. Passwords/tokens use platform secure storage; the content database itself is not encrypted by this app. App lock and note lock use the device authentication prompt.

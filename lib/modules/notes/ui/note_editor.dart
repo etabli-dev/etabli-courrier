@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 import '../data/note_draft.dart';
 import 'undo_history.dart';
 
@@ -34,7 +35,7 @@ class _NoteEditorState extends State<NoteEditor> {
   bool _suppressNextCommit = false;
   bool _saving = false;
   bool _allowPop = false;
-  String? _saveError;
+  bool _saveFailed = false;
 
   @override
   void initState() {
@@ -111,16 +112,16 @@ class _NoteEditorState extends State<NoteEditor> {
       final discard = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Discard unsaved changes?'),
-          content: const Text('Your saved note will stay unchanged.'),
+          title: Text(context.l10n.notesDiscardTitle),
+          content: Text(context.l10n.notesDiscardBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Keep editing'),
+              child: Text(context.l10n.notesKeepEditing),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text('Discard'),
+              child: Text(context.l10n.notesDiscard),
             ),
           ],
         ),
@@ -140,6 +141,7 @@ class _NoteEditorState extends State<NoteEditor> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     return PopScope(
       canPop: _allowPop || (!_dirty && !_saving),
       onPopInvokedWithResult: (didPop, result) {
@@ -157,18 +159,20 @@ class _NoteEditorState extends State<NoteEditor> {
                 IconButton(
                   icon: const Icon(Icons.undo),
                   onPressed: _history.canUndo ? _undo : null,
-                  tooltip: 'Undo',
+                  tooltip: l10n.notesUndo,
                 ),
                 IconButton(
                   icon: const Icon(Icons.redo),
                   onPressed: _history.canRedo ? _redo : null,
-                  tooltip: 'Redo',
+                  tooltip: l10n.notesRedo,
                 ),
                 IconButton(
                   icon: Icon(_favorite ? Icons.star : Icons.star_border),
                   onPressed: () => setState(() => _favorite = !_favorite),
-                  tooltip: 'Favorite',
-                  color: _favorite ? CourrierTokens.accent : null,
+                  tooltip: l10n.notesFavorite,
+                  color: _favorite
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
                 IconButton(
                   icon: Icon(_locked ? Icons.lock : Icons.lock_open),
@@ -176,15 +180,18 @@ class _NoteEditorState extends State<NoteEditor> {
                       ? () => setState(() => _locked = !_locked)
                       : null,
                   tooltip: widget.allowLocking
-                      ? 'Lock'
-                      : 'Configure an app lock first',
+                      ? l10n.notesLock
+                      : l10n.notesLockUnavailable,
                 ),
                 SegmentedButton<NoteKind>(
-                  segments: const [
-                    ButtonSegment(value: NoteKind.text, label: Text('Text')),
+                  segments: [
+                    ButtonSegment(
+                      value: NoteKind.text,
+                      label: Text(l10n.notesKindText),
+                    ),
                     ButtonSegment(
                       value: NoteKind.checklist,
-                      label: Text('Checklist'),
+                      label: Text(l10n.notesKindChecklist),
                     ),
                   ],
                   selected: {_kind},
@@ -195,24 +202,24 @@ class _NoteEditorState extends State<NoteEditor> {
             const SizedBox(height: CourrierTokens.space3),
             TextField(
               controller: _title,
-              decoration: const InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: l10n.notesTitleLabel),
             ),
             const SizedBox(height: CourrierTokens.space3),
             Expanded(
               child: TextField(
                 controller: _content,
-                decoration: const InputDecoration(
-                  labelText: 'Content',
-                  hintText: 'Type — checklist mode uses markdown task lists.',
+                decoration: InputDecoration(
+                  labelText: l10n.notesContentLabel,
+                  hintText: l10n.notesContentHint,
                 ),
                 minLines: 8,
                 maxLines: null,
               ),
             ),
             const SizedBox(height: CourrierTokens.space3),
-            if (_saveError != null)
+            if (_saveFailed)
               Text(
-                _saveError!,
+                l10n.notesSaveFailed,
                 style: TextStyle(color: theme.colorScheme.error),
               ),
             Row(
@@ -221,7 +228,7 @@ class _NoteEditorState extends State<NoteEditor> {
                 if (widget.onCancel != null)
                   TextButton(
                     onPressed: _saving ? null : () => _leave(cancel: true),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.commonCancel),
                   ),
                 const SizedBox(width: CourrierTokens.space2),
                 FilledButton(
@@ -230,7 +237,7 @@ class _NoteEditorState extends State<NoteEditor> {
                       : () async {
                           setState(() {
                             _saving = true;
-                            _saveError = null;
+                            _saveFailed = false;
                           });
                           try {
                             await widget.onSave(
@@ -251,23 +258,19 @@ class _NoteEditorState extends State<NoteEditor> {
                             }
                           } catch (_) {
                             if (mounted) {
-                              setState(
-                                () => _saveError =
-                                    'Could not save this note. Your draft is still here; try again.',
-                              );
+                              setState(() => _saveFailed = true);
                             }
                           } finally {
                             if (mounted) setState(() => _saving = false);
                           }
                         },
-                  child: Text(_saving ? 'Saving…' : 'Save'),
+                  child: Text(_saving ? l10n.notesSaving : l10n.commonSave),
                 ),
               ],
             ),
             const SizedBox(height: CourrierTokens.space2),
             Text(
-              '${_history.length} edit${_history.length == 1 ? '' : 's'} '
-              'in history',
+              l10n.notesHistoryCount(_history.length),
               style: theme.textTheme.bodySmall,
             ),
           ],

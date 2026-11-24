@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/l10n.dart';
 import 'scheduler/notification_scheduler.dart';
 import 'scheduler/reminder_rearm_service.dart';
 import 'ui/reminders_list_view.dart';
@@ -25,10 +26,12 @@ class RemindersScreen extends StatefulWidget {
   State<RemindersScreen> createState() => _RemindersScreenState();
 }
 
+enum _RemindersError { load, enable, reload }
+
 class _RemindersScreenState extends State<RemindersScreen> {
   bool _hasPermission = false;
   bool _loading = true;
-  String? _error;
+  _RemindersError? _error;
   List<ScheduledNotification> _upcoming = const <ScheduledNotification>[];
 
   @override
@@ -54,7 +57,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (mounted) {
         setState(() {
           _loading = false;
-          _error = 'Could not load reminders. Please try Reload.';
+          _error = _RemindersError.load;
         });
       }
     }
@@ -73,10 +76,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       await _refresh();
     } catch (_) {
       if (mounted) {
-        setState(
-          () => _error =
-              'Could not enable reminders. Check notification permissions.',
-        );
+        setState(() => _error = _RemindersError.enable);
       }
     }
   }
@@ -100,20 +100,30 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (mounted) {
         setState(() {
           _loading = false;
-          _error =
-              'Reload failed. Existing reminders have been retained where possible.';
+          _error = _RemindersError.reload;
         });
       }
     }
   }
 
+  String _errorText(AppLocalizations l10n, _RemindersError error) =>
+      switch (error) {
+        _RemindersError.load => l10n.remindersLoadFailed,
+        _RemindersError.enable => l10n.remindersEnableFailed,
+        _RemindersError.reload => l10n.remindersReloadFailed,
+      };
+
   @override
   Widget build(BuildContext context) {
+    final error = _error;
     return Column(
       children: [
         if (_loading) const LinearProgressIndicator(),
-        if (_error != null)
-          Padding(padding: const EdgeInsets.all(16), child: Text(_error!)),
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(_errorText(context.l10n, error)),
+          ),
         Expanded(
           child: RemindersListView(
             reminders: _upcoming,

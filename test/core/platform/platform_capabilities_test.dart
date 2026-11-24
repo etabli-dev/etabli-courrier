@@ -3,6 +3,7 @@ import 'package:courrier/core/lock/app_security.dart';
 import 'package:courrier/core/platform/platform_capabilities.dart';
 import 'package:courrier/core/settings/about_info.dart';
 import 'package:courrier/core/theme/app_theme.dart';
+import 'package:courrier/l10n/l10n.dart';
 import 'package:courrier/modules/reminders/reminders_screen.dart';
 import 'package:courrier/modules/reminders/scheduler/notification_scheduler.dart';
 import 'package:courrier/modules/reminders/scheduler/reminder_rearm_service.dart';
@@ -142,7 +143,7 @@ void main() {
     final db = CourrierDatabase.forTesting(NativeDatabase.memory());
     final reminders = moduleDestinations(
       db,
-    ).firstWhere((d) => d.label == 'reminders');
+    ).firstWhere((d) => d.label(L10n.current) == 'reminders');
     await tester.pumpWidget(
       MaterialApp(
         theme: CourrierTheme.light(),

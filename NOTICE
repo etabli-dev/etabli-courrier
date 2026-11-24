@@ -55,7 +55,7 @@ Pinned:  ^0.2.16 (added at M3)
 intl — Dart team's i18n / date formatting
 License: BSD-3-Clause
 Source:  https://github.com/dart-lang/i18n/tree/main/pkgs/intl
-Pinned:  ^0.19.0 (added at M3; transitive dep of rrule)
+Pinned:  ^0.20.2 (added at M3; transitive dep of rrule; also used for the German and English UI)
 --------------------------------------------------------------------------------
 time — TimeOfDay arithmetic / Duration extensions (transitive via rrule)
 License: Apache-2.0

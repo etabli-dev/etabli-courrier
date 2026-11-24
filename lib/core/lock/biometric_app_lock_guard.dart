@@ -1,5 +1,6 @@
 import 'package:local_auth/local_auth.dart';
 
+import '../../l10n/l10n.dart';
 import 'app_lock_guard.dart';
 
 // Biometric lock backed by `local_auth`. The platform prompt does the actual
@@ -28,7 +29,7 @@ class BiometricAppLockGuard implements AppLockGuard {
   Future<bool> unlock() async {
     try {
       return await _auth.authenticate(
-        localizedReason: 'Unlock courrier',
+        localizedReason: L10n.current.appLockReason,
         options: const AuthenticationOptions(stickyAuth: true),
       );
     } on Exception {

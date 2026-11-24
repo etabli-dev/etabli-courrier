@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/db/database.dart';
 import '../../core/net/bounded_http.dart';
+import '../../l10n/l10n.dart';
 import '../mail/render/mime_render_plan.dart';
 import 'data/feed_repository.dart';
 import 'sync/feeds_sync_backend.dart';
@@ -59,15 +60,17 @@ class _FeedsScreenState extends State<FeedsScreen> {
       });
       await _refresh();
     } catch (_) {
-      _message('Could not add feed. Use an HTTPS RSS or Atom URL.');
+      _message((l10n) => l10n.feedsAddFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  void _message(String text) {
+  void _message(String Function(AppLocalizations l10n) text) {
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(text(context.l10n))));
     }
   }
 
@@ -92,12 +95,11 @@ class _FeedsScreenState extends State<FeedsScreen> {
         }
       }
       _message(
-        failed
-            ? 'Some feeds could not refresh. Cached articles are retained.'
-            : 'Checked $count articles. Nextcloud News refreshes from Accounts.',
+        (l10n) =>
+            failed ? l10n.feedsRefreshPartial : l10n.feedsRefreshDone(count),
       );
     } catch (_) {
-      _message('Could not refresh feeds. Cached articles are retained.');
+      _message((l10n) => l10n.feedsRefreshFailed);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -124,43 +126,73 @@ class _FeedsScreenState extends State<FeedsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Column(
-    children: [
-      Wrap(
-        spacing: 12,
-        children: [
-          TextButton.icon(
-            onPressed: _busy ? null : _add,
-            icon: const Icon(Icons.add),
-            label: const Text('Add HTTPS feed'),
-          ),
-          TextButton.icon(
-            onPressed: _busy ? null : _refresh,
-            icon: const Icon(Icons.refresh),
-            label: Text(_busy ? 'Refreshing…' : 'Refresh local feeds'),
-          ),
-        ],
-      ),
-      Expanded(
-        child: StreamBuilder<List<FeedSubscription>>(
-          stream: _subscriptions,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(child: Text('Could not load subscriptions.'));
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return FeedSubscriptionList(
-              subscriptions: snapshot.data!,
-              unreadCounts: const {},
-              onSubscriptionTap: _open,
-            );
-          },
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      children: [
+        Wrap(
+          spacing: 12,
+          children: [
+            _FullWording(
+              full: l10n.feedsAddTooltip,
+              label: l10n.feedsAdd,
+              child: TextButton.icon(
+                onPressed: _busy ? null : _add,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.feedsAdd),
+              ),
+            ),
+            _FullWording(
+              full: l10n.feedsRefreshTooltip,
+              label: l10n.feedsRefresh,
+              child: TextButton.icon(
+                onPressed: _busy ? null : _refresh,
+                icon: const Icon(Icons.refresh),
+                label: Text(_busy ? l10n.feedsRefreshing : l10n.feedsRefresh),
+              ),
+            ),
+          ],
         ),
-      ),
-    ],
-  );
+        Expanded(
+          child: StreamBuilder<List<FeedSubscription>>(
+            stream: _subscriptions,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(context.l10n.feedsSubscriptionsLoadFailed),
+                );
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              return FeedSubscriptionList(
+                subscriptions: snapshot.data!,
+                unreadCounts: const {},
+                onSubscriptionTap: _open,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Keeps the full wording of a shortened button label available as a tooltip.
+class _FullWording extends StatelessWidget {
+  const _FullWording({
+    required this.full,
+    required this.label,
+    required this.child,
+  });
+
+  final String full;
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      full == label ? child : Tooltip(message: full, child: child);
 }
 
 class _FeedPage extends StatefulWidget {
@@ -195,7 +227,7 @@ class _FeedPageState extends State<_FeedPage> {
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: SelectableText(
-                text.isEmpty ? 'No saved article content.' : text,
+                text.isEmpty ? context.l10n.feedsNoArticleContent : text,
               ),
             ),
           ),
@@ -204,9 +236,7 @@ class _FeedPageState extends State<_FeedPage> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not open this article. Please try again.'),
-          ),
+          SnackBar(content: Text(context.l10n.feedsArticleOpenFailed)),
         );
       }
     }
@@ -217,18 +247,16 @@ class _FeedPageState extends State<_FeedPage> {
     final approved = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Remove this local feed?'),
-        content: const Text(
-          'The subscription and its cached articles will be removed from this device. The feed website is unchanged.',
-        ),
+        title: Text(c.l10n.feedsRemoveTitle),
+        content: Text(c.l10n.feedsRemoveBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Cancel'),
+            child: Text(c.l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Remove'),
+            child: Text(c.l10n.feedsRemove),
           ),
         ],
       ),
@@ -240,11 +268,9 @@ class _FeedPageState extends State<_FeedPage> {
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not remove the feed. Please retry.'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.feedsRemoveFailed)));
       }
     } finally {
       if (mounted) setState(() => _removing = false);
@@ -258,7 +284,7 @@ class _FeedPageState extends State<_FeedPage> {
       actions: [
         if (widget.allowRemoval)
           IconButton(
-            tooltip: 'Remove local feed',
+            tooltip: context.l10n.feedsRemoveTooltip,
             onPressed: _removing ? null : _remove,
             icon: const Icon(Icons.delete_outline),
           ),
@@ -268,7 +294,7 @@ class _FeedPageState extends State<_FeedPage> {
       stream: _items,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(child: Text('Could not load saved articles.'));
+          return Center(child: Text(context.l10n.feedsArticlesLoadFailed));
         }
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -295,22 +321,22 @@ class _FeedUrlDialogState extends State<_FeedUrlDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-    title: const Text('Add feed'),
+    title: Text(context.l10n.feedsAddTitle),
     content: TextField(
       controller: _url,
       keyboardType: TextInputType.url,
       autocorrect: false,
       maxLength: 4096,
-      decoration: const InputDecoration(labelText: 'HTTPS RSS or Atom URL'),
+      decoration: InputDecoration(labelText: context.l10n.feedsUrlLabel),
     ),
     actions: [
       TextButton(
         onPressed: () => Navigator.pop(context),
-        child: const Text('Cancel'),
+        child: Text(context.l10n.commonCancel),
       ),
       FilledButton(
         onPressed: () => Navigator.pop(context, _url.text),
-        child: const Text('Add'),
+        child: Text(context.l10n.feedsAddConfirm),
       ),
     ],
   );

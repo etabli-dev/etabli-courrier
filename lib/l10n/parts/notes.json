@@ -1,0 +1,288 @@
+{
+  "notesNew": {
+    "en": "New note",
+    "de": "Neue Notiz"
+  },
+  "notesEdit": {
+    "en": "Edit note",
+    "de": "Notiz bearbeiten"
+  },
+  "notesUnlockRequired": {
+    "en": "Unlock is required to open this note.",
+    "de": "Zum Öffnen dieser Notiz musst du entsperren."
+  },
+  "notesNoCollection": {
+    "en": "Create a notes collection in Accounts first.",
+    "de": "Lege zuerst unter Konten eine Notizsammlung an."
+  },
+  "notesChooseNotebook": {
+    "en": "Choose a notebook",
+    "de": "Notizbuch wählen"
+  },
+  "notesOpenFailed": {
+    "en": "Could not open the note. Please try again.",
+    "de": "Die Notiz konnte nicht geöffnet werden. Bitte versuche es erneut."
+  },
+  "notesLoadFailed": {
+    "en": "Could not load notes.",
+    "de": "Notizen konnten nicht geladen werden."
+  },
+  "notesEmpty": {
+    "en": "No notes yet.",
+    "de": "Noch keine Notizen."
+  },
+  "notesLockedPreview": {
+    "en": "(locked)",
+    "de": "(gesperrt)",
+    "description": "Shown instead of the first line of a locked note in the note list."
+  },
+  "notesChecklistBadge": {
+    "en": "checklist",
+    "de": "Checkliste",
+    "description": "Small marker next to the title of a checklist note."
+  },
+  "notesDiscardTitle": {
+    "en": "Discard unsaved changes?",
+    "de": "Ungespeicherte Änderungen verwerfen?"
+  },
+  "notesDiscardBody": {
+    "en": "Your saved note will stay unchanged.",
+    "de": "Deine gespeicherte Notiz bleibt unverändert."
+  },
+  "notesKeepEditing": {
+    "en": "Keep editing",
+    "de": "Weiterschreiben"
+  },
+  "notesDiscard": {
+    "en": "Discard",
+    "de": "Verwerfen"
+  },
+  "notesUndo": {
+    "en": "Undo",
+    "de": "Rückgängig"
+  },
+  "notesRedo": {
+    "en": "Redo",
+    "de": "Wiederholen"
+  },
+  "notesFavorite": {
+    "en": "Favorite",
+    "de": "Favorit"
+  },
+  "notesLock": {
+    "en": "Lock",
+    "de": "Sperren"
+  },
+  "notesLockUnavailable": {
+    "en": "Configure an app lock first",
+    "de": "Richte zuerst eine App-Sperre ein"
+  },
+  "notesKindText": {
+    "en": "Text",
+    "de": "Text"
+  },
+  "notesKindChecklist": {
+    "en": "Checklist",
+    "de": "Checkliste"
+  },
+  "notesTitleLabel": {
+    "en": "Title",
+    "de": "Titel"
+  },
+  "notesContentLabel": {
+    "en": "Content",
+    "de": "Inhalt"
+  },
+  "notesContentHint": {
+    "en": "Type — checklist mode uses markdown task lists.",
+    "de": "Schreib los – der Checklistenmodus nutzt Markdown-Aufgabenlisten."
+  },
+  "notesSaveFailed": {
+    "en": "Could not save this note. Your draft is still here; try again.",
+    "de": "Die Notiz konnte nicht gespeichert werden. Dein Entwurf bleibt erhalten; versuche es erneut."
+  },
+  "notesSaving": {
+    "en": "Saving…",
+    "de": "Speichern …"
+  },
+  "notesHistoryCount": {
+    "en": "{count, plural, =1{1 edit in history} other{{count} edits in history}}",
+    "de": "{count, plural, =1{1 Änderung im Verlauf} other{{count} Änderungen im Verlauf}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "feedsAdd": {
+    "en": "Add HTTPS feed",
+    "de": "Feed hinzufügen",
+    "description": "Button next to the refresh button; keep it short (full wording: feedsAddTooltip)."
+  },
+  "feedsAddTooltip": {
+    "en": "Add HTTPS feed",
+    "de": "HTTPS-Feed hinzufügen"
+  },
+  "feedsRefresh": {
+    "en": "Refresh local feeds",
+    "de": "Aktualisieren",
+    "description": "Button next to the add button; keep it short (full wording: feedsRefreshTooltip)."
+  },
+  "feedsRefreshTooltip": {
+    "en": "Refresh local feeds",
+    "de": "Lokale Feeds aktualisieren"
+  },
+  "feedsRefreshing": {
+    "en": "Refreshing…",
+    "de": "Wird aktualisiert …"
+  },
+  "feedsAddFailed": {
+    "en": "Could not add feed. Use an HTTPS RSS or Atom URL.",
+    "de": "Der Feed konnte nicht hinzugefügt werden. Verwende eine HTTPS-URL für RSS oder Atom."
+  },
+  "feedsRefreshPartial": {
+    "en": "Some feeds could not refresh. Cached articles are retained.",
+    "de": "Einige Feeds konnten nicht aktualisiert werden. Gespeicherte Artikel bleiben erhalten."
+  },
+  "feedsRefreshDone": {
+    "en": "{count, plural, =1{Checked 1 article. Nextcloud News refreshes from Accounts.} other{Checked {count} articles. Nextcloud News refreshes from Accounts.}}",
+    "de": "{count, plural, =1{1 Artikel geprüft. Nextcloud News wird über Konten aktualisiert.} other{{count} Artikel geprüft. Nextcloud News wird über Konten aktualisiert.}}",
+    "placeholders": {
+      "count": "int"
+    }
+  },
+  "feedsRefreshFailed": {
+    "en": "Could not refresh feeds. Cached articles are retained.",
+    "de": "Die Feeds konnten nicht aktualisiert werden. Gespeicherte Artikel bleiben erhalten."
+  },
+  "feedsSubscriptionsLoadFailed": {
+    "en": "Could not load subscriptions.",
+    "de": "Abonnements konnten nicht geladen werden."
+  },
+  "feedsSubscriptionsEmpty": {
+    "en": "No subscriptions yet.",
+    "de": "Noch keine Abonnements."
+  },
+  "feedsNoArticleContent": {
+    "en": "No saved article content.",
+    "de": "Kein gespeicherter Artikelinhalt."
+  },
+  "feedsArticleOpenFailed": {
+    "en": "Could not open this article. Please try again.",
+    "de": "Dieser Artikel konnte nicht geöffnet werden. Bitte versuche es erneut."
+  },
+  "feedsRemoveTitle": {
+    "en": "Remove this local feed?",
+    "de": "Diesen lokalen Feed entfernen?"
+  },
+  "feedsRemoveBody": {
+    "en": "The subscription and its cached articles will be removed from this device. The feed website is unchanged.",
+    "de": "Das Abonnement und seine gespeicherten Artikel werden von diesem Gerät entfernt. Die Website des Feeds bleibt unverändert."
+  },
+  "feedsRemove": {
+    "en": "Remove",
+    "de": "Entfernen"
+  },
+  "feedsRemoveFailed": {
+    "en": "Could not remove the feed. Please retry.",
+    "de": "Der Feed konnte nicht entfernt werden. Bitte versuche es erneut."
+  },
+  "feedsRemoveTooltip": {
+    "en": "Remove local feed",
+    "de": "Lokalen Feed entfernen"
+  },
+  "feedsArticlesLoadFailed": {
+    "en": "Could not load saved articles.",
+    "de": "Gespeicherte Artikel konnten nicht geladen werden."
+  },
+  "feedsItemsEmpty": {
+    "en": "No items in this feed.",
+    "de": "Keine Artikel in diesem Feed."
+  },
+  "feedsAddTitle": {
+    "en": "Add feed",
+    "de": "Feed hinzufügen"
+  },
+  "feedsUrlLabel": {
+    "en": "HTTPS RSS or Atom URL",
+    "de": "HTTPS-URL (RSS oder Atom)"
+  },
+  "feedsAddConfirm": {
+    "en": "Add",
+    "de": "Hinzufügen"
+  },
+  "syncConflictTitle": {
+    "en": "Sync conflict — {table}",
+    "de": "Sync-Konflikt – {table}",
+    "placeholders": {
+      "table": "String"
+    },
+    "description": "table is the internal name of the affected data table."
+  },
+  "syncConflictBody": {
+    "en": "The server has a newer version than the local copy.",
+    "de": "Der Server hat eine neuere Version als die lokale Kopie."
+  },
+  "syncConflictLocal": {
+    "en": "Local",
+    "de": "Lokal"
+  },
+  "syncConflictServer": {
+    "en": "Server",
+    "de": "Server"
+  },
+  "syncConflictKeepServer": {
+    "en": "Keep server",
+    "de": "Server behalten"
+  },
+  "syncConflictKeepBoth": {
+    "en": "Keep both",
+    "de": "Beide behalten"
+  },
+  "syncConflictKeepLocal": {
+    "en": "Keep local",
+    "de": "Lokal behalten"
+  },
+  "whatsNewTitle": {
+    "en": "What's new in {version}",
+    "de": "Neu in {version}",
+    "placeholders": {
+      "version": "String"
+    }
+  },
+  "whatsNewGotIt": {
+    "en": "Got it",
+    "de": "Verstanden"
+  },
+  "modulePlaceholderNote": {
+    "en": "Empty by design at M0. Module wired in during its milestone.",
+    "de": "In M0 bewusst leer. Das Modul wird in seinem Meilenstein angebunden."
+  },
+  "appLockTitle": {
+    "en": "Unlock courrier",
+    "de": "courrier entsperren"
+  },
+  "appLockReason": {
+    "en": "Unlock courrier",
+    "de": "courrier entsperren",
+    "description": "Reason shown in the system's device-authentication prompt."
+  },
+  "appLockLoading": {
+    "en": "Loading security settings…",
+    "de": "Sicherheitseinstellungen werden geladen …"
+  },
+  "appLockSettingsFailed": {
+    "en": "Could not read app-lock settings. Retry to continue.",
+    "de": "Die Einstellungen der App-Sperre konnten nicht gelesen werden. Versuche es erneut, um fortzufahren."
+  },
+  "appLockAuthFailed": {
+    "en": "Authentication was cancelled or unavailable. Please retry.",
+    "de": "Die Authentifizierung wurde abgebrochen oder ist nicht verfügbar. Bitte versuche es erneut."
+  },
+  "appLockAuthenticating": {
+    "en": "Authenticating…",
+    "de": "Authentifizierung …"
+  },
+  "appLockUnlock": {
+    "en": "Unlock",
+    "de": "Entsperren"
+  }
+}

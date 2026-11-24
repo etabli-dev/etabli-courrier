@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../../core/db/database.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../core/widgets/date_locale.dart';
+import '../../../l10n/l10n.dart';
 
 class MonthView extends StatelessWidget {
   const MonthView({
@@ -20,8 +22,11 @@ class MonthView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final monthLabel = DateFormat.yMMMM().format(monthStart);
+    final locale = context.l10n.dateLocale;
+    // intl lists weekdays Sunday-first; the grid starts on Monday.
+    final weekdays = DateFormat.E(locale).dateSymbols.STANDALONESHORTWEEKDAYS;
+    final dayLabels = [for (var d = 1; d <= 7; d++) weekdays[d % 7]];
+    final monthLabel = DateFormat.yMMMM(locale).format(monthStart);
     final grid = _buildGrid();
     final eventsByDate = _bucketEventsByDate();
 
@@ -160,7 +165,11 @@ class _DayCell extends StatelessWidget {
             Text('${date.day}', style: textStyle),
             const Spacer(),
             if (hasEvents && inMonth)
-              Container(width: 5, height: 5, color: CourrierTokens.accent),
+              Container(
+                width: 5,
+                height: 5,
+                color: Theme.of(context).colorScheme.primary,
+              ),
           ],
         ),
       ),

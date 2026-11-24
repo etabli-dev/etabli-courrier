@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/sync/conflict_resolver.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 // Dialog used by the AppShell-level ConflictResolver to surface a single
 // conflict's payloads + ask the user to choose. Pure widget; no IO.
@@ -24,9 +25,10 @@ class ConflictResolutionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext build) {
     final theme = Theme.of(build);
+    final l10n = build.l10n;
     return AlertDialog(
       title: Text(
-        'Sync conflict — ${context.entityTable}',
+        l10n.syncConflictTitle(context.entityTable),
         style: theme.textTheme.titleMedium,
       ),
       content: SizedBox(
@@ -35,14 +37,17 @@ class ConflictResolutionDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'The server has a newer version than the local copy.',
-              style: theme.textTheme.bodyMedium,
+            Text(l10n.syncConflictBody, style: theme.textTheme.bodyMedium),
+            const SizedBox(height: CourrierTokens.space3),
+            _PayloadColumn(
+              label: l10n.syncConflictLocal,
+              payload: context.localPayload,
             ),
             const SizedBox(height: CourrierTokens.space3),
-            _PayloadColumn(label: 'Local', payload: context.localPayload),
-            const SizedBox(height: CourrierTokens.space3),
-            _PayloadColumn(label: 'Server', payload: context.serverPayload),
+            _PayloadColumn(
+              label: l10n.syncConflictServer,
+              payload: context.serverPayload,
+            ),
           ],
         ),
       ),
@@ -50,16 +55,16 @@ class ConflictResolutionDialog extends StatelessWidget {
         TextButton(
           onPressed: () =>
               Navigator.of(build).pop(ConflictResolution.keepServer),
-          child: const Text('Keep server'),
+          child: Text(l10n.syncConflictKeepServer),
         ),
         TextButton(
           onPressed: () => Navigator.of(build).pop(ConflictResolution.keepBoth),
-          child: const Text('Keep both'),
+          child: Text(l10n.syncConflictKeepBoth),
         ),
         FilledButton(
           onPressed: () =>
               Navigator.of(build).pop(ConflictResolution.keepLocal),
-          child: const Text('Keep local'),
+          child: Text(l10n.syncConflictKeepLocal),
         ),
       ],
     );

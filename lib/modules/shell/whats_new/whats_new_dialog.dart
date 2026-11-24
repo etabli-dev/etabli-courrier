@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/preferences_store.dart';
 import '../../../core/theme/tokens.dart';
+import '../../../l10n/l10n.dart';
 
 // One-shot post-update dialog. The shell checks `WhatsNewService.shouldShow`
 // on cold start; if true it shows this dialog and the service flips the
@@ -69,7 +70,7 @@ class WhatsNewDialog extends StatelessWidget {
     final theme = Theme.of(context);
     return AlertDialog(
       title: Text(
-        "What's new in $versionLabel",
+        context.l10n.whatsNewTitle(versionLabel),
         style: theme.textTheme.titleMedium,
       ),
       content: SizedBox(
@@ -86,15 +87,15 @@ class WhatsNewDialog extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(
+                    Padding(
+                      padding: const EdgeInsets.only(
                         top: 6,
                         right: CourrierTokens.space2,
                       ),
                       child: Icon(
                         Icons.fiber_manual_record,
                         size: 6,
-                        color: CourrierTokens.accent,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     Expanded(
@@ -109,7 +110,7 @@ class WhatsNewDialog extends StatelessWidget {
       actions: [
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Got it'),
+          child: Text(context.l10n.whatsNewGotIt),
         ),
       ],
     );

@@ -1,5 +1,5 @@
 {
-  "reviewed": "2026-11-08",
+  "reviewed": "2026-11-24",
   "packages": {
     "_fe_analyzer_shared": {
       "version": "100.0.0",
@@ -259,6 +259,12 @@
       "license": "BSD-3-Clause",
       "source": "https://pub.dev/packages/flutter_appauth_platform_interface/versions/9.0.0"
     },
+    "flutter_driver": {
+      "version": "sdk",
+      "sha256": "a598db94b6290ffbe10b5ecf911057b6a943351c727fdda9e5f2891d68700a20",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/flutter/flutter/tree/3.47.9"
+    },
     "flutter_lints": {
       "version": "6.0.0",
       "sha256": "89519eca6f7b9529b35bdddd623a58c3af06a88c458dbd6531ddb4675acf75a9",
@@ -295,6 +301,12 @@
       "sha256": "bfe6db9a3430334378d729fb52a0d29972383a41e09a1d2e41f73890dcf508ca",
       "license": "BSD-3-Clause",
       "source": "https://pub.dev/packages/flutter_local_notifications_windows/versions/3.1.1"
+    },
+    "flutter_localizations": {
+      "version": "sdk",
+      "sha256": "a598db94b6290ffbe10b5ecf911057b6a943351c727fdda9e5f2891d68700a20",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/flutter/flutter/tree/3.47.9"
     },
     "flutter_plugin_android_lifecycle": {
       "version": "2.0.35",
@@ -356,6 +368,12 @@
       "license": "BSD-3-Clause",
       "source": "https://github.com/flutter/flutter/tree/3.47.9"
     },
+    "fuchsia_remote_debug_protocol": {
+      "version": "sdk",
+      "sha256": "a598db94b6290ffbe10b5ecf911057b6a943351c727fdda9e5f2891d68700a20",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/flutter/flutter/tree/3.47.9"
+    },
     "get_it": {
       "version": "9.3.0",
       "sha256": "460d44fd0a79778594da1234555f07ee665ed43cbb1bd1160920b48bac4d4f22",
@@ -410,11 +428,17 @@
       "license": "MIT",
       "source": "https://pub.dev/packages/image/versions/4.11.0"
     },
+    "integration_test": {
+      "version": "sdk",
+      "sha256": "a598db94b6290ffbe10b5ecf911057b6a943351c727fdda9e5f2891d68700a20",
+      "license": "BSD-3-Clause",
+      "source": "https://github.com/flutter/flutter/tree/3.47.9"
+    },
     "intl": {
-      "version": "0.19.0",
+      "version": "0.20.3",
       "sha256": "7e124af6a556f045cb3a20cafbdaa31602ac2c82cbcb3c3b15faaaf514b06028",
       "license": "BSD-3-Clause",
-      "source": "https://pub.dev/packages/intl/versions/0.19.0"
+      "source": "https://pub.dev/packages/intl/versions/0.20.3"
     },
     "io": {
       "version": "1.0.5",
@@ -626,6 +650,12 @@
       "license": "MIT",
       "source": "https://pub.dev/packages/posix/versions/6.5.0"
     },
+    "process": {
+      "version": "5.0.6",
+      "sha256": "5f018bbc25a55406d7a4e1d3229135439e315210b0050ca56dbb367a4934e85d",
+      "license": "BSD-3-Clause",
+      "source": "https://pub.dev/packages/process/versions/5.0.6"
+    },
     "pub_semver": {
       "version": "2.2.0",
       "sha256": "3c32b53167c7dae9190c38dab5dd9fe1789c53623ebc7d1babcb29914c5b3f16",
@@ -770,6 +800,12 @@
       "license": "BSD-3-Clause",
       "source": "https://pub.dev/packages/string_scanner/versions/1.4.1"
     },
+    "sync_http": {
+      "version": "0.3.1",
+      "sha256": "b9b748d4dd6f725387bf69e96df4e4ebff167ae83547954242a731504d037644",
+      "license": "BSD-3-Clause",
+      "source": "https://pub.dev/packages/sync_http/versions/0.3.1"
+    },
     "synchronized": {
       "version": "3.4.1",
       "sha256": "6d07c6bb60afb906049d507e19fcc4c6b59e35c0dd0f8a7302e87b3fb0576900",
@@ -841,6 +877,12 @@
       "sha256": "a4b5d7d31626e90b77e8696f1c47643aa31f52e17c1907c1ab60b068110e6e10",
       "license": "BSD-3-Clause",
       "source": "https://pub.dev/packages/web_socket_channel/versions/3.0.3"
+    },
+    "webdriver": {
+      "version": "3.2.0",
+      "sha256": "74cb46b123c9fa918ea8e0a0f5be736a1cd661edf145ccc723dc7ce30324ebab",
+      "license": "Apache-2.0",
+      "source": "https://pub.dev/packages/webdriver/versions/3.2.0"
     },
     "win32": {
       "version": "6.3.0",
