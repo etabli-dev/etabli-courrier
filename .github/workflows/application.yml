@@ -26,7 +26,7 @@ jobs:
       - run: flutter test --no-pub
       - run: python3 tool/check_licenses.py
       - run: flutter build apk --debug --no-pub
-      - run: flutter build appbundle --release --no-pub
+      - run: flutter build appbundle --release
       - run: ./gradlew --no-daemon :flutter_local_notifications:testDebugUnitTest :app:lintDebug
         working-directory: android
       - name: Retain development APK and unsigned release bundle

@@ -32,3 +32,25 @@ Notes:
   **own** Entra app and does not reuse any third-party client ID.
 
 Maintainer: keep this file updated whenever a new reference is consulted.
+
+- clock 1.1.3: https://pub.dev/packages/clock/versions/1.1.3
+
+- cross_file 0.3.5+5: https://pub.dev/packages/cross_file/versions/0.3.5+5
+
+- file_selector 1.1.0: https://pub.dev/packages/file_selector/versions/1.1.0
+
+- file_selector_android 0.5.2+11: https://pub.dev/packages/file_selector_android/versions/0.5.2+11
+
+- file_selector_ios 0.5.3+7: https://pub.dev/packages/file_selector_ios/versions/0.5.3+7
+
+- file_selector_linux 0.9.4+1: https://pub.dev/packages/file_selector_linux/versions/0.9.4+1
+
+- file_selector_macos 0.9.5+2: https://pub.dev/packages/file_selector_macos/versions/0.9.5+2
+
+- file_selector_platform_interface 2.7.0: https://pub.dev/packages/file_selector_platform_interface/versions/2.7.0
+
+- file_selector_web 0.9.5: https://pub.dev/packages/file_selector_web/versions/0.9.5
+
+- file_selector_windows 0.9.3+6: https://pub.dev/packages/file_selector_windows/versions/0.9.3+6
+
+- stack_trace 1.12.2: https://pub.dev/packages/stack_trace/versions/1.12.2

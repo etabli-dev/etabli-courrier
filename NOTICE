@@ -155,3 +155,8 @@ with a small Android permission handling patch; its BSD-3-Clause license and
 upstream provenance remain in third_party/flutter_local_notifications.
 
 local_auth_windows 1.0.11 is included as a BSD-3-Clause source dependency with a standard-C++20 coroutine compatibility patch. See third_party/local_auth_windows/UPSTREAM.md and its retained LICENSE.
+
+file_selector and platform implementations, cross_file — native Notes event selection and export
+License: BSD-3-Clause; file_selector_android also includes Apache-2.0 aFileChooser code.
+Source: https://github.com/flutter/packages/tree/main/packages/file_selector
+Exact resolved versions and complete notices are in tool/license_manifest.json and THIRD_PARTY_LICENSES.md.

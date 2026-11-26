@@ -48,8 +48,8 @@ jobs:
           props.write_text(''.join(k + '=' + escape(v) + '\n' for k, v in values.items()))
           props.chmod(0o600)
           PY_SIGN
-      - run: flutter build apk --release --split-per-abi --no-pub
-      - run: flutter build appbundle --release --no-pub
+      - run: flutter build apk --release --split-per-abi
+      - run: flutter build appbundle --release
       - name: Record package hashes
         run: find build/app/outputs -type f \( -name '*.apk' -o -name '*.aab' \) -exec sha256sum {} + > SHA256SUMS.txt
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

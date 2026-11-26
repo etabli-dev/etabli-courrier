@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import file_selector_macos
 import flutter_appauth
 import flutter_local_notifications
 import flutter_secure_storage_darwin
@@ -14,6 +15,7 @@ import shared_preferences_foundation
 import sqlite3_flutter_libs
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   FlutterAppauthPlugin.register(with: registry.registrar(forPlugin: "FlutterAppauthPlugin"))
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   FlutterSecureStorageDarwinPlugin.register(with: registry.registrar(forPlugin: "FlutterSecureStorageDarwinPlugin"))

@@ -77,3 +77,16 @@ For signing, create the ignored `android/keystore.properties` with `storeFile`, 
 [AGPL-3.0-only](LICENSE), or a commercial licence from the copyright holder (etabli.dev@outlook.com). Versions published before 22 November 2026 remain available under Apache-2.0. [NOTICE](NOTICE), [resolved license texts](THIRD_PARTY_LICENSES.md), [licensing process](LICENSING.md), and [source provenance](THIRD_PARTY_REFERENCES.md). `enough_mail`, `enough_convert` and desktop-only `dbus` are resolved MPL-2.0 dependencies; native plugin SDKs retain their own notices.
 
 Copyright 2026 R. Heller.
+
+### Export to the shared Notes calendar workflow
+
+On Linux, macOS and Windows, open a saved note and choose **Export checked note to Notes**.
+Select a server-issued event identity or `manifest.json`, select the event, and review a
+short text summary. Save the resulting JSON into the synchronized `App/Notes/Courrier/`
+folder. The original note and Nextcloud sync state remain unchanged. Repeated identical
+exports reuse their identity/revision; corrections create a new revision. A previously
+exported note cannot silently be reassigned to another event. Import/calendar receipts
+are available under `App/Notes/Courrier/receipts/`.
+
+This is a deliberate reviewed export, not automatic publication of every Nextcloud note.
+Mobile contribution export is not yet exposed by this desktop file-save flow.

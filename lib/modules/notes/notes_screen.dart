@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -6,6 +8,7 @@ import '../../l10n/l10n.dart';
 import 'data/note_draft.dart';
 import 'data/note_repository.dart';
 import 'ui/note_editor.dart';
+import 'ui/note_export.dart';
 import 'ui/note_list_view.dart';
 
 class NotesScreen extends StatelessWidget {
@@ -70,6 +73,35 @@ class NotesScreen extends StatelessWidget {
         MaterialPageRoute<void>(
           builder: (editorContext) => Scaffold(
             appBar: AppBar(
+              actions: [
+                if (note != null &&
+                    (Platform.isLinux ||
+                        Platform.isMacOS ||
+                        Platform.isWindows))
+                  IconButton(
+                    tooltip: 'Export checked note to Notes',
+                    icon: const Icon(Icons.upload_file),
+                    onPressed: () async {
+                      try {
+                        await exportCheckedNote(
+                          editorContext,
+                          repository.db,
+                          note,
+                        );
+                      } catch (_) {
+                        if (editorContext.mounted) {
+                          ScaffoldMessenger.of(editorContext).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Export failed. Check the event file and short summary.',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+              ],
               title: Text(
                 note == null
                     ? editorContext.l10n.notesNew
